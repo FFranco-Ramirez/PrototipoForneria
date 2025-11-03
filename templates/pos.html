@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Punto de Venta - La Fornería</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../static/css/forneria_design.css">
+</head>
+<body>
+    <div class="pos-container">
+        <!-- POS Header -->
+        <div class="pos-header">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h1 style="font-size: 24px; font-weight: 700; color: var(--primary-800);">Punto de Venta</h1>
+                <div style="display: flex; gap: 16px; align-items: center;">
+                    <span style="color: var(--neutral-600);">Cajero: Juan Pérez</span>
+                    <span style="color: var(--neutral-600);">Turno: Mañana</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- POS Main (Productos) -->
+        <div class="pos-main">
+            <input type="text" class="product-search" placeholder="Buscar productos...">
+            
+            <div style="display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap;">
+                <button style="padding: 8px 16px; border: 1px solid var(--primary-500); background: var(--primary-500); color: white; border-radius: 6px; cursor: pointer;">Todos</button>
+                <button style="padding: 8px 16px; border: 1px solid var(--neutral-300); background: white; color: var(--neutral-700); border-radius: 6px; cursor: pointer;">Panadería</button>
+                <button style="padding: 8px 16px; border: 1px solid var(--neutral-300); background: white; color: var(--neutral-700); border-radius: 6px; cursor: pointer;">Pastelería</button>
+                <button style="padding: 8px 16px; border: 1px solid var(--neutral-300); background: white; color: var(--neutral-700); border-radius: 6px; cursor: pointer;">Bebidas</button>
+                <button style="padding: 8px 16px; border: 1px solid var(--neutral-300); background: white; color: var(--neutral-700); border-radius: 6px; cursor: pointer;">Otros</button>
+            </div>
+
+            <div class="product-grid">
+                <div class="product-card">
+                    <div style="width: 100%; height: 80px; background: var(--neutral-200); border-radius: 8px; margin-bottom: 12px; display: flex; align-items: center; justify-content: center;">🍞</div>
+                    <div class="product-name">Pan Integral</div>
+                    <div class="product-price">$2.50</div>
+                </div>
+                <div class="product-card">
+                    <div style="width: 100%; height: 80px; background: var(--neutral-200); border-radius: 8px; margin-bottom: 12px; display: flex; align-items: center; justify-content: center;">🥐</div>
+                    <div class="product-name">Croissant</div>
+                    <div class="product-price">$3.00</div>
+                </div>
+                <div class="product-card">
+                    <div style="width: 100%; height: 80px; background: var(--neutral-200); border-radius: 8px; margin-bottom: 12px; display: flex; align-items: center; justify-content: center;">🥟</div>
+                    <div class="product-name">Empanada</div>
+                    <div class="product-price">$4.50</div>
+                </div>
+                <div class="product-card">
+                    <div style="width: 100%; height: 80px; background: var(--neutral-200); border-radius: 8px; margin-bottom: 12px; display: flex; align-items: center; justify-content: center;">☕</div>
+                    <div class="product-name">Café</div>
+                    <div class="product-price">$2.00</div>
+                </div>
+                <div class="product-card">
+                    <div style="width: 100%; height: 80px; background: var(--neutral-200); border-radius: 8px; margin-bottom: 12px; display: flex; align-items: center; justify-content: center;">🧁</div>
+                    <div class="product-name">Cupcake</div>
+                    <div class="product-price">$3.50</div>
+                </div>
+                <div class="product-card">
+                    <div style="width: 100%; height: 80px; background: var(--neutral-200); border-radius: 8px; margin-bottom: 12px; display: flex; align-items: center; justify-content: center;">🥤</div>
+                    <div class="product-name">Jugo Natural</div>
+                    <div class="product-price">$2.75</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- POS Sidebar (Carrito) -->
+        <div class="pos-sidebar">
+            <div class="cart-summary">
+                <h3 style="font-size: 18px; font-weight: 600; color: var(--neutral-800); margin-bottom: 16px;">Carrito de Compras</h3>
+                
+                <div class="cart-item">
+                    <div>
+                        <div style="font-weight: 500;">Pan Integral</div>
+                        <div style="font-size: 12px; color: var(--neutral-500);">$2.50 x 2</div>
+                    </div>
+                    <div style="font-weight: 600;">$5.00</div>
+                </div>
+                
+                <div class="cart-item">
+                    <div>
+                        <div style="font-weight: 500;">Café</div>
+                        <div style="font-size: 12px; color: var(--neutral-500);">$2.00 x 1</div>
+                    </div>
+                    <div style="font-weight: 600;">$2.00</div>
+                </div>
+                
+                <div class="cart-item">
+                    <div>
+                        <div style="font-weight: 500;">Croissant</div>
+                        <div style="font-size: 12px; color: var(--neutral-500);">$3.00 x 1</div>
+                    </div>
+                    <div style="font-weight: 600;">$3.00</div>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 16px;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                    <span>Subtotal:</span>
+                    <span>$10.00</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                    <span>IVA (16%):</span>
+                    <span>$1.60</span>
+                </div>
+                <div class="cart-total">
+                    Total: $11.60
+                </div>
+            </div>
+
+            <div style="space-y: 12px;">
+                <h4 style="font-size: 14px; font-weight: 600; color: var(--neutral-700); margin-bottom: 8px;">Método de Pago</h4>
+                <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+                    <button style="flex: 1; padding: 8px; border: 2px solid var(--primary-500); background: var(--primary-500); color: white; border-radius: 6px; cursor: pointer;">Efectivo</button>
+                    <button style="flex: 1; padding: 8px; border: 2px solid var(--neutral-300); background: white; color: var(--neutral-700); border-radius: 6px; cursor: pointer;">Tarjeta</button>
+                </div>
+                
+                <button style="width: 100%; padding: 14px; background: var(--primary-500); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; margin-bottom: 8px;">
+                    Procesar Venta
+                </button>
+                
+                <button style="width: 100%; padding: 12px; background: var(--neutral-200); color: var(--neutral-700); border: none; border-radius: 8px; font-size: 14px; cursor: pointer;">
+                    Limpiar Carrito
+                </button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

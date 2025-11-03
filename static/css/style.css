@@ -1,0 +1,52 @@
+body, html {
+    height: 100%;
+    margin: 0;
+    font-family: 'Garamond', serif;
+}
+
+/* --- Estilos para la Página de Bienvenida (home.html) --- */
+
+.welcome-container {
+    display: flex; /* Utilizamos flexbox para centrar el contenido */
+    flex-direction: column; /* apila los elementos hijos verticalmente, uno encima del otro, en lugar de en una fila horizontal */
+    justify-content: center;
+    /* alinea los elementos en el centro del eje principal (que en nuestro caso es el vertical) */
+    align-items: center;
+    /* los alinea en el centro del eje secundario (el horizontal) */
+    height: 100vh;
+    /* nos aseguramos de que el contenedor se estire para ocupar el 100% de la altura de la ventana del navegador */
+    background-color: #121212; /* establece un fondo negro oscuro */
+    color: #ffffff; /* define el texto dentro del contenedor como blanco */
+    text-align: center; /* centra el texto de los elementos hijos */
+}
+
+.welcome-title {
+    font-size: 4rem; /* define el tamaño de fuente del título como 4 veces el tamaño base */
+    font-weight: bold; /* establece el peso de la fuente como negrita, a que se refiere con peso?? */
+    color: #D4AF37; /* define el color del texto como un tono dorado */
+    margin-bottom: 1rem; /* agrega un margen inferior de 1 vez el tamaño base, para separar el título de los botones */
+    text-shadow: 2px 2px 4px #000000; /* agrega una sombra al texto para mejorar la legibilidad */
+}
+
+.welcome-subtitle {
+    font-size: 1.5rem; /* define el tamaño de fuente del subtítulo como 1.5 veces el tamaño base */
+    color: #EAEAEA; /* define el color del texto como un tono gris claro */
+    margin-bottom: 2rem; /* agrega un margen inferior de 2 veces el tamaño base, para separar el subtítulo de los botones */
+}
+
+.login-button {
+    padding: 15px 30px; /* añade espacio dentro del botón, entre el texto y el borde, haciéndolo más grande y fácil de presionar */
+    font-size: 1.2rem; /* define el tamaño de fuente del botón como 1.2 veces el tamaño base */
+    color: #121212; /* define el color del texto como negro */
+    background-color: #D4AF37; /* define el color de fondo como el mismo tono dorado que el título */
+    border: none; /* elimina el borde predeterminado del botón */
+    border-radius: 5px; /* agrega un borde redondeado de 5px */
+    text-decoration: none; /* elimina el subrayado predeterminado de los enlaces */
+    cursor: pointer; /* cambia el cursor al pasar sobre el botón a una mano, para indicar que es clickeable */
+    transition: background-color 0.3s, transform 0.3s; /* agrega una transición suave para el cambio de color de fondo y transformación (escala) */
+}
+
+.login-button:hover {
+    background-color: #E5C100; /* cambia el color de fondo a un tono dorado más claro cuando se pasa el mouse sobre el botón */
+    transform: scale(1.05); /* agrega una ligera escala (aumento del tamaño) del 5% cuando se pasa el mouse sobre el botón */
+}

@@ -1,0 +1,3 @@
+que el auth_user se conecte con el usuario
+por que el auth_user ya viene con parametros de seguridad
+ademas 
