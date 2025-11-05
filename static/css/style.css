@@ -34,6 +34,27 @@ body, html {
     margin-bottom: 2rem; /* agrega un margen inferior de 2 veces el tamaño base, para separar el subtítulo de los botones */
 }
 
+/* --- Estilos para los Botones --- */
+.button-container {
+    margin-top: 20px; /* agrega un margen superior de 20px, para separar los botones del subtítulo */
+    display: flex; /* Utilizamos flexbox para centrar los botones */
+    gap: 15px; /* agrega un espacio de 15px entre cada botón */
+}
+
+.register-button {
+    background-color: #D4AF37; /* tono dorado */
+    color: #000000; /* Este seria color del texto, negro */
+    padding: 10px 20px; /* añade espacio dentro del botón, entre el texto y el borde, haciéndolo más grande y fácil de presionar */
+    text-decoration: none; /* elimina el subrayado predeterminado de los enlaces */
+    border-radius: 5px; /* agrega un borde redondeado de 5px */
+    font-weight: bold; /* establece el peso de la fuente como negrita, a que se refiere con peso?? */
+    transition: background-color 0.3 ease /* Añade una transición suave al color de fondo, de modo que cuando el usuario pase el ratón por encima, el cambio de color no sea brusco */
+}
+
+.register-button:hover {
+    background-color: #E5C100; /* cambia el color de fondo a un tono dorado más claro cuando se pasa el mouse sobre el botón */
+}
+
 .login-button {
     padding: 15px 30px; /* añade espacio dentro del botón, entre el texto y el borde, haciéndolo más grande y fácil de presionar */
     font-size: 1.2rem; /* define el tamaño de fuente del botón como 1.2 veces el tamaño base */
@@ -49,4 +70,222 @@ body, html {
 .login-button:hover {
     background-color: #E5C100; /* cambia el color de fondo a un tono dorado más claro cuando se pasa el mouse sobre el botón */
     transform: scale(1.05); /* agrega una ligera escala (aumento del tamaño) del 5% cuando se pasa el mouse sobre el botón */
+}
+
+/* --- FIN Estilos para los Botones --- */
+/* --- Estilos para Formularios --- */
+.form-container {
+    background-color: #2c2c2c; /* Fondo oscuro similar al de la página de bienvenida */
+    padding: 40px; /* Añade espacio alrededor del formulario de 40pixeles */
+    border-radius: 10px; /* agrega un borde redondeado de 10px */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* agrega una sombra al formulario para mejorar la legibilidad */
+    max-width: 500px; /* establece el ancho máximo del formulario como 500px */
+    margin: 40px auto; /* agrega un margen de 40px en la parte superior e inferior, y centra el formulario horizontalmente */
+    color: #f0f0f0; /* define el color del texto dentro del formulario como un tono claro de gris */
+}
+
+.form-container h2 {
+    text-align: center; /* centra el texto del encabezado h2 dentro del formulario */
+    margin-bottom: 30px; /* agrega un margen inferior de 30px, para separar el encabezado del resto del formulario */
+    color: #D4AF37; /* define el color del texto como el mismo tono dorado que el título */
+}
+
+.form-group {
+    margin-bottom: 20px; /* agrega un margen inferior de 20px, para separar cada grupo de campos del formulario */
+}
+
+.form-group label {
+    display: block; /* hace que la etiqueta del campo de formulario se muestre como un bloque, lo que significa que se colocará en una línea separada del campo */
+    margin-bottom: 8px; /* agrega un margen inferior de 8px, para separar la etiqueta del campo */
+    font-weight: bold; /* establece el peso de la fuente como negrita, a que se refiere con peso?? */
+}
+
+.form-group input {
+    width: 100%; /* Hace que el campo de entrada ocupe todo el ancho disponible en su contenedor */
+    padding: 12px; /* Añade espacio dentro del campo de entrada, entre el texto y el borde, haciéndolo más grande y fácil de presionar */
+    background-color: #3a3a3a; /* Fondo oscuro similar al de la página de bienvenida */
+    border: 1px solid #555; /* Borde gris oscuro para resaltar el campo */
+    border-radius: 5px; /* agrega un borde redondeado de 5px */
+    color: #f0f0f0; /* define el color del texto dentro del campo de entrada como un tono claro de gris */
+    box-sizing: border-box; /* incluye el padding y el border en el ancho total del elemento, para que no se salga del contenedor */
+}
+
+.form-group input:focus {
+    outline: none; /* elimina el contorno predeterminado cuando el campo de entrada está enfocado */
+    border-color: #D4AF37; /* cambia el color del borde a dorado cuando el campo está enfocado */
+    box-shadow: 0 0 5px rgba(212, 175, 55, 0.5); /* agrega una sombra al campo enfocado para resaltar el campo */
+}
+
+.submit-button {
+    width: 100%; /* Hace que el botón de envío ocupe todo el ancho disponible en su contenedor */
+    padding: 12px; /* Añade espacio dentro del botón, entre el texto y el borde, haciéndolo más grande y fácil de presionar */
+    background-color: #D4AF37; /* define el color de fondo como el mismo tono dorado que el título */
+    color: #000000; /* define el color del texto como negro */
+    border: none; /* elimina el borde predeterminado del botón */
+    border-radius: 5px; /* agrega un borde redondeado de 5px */
+    font-size: 16px; /* define el tamaño de fuente del botón como 16px */
+    font-weight: bold; /* establece el peso de la fuente como negrita, a que se refiere con peso?? */
+    cursor: pointer; /* cambia el cursor al pasar sobre el botón a una mano, para indicar que es clickeable */
+    transition: background-color 0.3s, transform ease; /* Ease hace la transición más suave, al inicio y al final de la animación */
+}
+
+.submit-button:hover {
+    background-color: #E5C100; /* Dorado más brillante */
+}
+
+.form-link {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.form-link a {
+    color: #D4AF37;
+    text-decoration: none;
+}
+
+.form-link a:hover {
+    text-decoration: underline;
+}
+/* --- FIN Estilos para Formularios --- */
+/* Dashboard Styles */
+.dashboard-main-container {
+    display: grid;
+    grid-template-columns: 240px 1fr; /* Sidebar and main content */
+    height: 100vh;
+    background-color: #f8f9fa;
+}
+
+.dashboard-sidebar {
+    background-color: #1a1a1a; /* Dark background */
+    color: #ffffff;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-header {
+    margin-bottom: 30px;
+}
+
+.sidebar-header .sidebar-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #ffd700; /* Gold color */
+    text-align: center;
+}
+
+.sidebar-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    flex-grow: 1;
+}
+
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    color: #ffffff;
+    text-decoration: none;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.sidebar-link:hover {
+    background-color: #333333;
+}
+
+.sidebar-link.active {
+    background-color: #ffd700; /* Gold background for active link */
+    color: #1a1a1a; /* Dark text for active link */
+    font-weight: bold;
+}
+
+.sidebar-link span {
+    margin-right: 10px;
+}
+
+.sidebar-footer {
+    margin-top: auto;
+}
+
+.dashboard-content-wrapper {
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 30px;
+    background-color: #ffffff;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.dashboard-main-title {
+    font-size: 28px;
+    font-weight: bold;
+    color: #343a40;
+}
+
+.header-user-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.header-user-info .user-name {
+    font-weight: 500;
+    color: #495057;
+}
+
+.header-user-info .user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #ffd700;
+    color: #1a1a1a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}
+
+.dashboard-content {
+    padding: 30px;
+}
+
+.dashboard-metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 20px;
+}
+
+.dashboard-metric-card {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    text-align: center;
+}
+
+.dashboard-metric-card .metric-card-title {
+    font-size: 16px;
+    color: #6c757d;
+    margin-bottom: 10px;
+}
+
+.dashboard-metric-card .metric-card-value {
+    font-size: 28px;
+    font-weight: bold;
+    color: #343a40;
+}
+
+.dashboard-metric-card .metric-card-subtitle {
+    font-size: 14px;
+    color: #adb5bd;
+    margin-top: 5px;
 }

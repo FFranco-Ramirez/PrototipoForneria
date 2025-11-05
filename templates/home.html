@@ -1,9 +1,12 @@
-1 {% extends "base.html" %}
+{% extends "base.html" %}
 
-{% block content %}
+{% block contenido %}
 <div class="welcome-container">
     <h1 class="welcome-title">Bienvenido a Fornería</h1>
     <h2 class="welcome-subtitle">Sistema de gestión de confianza</h2>
-    <a href="#" class="login-button">Iniciar sesión</a>
+
+    <div class="button-container">
+        <a href="{% url 'login'%}" class="login-button">Iniciar sesion</a>
+        <a href="{% url 'registro'%}" class="register-button">Registrarse</a>
 </div>
 {% endblock %}
