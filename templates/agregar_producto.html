@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block contenido %}
+<div class="form-container">
+    <h2>Agregar Nuevo Producto</h2>
+    <form method="post">
+        {% csrf_token %}
+        
+        <div class="form-grid">
+            {{ form.as_p }}
+        </div>
+
+        <button type="submit" class="submit-button">Guardar Producto</button>
+    </form>
+    <div class="form-link">
+        <a href="{% url 'dashboard' %}">Volver al Dashboard</a>
+    </div>
+</div>
+{% endblock %}
