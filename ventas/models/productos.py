@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.validators import MinValueValidator
 
 class Categorias(models.Model):
     nombre = models.CharField(max_length=100, blank=True, null=True)
@@ -31,14 +32,17 @@ class Productos(models.Model):
     nombre = models.CharField(max_length=100)
     descripcion = models.CharField(max_length=300, blank=True, null=True)
     marca = models.CharField(max_length=100, blank=True, null=True)
-    precio = models.DecimalField(max_digits=10, decimal_places=2)
+    precio = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0)])
     caducidad = models.DateField()
     elaboracion = models.DateField(blank=True, null=True)
     tipo = models.CharField(max_length=100, blank=True, null=True)
-    stock_actual = models.IntegerField(blank=True, null=True)
-    stock_minimo = models.IntegerField(blank=True, null=True)
-    stock_maximo = models.IntegerField(blank=True, null=True)
-    presentacion = models.CharField(max_length=100, blank=True, null=True)
+    # NUEVO: cantidad para ingreso de productos
+    cantidad = models.IntegerField(default=0, validators=[MinValueValidator(0)])
+
+    stock_actual = models.IntegerField(blank=True, null=True, validators=[MinValueValidator(0)])
+    stock_minimo = models.IntegerField(blank=True, null=True, validators=[MinValueValidator(0)])
+    stock_maximo = models.IntegerField(blank=True, null=True, validators=[MinValueValidator(0)])
+    # presentacion = models.CharField(max_length=100, blank=True, null=True)
     formato = models.CharField(max_length=100, blank=True, null=True)
     creado = models.DateTimeField(blank=True, null=True, auto_now_add=True)
     modificado = models.DateTimeField(blank=True, null=True, auto_now=True)

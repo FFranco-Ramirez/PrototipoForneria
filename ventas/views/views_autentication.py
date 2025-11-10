@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib import messages
 from ..funciones.formularios import RegistrationForms, LoginForm
@@ -33,7 +33,7 @@ def login_view(request):
                 login(request, user)
                 return redirect('dashboard')
 
-            form.add_error(None, 'Credenciales incorrectas.')
+            form.add_error(None, 'Usuario o contraseña incorrectos.')
             return render(request, 'login.html', {'form': form})
 
         # Form inválido: re-render con errores
@@ -79,4 +79,54 @@ def proximamente_view(request, feature=None):
 
 def recuperar_contrasena_view(request):
     return redirect("proximamente_feature", feature="recuperar-contrasena")
+
+def logout_view(request):
+    logout(request)
+    messages.info(request, "Sesión cerrada correctamente.")
+    return redirect('login')
+
+# NUEVO: gestión de usuarios (solo superusuario)
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.shortcuts import get_object_or_404
+from ..funciones.formularios import AdminUserEditForm
+
+def _es_superusuario(u):
+    return u.is_superuser
+
+@login_required
+@user_passes_test(_es_superusuario)
+def usuarios_list_view(request):
+    usuarios = User.objects.all().order_by('-is_superuser', '-is_staff', 'username')
+    return render(request, 'usuarios_list.html', {'usuarios': usuarios})
+
+@login_required
+@user_passes_test(_es_superusuario)
+def usuario_editar_view(request, user_id):
+    usuario = get_object_or_404(User, pk=user_id)
+    if request.method == 'POST':
+        form = AdminUserEditForm(request.POST, instance=usuario)
+        if form.is_valid():
+            usuario = form.save()
+            nueva = form.cleaned_data.get('password')
+            if nueva:
+                usuario.set_password(nueva)
+                usuario.save()
+            messages.success(request, "Usuario actualizado correctamente.")
+            return redirect('usuarios_list')
+    else:
+        form = AdminUserEditForm(instance=usuario)
+    return render(request, 'usuario_editar.html', {'form': form, 'usuario': usuario})
+
+@login_required
+@user_passes_test(_es_superusuario)
+def usuario_eliminar_view(request, user_id):
+    usuario = get_object_or_404(User, pk=user_id)
+    if usuario == request.user:
+        messages.error(request, "No puedes eliminar tu propio usuario mientras estás conectado.")
+        return redirect('usuarios_list')
+    if request.method == 'POST':
+        usuario.delete()
+        messages.success(request, "Usuario eliminado.")
+        return redirect('usuarios_list')
+    return render(request, 'confirmar_eliminar_usuario.html', {'usuario': usuario})
     

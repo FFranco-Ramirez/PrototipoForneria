@@ -1,7 +1,7 @@
 body, html {
     height: 100%;
     margin: 0;
-    font-family: 'Garamond', serif;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
 /* --- Estilos para la Página de Bienvenida (home.html) --- */
@@ -18,6 +18,7 @@ body, html {
     background-color: #121212; /* establece un fondo negro oscuro */
     color: #ffffff; /* define el texto dentro del contenedor como blanco */
     text-align: center; /* centra el texto de los elementos hijos */
+    font-family: 'Garamond', serif;
 }
 
 .welcome-title {
@@ -73,49 +74,185 @@ body, html {
 }
 
 /* --- FIN Estilos para los Botones --- */
-/* --- Estilos para Formularios --- */
+/* --- Estilos para Formularios (PRODUCTOS) --- */
+/* Nota: estos estilos solo aplican al formulario de productos usando .form-producto,
+   así no afectan login ni registro. */
+
+.form-producto {
+    /* deja espacio lateral y centra verticalmente para productos */
+    max-width: 640px;
+    margin: 40px auto;
+}
+
+.form-producto .form-row {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 14px;
+}
+
+/* Para formularios que usan {{ form.as_p }} dentro del contenedor de productos,
+   mantenemos la disposición vertical */
+.form-producto form p {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 14px;
+}
+
+.form-producto label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+    color: #f0f0f0;
+}
+
+.form-producto input,
+.form-producto select,
+.form-producto textarea {
+    width: 100%;
+    padding: 12px;
+    background-color: #3a3a3a;
+    border: 1px solid #555;
+    border-radius: 5px;
+    color: #f0f0f0;
+    box-sizing: border-box;
+}
+
+.form-producto input:focus,
+.form-producto select:focus,
+.form-producto textarea:focus {
+    outline: none;
+    border-color: #D4AF37;
+    box-shadow: 0 0 5px rgba(212, 175, 55, 0.5);
+}
+
+/* Mensajes de error SOLO en productos */
+.form-producto .error-summary {
+    background: #3a2e00;
+    color: #ffd700;
+    padding: 10px 12px;
+    border-radius: 6px;
+    margin-bottom: 16px;
+}
+
+.form-producto .field-error {
+    color: #ffb4b4;
+    font-size: 0.9rem;
+    margin-top: 4px;
+}
+
+/* Si quieres que el botón de productos ocupe todo el ancho,
+   lo limitamos al contenedor de productos */
+.form-producto .submit-button {
+    width: 100%;
+}
+
+/* El resto de clases globales (submit-button, form-link) se mantienen igual para no tocar login */
+.form-container {
+    /* deja espacio lateral y centra verticalmente */
+    max-width: 640px;
+    margin: 40px auto;
+}
+/* Campos en columnas verticales (manual y as_p) */
+.form-row {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 14px;
+}
+.form-container form p {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 14px;
+}
+/* --- Estilos para Formularios (GLOBAL: login/registro) --- */
 .form-container {
     background-color: #2c2c2c; /* Fondo oscuro similar al de la página de bienvenida */
-    padding: 40px; /* Añade espacio alrededor del formulario de 40pixeles */
-    border-radius: 10px; /* agrega un borde redondeado de 10px */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* agrega una sombra al formulario para mejorar la legibilidad */
-    max-width: 500px; /* establece el ancho máximo del formulario como 500px */
-    margin: 40px auto; /* agrega un margen de 40px en la parte superior e inferior, y centra el formulario horizontalmente */
-    color: #f0f0f0; /* define el color del texto dentro del formulario como un tono claro de gris */
+    padding: 40px;            /* Espacio alrededor del formulario */
+    border-radius: 10px;      /* Bordes redondeados */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    max-width: 500px;
+    margin: 40px auto;
+    color: #f0f0f0;           /* Texto claro */
 }
 
 .form-container h2 {
-    text-align: center; /* centra el texto del encabezado h2 dentro del formulario */
-    margin-bottom: 30px; /* agrega un margen inferior de 30px, para separar el encabezado del resto del formulario */
-    color: #D4AF37; /* define el color del texto como el mismo tono dorado que el título */
+    text-align: center;
+    margin-bottom: 30px;
+    color: #D4AF37;           /* Dorado */
 }
 
 .form-group {
-    margin-bottom: 20px; /* agrega un margen inferior de 20px, para separar cada grupo de campos del formulario */
+    margin-bottom: 20px;
 }
 
 .form-group label {
-    display: block; /* hace que la etiqueta del campo de formulario se muestre como un bloque, lo que significa que se colocará en una línea separada del campo */
-    margin-bottom: 8px; /* agrega un margen inferior de 8px, para separar la etiqueta del campo */
-    font-weight: bold; /* establece el peso de la fuente como negrita, a que se refiere con peso?? */
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
 }
 
 .form-group input {
-    width: 100%; /* Hace que el campo de entrada ocupe todo el ancho disponible en su contenedor */
-    padding: 12px; /* Añade espacio dentro del campo de entrada, entre el texto y el borde, haciéndolo más grande y fácil de presionar */
-    background-color: #3a3a3a; /* Fondo oscuro similar al de la página de bienvenida */
-    border: 1px solid #555; /* Borde gris oscuro para resaltar el campo */
-    border-radius: 5px; /* agrega un borde redondeado de 5px */
-    color: #f0f0f0; /* define el color del texto dentro del campo de entrada como un tono claro de gris */
-    box-sizing: border-box; /* incluye el padding y el border en el ancho total del elemento, para que no se salga del contenedor */
+    width: 100%;
+    padding: 12px;
+    background-color: #3a3a3a;
+    border: 1px solid #555;
+    border-radius: 5px;
+    color: #f0f0f0;
+    box-sizing: border-box;
 }
 
 .form-group input:focus {
-    outline: none; /* elimina el contorno predeterminado cuando el campo de entrada está enfocado */
-    border-color: #D4AF37; /* cambia el color del borde a dorado cuando el campo está enfocado */
-    box-shadow: 0 0 5px rgba(212, 175, 55, 0.5); /* agrega una sombra al campo enfocado para resaltar el campo */
+    outline: none;
+    border-color: #D4AF37;
+    box-shadow: 0 0 5px rgba(212, 175, 55, 0.5);
 }
 
+.submit-button {
+    width: 100%;
+    padding: 12px;
+    background-color: #D4AF37;
+    color: #000000;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s, transform ease;
+}
+
+.submit-button:hover {
+    background-color: #E5C100;
+}
+
+.form-link {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.form-link a {
+    color: #D4AF37;
+    text-decoration: none;
+}
+
+.form-link a:hover {
+    text-decoration: underline;
+}
+/* Mensajes de error del formulario */
+.error-summary {
+    background: #3a2e00;
+    color: #ffd700;
+    padding: 10px 12px;
+    border-radius: 6px;
+    margin-bottom: 16px;
+}
+.field-error {
+    color: #ffb4b4;
+    font-size: 0.9rem;
+    margin-top: 4px;
+}
 .submit-button {
     width: 100%; /* Hace que el botón de envío ocupe todo el ancho disponible en su contenedor */
     padding: 12px; /* Añade espacio dentro del botón, entre el texto y el borde, haciéndolo más grande y fácil de presionar */
@@ -232,26 +369,83 @@ body, html {
 }
 
 .header-user-info {
+    position: relative;
     display: flex;
     align-items: center;
-    gap: 15px;
+    gap: 10px;
 }
 
-.header-user-info .user-name {
-    font-weight: 500;
-    color: #495057;
+.user-name {
+    font-weight: 600;
 }
 
-.header-user-info .user-avatar {
-    width: 40px;
-    height: 40px;
+.user-avatar {
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
-    background-color: #ffd700;
-    color: #1a1a1a;
-    display: flex;
+    background: #222;
+    color: #fff;
+    border: 1px solid #ccc;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    font-weight: bold;
+    cursor: pointer;
+    font-weight: 700;
+}
+
+.user-menu {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 8px);
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, .1);
+    padding: 6px;
+    display: none;
+    min-width: 160px;
+    z-index: 1000;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity .15s ease, transform .15s ease;
+    pointer-events: none;
+}
+
+/* fuerza el ocultamiento si hay atributo hidden */
+.header-user-info .user-menu[hidden] {
+    display: none !important;
+}
+
+.user-menu.open {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+/* pequeña flechita del “dash” */
+.user-menu::before {
+    content: '';
+    position: absolute;
+    right: 12px;
+    top: -6px;
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-bottom: 6px solid #fff;
+    filter: drop-shadow(0 -1px 1px rgba(0,0,0,.08));
+}
+
+.user-menu-item {
+    display: block;
+    padding: 8px 10px;
+    color: #333;
+    text-decoration: none;
+}
+
+.user-menu-item:hover {
+    background: #f5f5f5;
 }
 
 .dashboard-content {
@@ -323,3 +517,85 @@ input::-ms-input-placeholder      { color: rgba(200,200,200,0.70) !important; }
 textarea::-webkit-input-placeholder { color: rgba(200,200,200,0.70) !important; }
 textarea:-ms-input-placeholder       { color: rgba(200,200,200,0.70) !important; }
 textarea::-ms-input-placeholder      { color: rgba(200,200,200,0.70) !important; }
+
+/* Black & Gold theme: Inventario + Edit Product (scoped) */
+.dark-gold-theme {
+  --bg: #0e0e0e;
+  --bg-alt: #141414;
+  --text: #f2f2f2;
+  --muted: #c8c8c8;
+  --gold: #d4af37;
+  --gold-weak: #caa730;
+  --danger: #dc3545;
+  --border: #222;
+  background: var(--bg);
+  color: var(--text);
+  padding: 24px;
+  border-radius: 12px;
+}
+
+/* INVENTARIO: estilos ahora solo aplican si hay .dark-gold-theme */
+.dark-gold-theme .inventory-container h2 { color: var(--gold); font-weight: 700; }
+.dark-gold-theme .inventory-container .inventory-search input[type="text"] {
+  background: var(--bg-alt); color: var(--text); border: 1px solid var(--border);
+}
+.dark-gold-theme .inventory-container .inventory-search .btn-primary {
+  background: var(--gold); border-color: var(--gold);
+  color: #111; font-weight: 600;
+}
+.dark-gold-theme .inventory-container .inventory-table thead th {
+  background: var(--bg-alt); color: var(--gold); border-bottom: 1px solid var(--border);
+}
+.dark-gold-theme .inventory-container .inventory-table tbody td {
+  color: var(--text); border-top: 1px solid var(--border);
+}
+.dark-gold-theme .inventory-container .btn-outline-primary { border-color: var(--gold); color: var(--gold); }
+.dark-gold-theme .inventory-container .btn-outline-secondary { border-color: #888; color: #ddd; }
+.dark-gold-theme .inventory-container .btn-outline-danger { border-color: var(--danger); color: var(--danger); }
+.dark-gold-theme .inventory-container .btn-outline-primary:hover,
+.dark-gold-theme .inventory-container .btn-outline-secondary:hover { background: #1e1e1e; }
+.dark-gold-theme .inventory-container .form-link a { color: var(--gold); text-decoration: none; }
+
+/* EDIT PRODUCT: mantiene el tema (ya usa .dark-gold-theme) */
+.edit-product-container .edit-header {
+  display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;
+}
+.edit-product-container .edit-header h2 { color: var(--gold); margin: 0; }
+.edit-product-container .back-link { color: var(--gold); }
+
+.edit-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+@media (max-width: 900px) { .edit-grid { grid-template-columns: 1fr; } }
+
+.edit-card {
+  background: var(--bg-alt);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+}
+.edit-section-title { color: var(--gold); margin-bottom: 8px; }
+
+.form-grid { display: grid; gap: 10px; }
+.form-row label { color: var(--muted); margin-bottom: 4px; }
+.form-row input, .form-row select {
+  background: #191919; color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 10px;
+}
+
+.field-error { color: #ff6b6b; font-size: 0.9rem; margin-top: 4px; }
+
+.edit-actions { margin-top: 16px; display: flex; gap: 12px; }
+.dark-gold-theme .btn-primary {
+  background: var(--gold); border-color: var(--gold); color: #101010; font-weight: 600;
+}
+.dark-gold-theme .btn-link { color: var(--gold); }
+.edit-product-container input, .edit-product-container select {
+  background-color: #141414;
+  color: #eaeaea;
+  border: 1px solid #444;
+}

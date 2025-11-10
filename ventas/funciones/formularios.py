@@ -157,3 +157,55 @@ class RegistrationForms(forms.Form):
             cleaned_data["password"] = validador_contrasena_registro(password)
 
         return cleaned_data
+
+class AdminUserEditForm(forms.ModelForm):
+    password = forms.CharField(
+        label="Nueva contraseña",
+        required=False,
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Dejar vacío para no cambiar',
+            'autocomplete': 'new-password',
+        })
+    )
+
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'first_name', 'last_name', 'is_active', 'is_staff', 'is_superuser']
+        widgets = {
+            'username': forms.TextInput(attrs={'class': 'form-control', 'autocomplete': 'username'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control', 'autocomplete': 'email'}),
+            'first_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'is_staff': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'is_superuser': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        }
+
+    def clean_username(self):
+        username = validador_usuario(self.cleaned_data.get('username'))
+        existe = User.objects.filter(username=username).exclude(pk=self.instance.pk).exists()
+        if existe:
+            raise forms.ValidationError("El nombre de usuario ya existe")
+        return username
+
+    def clean_email(self):
+        email = validador_correo(self.cleaned_data.get('email'))
+        existe = User.objects.filter(email=email).exclude(pk=self.instance.pk).exists()
+        if existe:
+            raise forms.ValidationError("El correo electrónico ya está registrado")
+        return email
+
+    def clean_first_name(self):
+        valor = sanitizador_texto(self.cleaned_data.get('first_name') or '')
+        return valor
+
+    def clean_last_name(self):
+        valor = sanitizador_texto(self.cleaned_data.get('last_name') or '')
+        return valor
+
+    def clean_password(self):
+        pwd = self.cleaned_data.get('password')
+        if pwd:
+            return validador_contrasena_registro(pwd)
+        return pwd

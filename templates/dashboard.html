@@ -1,6 +1,5 @@
 {% extends "base.html" %}
 {% load static %}
-
 {% block contenido %}
 <div class="dashboard-main-container">
     <!-- Sidebar -->
@@ -15,12 +14,12 @@
                 </a>
             </li>
             <li class="sidebar-item">
-                <a href="#" class="sidebar-link">
+                <a href="{% url 'proximamente_feature' 'ventas' %}" class="sidebar-link">
                     <span>🛒</span> Ventas
                 </a>
             </li>
             <li class="sidebar-item">
-                <a href="#" class="sidebar-link">
+                <a href="{% url 'inventario' %}" class="sidebar-link">
                     <span>📦</span> Inventario
                 </a>
             </li>
@@ -30,29 +29,45 @@
                 </a>
             </li>
             <li class="sidebar-item">
-                <a href="#" class="sidebar-link">
+                <a href="{% url 'proximamente_feature' 'reportes' %}" class="sidebar-link">
                     <span>📈</span> Reportes
                 </a>
             </li>
+            {% if request.user.is_authenticated and request.user.is_superuser %}
+            <li class="sidebar-item">
+                <a href="{% url 'usuarios_list' %}" class="sidebar-link">
+                    <span>👥</span> Usuarios
+                </a>
+            </li>
+            {% endif %}
         </ul>
         <div class="sidebar-footer">
-            <a href="#" class="sidebar-link">
+            <a href="{% url 'proximamente_feature' 'configuracion' %}" class="sidebar-link">
                 <span>⚙️</span> Configuración
             </a>
         </div>
     </nav>
-
     <!-- Main Content -->
     <div class="dashboard-content-wrapper">
         <!-- Header -->
         <header class="dashboard-header">
             <h1 class="dashboard-main-title">Resumen del Día</h1>
             <div class="header-user-info">
-                <span class="user-name">Admin</span>
-                <div class="user-avatar">A</div>
+                {% if request.user.is_authenticated %}
+                    <span class="user-name">{{ request.user.username }}</span>
+                    <button type="button" class="user-avatar" id="userMenuButton">
+                        {{ request.user.username|slice:":1"|upper }}
+                    </button>
+                    <div class="user-menu" id="userMenu" aria-hidden="true" hidden>
+                        <a href="{% url 'proximamente_feature' 'perfil' %}" class="user-menu-item">Ver perfil</a>
+                        <a href="{% url 'logout' %}" class="user-menu-item">Cerrar sesión</a>
+                    </div>
+                {% else %}
+                    <span class="user-name">Invitado</span>
+                    <a href="{% url 'login' %}" class="user-avatar">⇢</a>
+                {% endif %}
             </div>
         </header>
-
         <!-- Content -->
         <main class="dashboard-content">
             <!-- Metrics Cards -->
@@ -81,4 +96,31 @@
         </main>
     </div>
 </div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  const btn = document.getElementById('userMenuButton');
+  const menu = document.getElementById('userMenu');
+  if (!btn || !menu) return;
+
+  function hide(){
+    menu.hidden = true;
+    menu.classList.remove('open');
+    menu.setAttribute('aria-hidden','true');
+  }
+
+  function toggle(){
+    const willOpen = menu.hidden;       // si está oculto, se abrirá
+    menu.hidden = !willOpen;            // invertir estado hidden
+    menu.classList.toggle('open', willOpen);
+    menu.setAttribute('aria-hidden', String(!willOpen));
+  }
+
+  btn.addEventListener('click', function(e){ e.stopPropagation(); toggle(); });
+  document.addEventListener('click', hide);
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape') hide(); });
+});
+</script>
 {% endblock %}
