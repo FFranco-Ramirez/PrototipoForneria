@@ -65,4 +65,18 @@ def register_view(request):
 
 def dashboard_view(request):
     return render(request, 'dashboard.html')
+
+def proximamente_view(request, feature=None):
+    titulo = "En construcción" if not feature else f"{feature.replace('-', ' ').title()} en construcción"
+    contexto = {
+        "title": titulo,
+        "message": "Estamos trabajando en esta sección. Pronto estará disponible.",
+        "primary_action_url": "/",
+        "primary_action_text": "Volver al inicio",
+        "secondary_action_text": "Ir al dashboard",
+    }
+    return render(request, "proximamente.html", contexto)
+
+def recuperar_contrasena_view(request):
+    return redirect("proximamente_feature", feature="recuperar-contrasena")
     
