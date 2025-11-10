@@ -1,5 +1,4 @@
 {% extends "base.html" %}
-
 {% block contenido %}
 <div class="form-container">
     {% if messages %}
@@ -9,12 +8,14 @@
             {% endfor %}
         </ul>
     {% endif %}
+
     <h2>Iniciar Sesión</h2>
-    <form method="post">
+    <form method="post" action="{% url 'login' %}">
         {% csrf_token %}
         {{ form.as_p }}
         <button type="submit" class="submit-button">Iniciar Sesión</button>
     </form>
+
     <div class="form-link">
         <p>¿No tienes una cuenta? <a href="{% url 'registro' %}">Regístrate aquí</a></p>
     </div>

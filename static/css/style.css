@@ -289,3 +289,37 @@ body, html {
     color: #adb5bd;
     margin-top: 5px;
 }
+
+/* Oculta los errores inline que renderiza {{ form.as_p }} */
+.form-container ul.errorlist {
+    display: none;
+}
+
+/* Bloque de errores apilados (se muestra arriba del formulario) */
+.form-errors {
+    margin-bottom: 16px;
+    padding: 12px 16px;
+    border-radius: 6px;
+    border: 1px solid #caa335;           /* borde dorado (ajústalo si usas otro) */
+    background-color: #2c2c2c;           /* fondo oscuro del panel de errores */
+    color: #f0e6c0;                       /* texto claro para contraste */
+}
+.form-errors ul {
+    margin: 8px 0 0;
+    padding-left: 18px;
+}
+.form-errors li {
+    margin-bottom: 4px;
+}
+
+/* Placeholder (hint dentro del input) — conservamos tu ajuste de antes */
+input.form-control::placeholder,
+textarea.form-control::placeholder {
+    color: rgba(200, 200, 200, 0.70) !important;
+}
+input::-webkit-input-placeholder { color: rgba(200,200,200,0.70) !important; }
+input:-ms-input-placeholder       { color: rgba(200,200,200,0.70) !important; }
+input::-ms-input-placeholder      { color: rgba(200,200,200,0.70) !important; }
+textarea::-webkit-input-placeholder { color: rgba(200,200,200,0.70) !important; }
+textarea:-ms-input-placeholder       { color: rgba(200,200,200,0.70) !important; }
+textarea::-ms-input-placeholder      { color: rgba(200,200,200,0.70) !important; }
