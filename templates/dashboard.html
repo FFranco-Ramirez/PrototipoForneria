@@ -93,6 +93,29 @@
                     <p class="metric-card-subtitle">-- unidades</p>
                 </div>
             </div>
+
+            <!-- Por vencer (7 días) + Gauge -->
+            <div class="dashboard-two-col" style="margin-top: 16px;">
+                <!-- Izquierda: listado por vencer -->
+                <div class="dashboard-metric-card" id="vencimientos-card">
+                    <h3 class="metric-card-title">Por vencer (7 días)</h3>
+                    <ul id="vencimientos-list" class="metric-list"></ul>
+                    <div id="vencimientos-extra" style="display: none;">
+                        <ul id="vencimientos-extra-list" class="metric-list"></ul>
+                    </div>
+                    <button id="vencimientos-toggle" class="metric-card-button" style="display:none;">Ver más</button>
+                </div>
+
+                <!-- Derecha: gauge de Grafana -->
+                <div class="dashboard-metric-card" id="grafana-gauge-card">
+                    <h3 class="metric-card-title">Pérdida potencial (7 días)</h3>
+                    <iframe src="http://localhost:3000/d-solo/ad56wm8/forneria?orgId=1&from=1762891605031&to=1762913205031&timezone=browser&panelId=panel-1&__feature.dashboardSceneSolo=true"
+                            width="450"
+                            height="200"
+                            frameborder="0">
+                    </iframe>
+                </div>
+            </div>
         </main>
     </div>
 </div>
@@ -112,8 +135,8 @@ document.addEventListener('DOMContentLoaded', function(){
   }
 
   function toggle(){
-    const willOpen = menu.hidden;       // si está oculto, se abrirá
-    menu.hidden = !willOpen;            // invertir estado hidden
+    const willOpen = menu.hidden;
+    menu.hidden = !willOpen;
     menu.classList.toggle('open', willOpen);
     menu.setAttribute('aria-hidden', String(!willOpen));
   }
@@ -123,4 +146,5 @@ document.addEventListener('DOMContentLoaded', function(){
   document.addEventListener('keydown', function(e){ if (e.key === 'Escape') hide(); });
 });
 </script>
+<script src="{% static 'js/expiraciones.js' %}"></script>
 {% endblock %}

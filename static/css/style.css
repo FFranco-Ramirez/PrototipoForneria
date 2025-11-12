@@ -452,12 +452,12 @@ body, html {
     padding: 30px;
 }
 
+/* Dashboard Styles */
 .dashboard-metrics-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
     gap: 20px;
 }
-
 .dashboard-metric-card {
     background-color: #ffffff;
     padding: 20px;
@@ -465,7 +465,6 @@ body, html {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     text-align: center;
 }
-
 .dashboard-metric-card .metric-card-title {
     font-size: 16px;
     color: #6c757d;
@@ -598,4 +597,160 @@ textarea::-ms-input-placeholder      { color: rgba(200,200,200,0.70) !important;
   background-color: #141414;
   color: #eaeaea;
   border: 1px solid #444;
+}
+
+/* NUEVO: tarjeta compacta y aislada para “Por vencer (7 días)” */
+#vencimientos-card {
+    max-width: 280px;        /* tamaño compacto similar a Top Producto */
+    display: inline-block;   /* evita que ocupe todo el ancho */
+    text-align: left;        /* alinear el contenido a la izquierda */
+    margin-top: 16px;        /* separación del bloque anterior */
+}
+#vencimientos-card .metric-card-title {
+    text-align: left;        /* título alineado a la izquierda sólo aquí */
+    margin-bottom: 8px;
+}
+#vencimientos-card .metric-list {
+    list-style: none;        /* sin puntos negros */
+    padding-left: 0;         /* quitar sangría */
+    margin: 0 0 12px 0;
+}
+#vencimientos-card .metric-list li {
+    margin: 4px 0;           /* espaciado vertical */
+    color: #343a40;
+}
+#vencimientos-card .metric-card-button {
+    background: #D4AF37;
+    color: #111;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-weight: 600;
+    cursor: pointer;
+}
+@media (max-width: 600px) {
+  #vencimientos-card { max-width: none; width: 100%; }
+}
+.form-errors {
+    margin-bottom: 16px;
+    padding: 12px 16px;
+    border-radius: 6px;
+    border: 1px solid #caa335;           /* borde dorado (ajústalo si usas otro) */
+    background-color: #2c2c2c;           /* fondo oscuro del panel de errores */
+    color: #f0e6c0;                       /* texto claro para contraste */
+}
+.form-errors ul {
+    margin: 8px 0 0;
+    padding-left: 18px;
+}
+.form-errors li {
+    margin-bottom: 4px;
+}
+
+/* Placeholder (hint dentro del input) — conservamos tu ajuste de antes */
+input.form-control::placeholder,
+textarea.form-control::placeholder {
+    color: rgba(200, 200, 200, 0.70) !important;
+}
+input::-webkit-input-placeholder { color: rgba(200,200,200,0.70) !important; }
+input:-ms-input-placeholder       { color: rgba(200,200,200,0.70) !important; }
+input::-ms-input-placeholder      { color: rgba(200,200,200,0.70) !important; }
+textarea::-webkit-input-placeholder { color: rgba(200,200,200,0.70) !important; }
+textarea:-ms-input-placeholder       { color: rgba(200,200,200,0.70) !important; }
+textarea::-ms-input-placeholder      { color: rgba(200,200,200,0.70) !important; }
+
+/* Black & Gold theme: Inventario + Edit Product (scoped) */
+.dark-gold-theme {
+  --bg: #0e0e0e;
+  --bg-alt: #141414;
+  --text: #f2f2f2;
+  --muted: #c8c8c8;
+  --gold: #d4af37;
+  --gold-weak: #caa730;
+  --danger: #dc3545;
+  --border: #222;
+  background: var(--bg);
+  color: var(--text);
+  padding: 24px;
+  border-radius: 12px;
+}
+
+/* INVENTARIO: estilos ahora solo aplican si hay .dark-gold-theme */
+.dark-gold-theme .inventory-container h2 { color: var(--gold); font-weight: 700; }
+.dark-gold-theme .inventory-container .inventory-search input[type="text"] {
+  background: var(--bg-alt); color: var(--text); border: 1px solid var(--border);
+}
+.dark-gold-theme .inventory-container .inventory-search .btn-primary {
+  background: var(--gold); border-color: var(--gold);
+  color: #111; font-weight: 600;
+}
+.dark-gold-theme .inventory-container .inventory-table thead th {
+  background: var(--bg-alt); color: var(--gold); border-bottom: 1px solid var(--border);
+}
+.dark-gold-theme .inventory-container .inventory-table tbody td {
+  color: var(--text); border-top: 1px solid var(--border);
+}
+.dark-gold-theme .inventory-container .btn-outline-primary { border-color: var(--gold); color: var(--gold); }
+.dark-gold-theme .inventory-container .btn-outline-secondary { border-color: #888; color: #ddd; }
+.dark-gold-theme .inventory-container .btn-outline-danger { border-color: var(--danger); color: var(--danger); }
+.dark-gold-theme .inventory-container .btn-outline-primary:hover,
+.dark-gold-theme .inventory-container .btn-outline-secondary:hover { background: #1e1e1e; }
+.dark-gold-theme .inventory-container .form-link a { color: var(--gold); text-decoration: none; }
+
+/* EDIT PRODUCT: mantiene el tema (ya usa .dark-gold-theme) */
+.edit-product-container .edit-header {
+  display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;
+}
+.edit-product-container .edit-header h2 { color: var(--gold); margin: 0; }
+.edit-product-container .back-link { color: var(--gold); }
+
+.edit-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+@media (max-width: 900px) { .edit-grid { grid-template-columns: 1fr; } }
+
+.edit-card {
+  background: var(--bg-alt);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+}
+.edit-section-title { color: var(--gold); margin-bottom: 8px; }
+
+.form-grid { display: grid; gap: 10px; }
+.form-row label { color: var(--muted); margin-bottom: 4px; }
+.form-row input, .form-row select {
+  background: #191919; color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 10px;
+}
+
+.field-error { color: #ff6b6b; font-size: 0.9rem; margin-top: 4px; }
+
+.edit-actions { margin-top: 16px; display: flex; gap: 12px; }
+.dark-gold-theme .btn-primary {
+  background: var(--gold); border-color: var(--gold); color: #101010; font-weight: 600;
+}
+.dark-gold-theme .btn-link { color: var(--gold); }
+.edit-product-container input, .edit-product-container select {
+  background-color: #141414;
+  color: #eaeaea;
+  border: 1px solid #444;
+}
+
+/* Layout para colocar dos tarjetas lado a lado en el dashboard */
+.dashboard-two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    align-items: start;
+}
+
+/* Asegura que el iframe encaje bien dentro de su tarjeta */
+#grafana-gauge-card iframe {
+    max-width: 100%;
+    display: block;
 }

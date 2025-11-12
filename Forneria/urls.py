@@ -3,6 +3,7 @@ from django.urls import path
 from ventas.views import home, login_view, register_view, dashboard_view, agregar_producto_view, inventario_view, editar_producto_view, eliminar_producto_view, logout_view
 from ventas.views import proximamente_view
 from ventas.views import usuarios_list_view, usuario_editar_view, usuario_eliminar_view
+from ventas.views.views_vencimientos import productos_por_vencer_api
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -20,4 +21,5 @@ urlpatterns = [
     path('usuarios/', usuarios_list_view, name='usuarios_list'),
     path('usuarios/editar/<int:user_id>/', usuario_editar_view, name='usuario_editar'),
     path('usuarios/eliminar/<int:user_id>/', usuario_eliminar_view, name='usuario_eliminar'),
+    path('api/proximos-vencimientos/', productos_por_vencer_api, name='api_proximos_vencimientos'),
 ]
