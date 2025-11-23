@@ -94,9 +94,9 @@
                 </div>
             </div>
 
-            <!-- Por vencer (7 días) + Gauge -->
-            <div class="dashboard-two-col" style="margin-top: 16px;">
-                <!-- Izquierda: listado por vencer -->
+            <!-- Gráficos y Vencimientos -->
+            <div class="dashboard-metrics-grid" style="margin-top: 16px;">
+                <!-- Listado por vencer -->
                 <div class="dashboard-metric-card" id="vencimientos-card">
                     <h3 class="metric-card-title">Por vencer (7 días)</h3>
                     <ul id="vencimientos-list" class="metric-list"></ul>
@@ -106,14 +106,10 @@
                     <button id="vencimientos-toggle" class="metric-card-button" style="display:none;">Ver más</button>
                 </div>
 
-                <!-- Derecha: gauge de Grafana -->
-                <div class="dashboard-metric-card" id="grafana-gauge-card">
+                <!-- Contenedor para el gráfico de 7 días -->
+                <div class="dashboard-metric-card" id="d3-gauge-container-7-days">
                     <h3 class="metric-card-title">Pérdida potencial (7 días)</h3>
-                    <iframe src="http://localhost:3000/d-solo/ad56wm8/forneria?orgId=1&from=1762891605031&to=1762913205031&timezone=browser&panelId=panel-1&__feature.dashboardSceneSolo=true"
-                            width="450"
-                            height="200"
-                            frameborder="0">
-                    </iframe>
+                    <!-- Aquí se renderizará el gráfico de D3.js -->
                 </div>
             </div>
         </main>
@@ -147,4 +143,29 @@ document.addEventListener('DOMContentLoaded', function(){
 });
 </script>
 <script src="{% static 'js/expiraciones.js' %}"></script>
+
+<!-- D3.js (necesario para los gráficos) -->
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<!-- Nuestro archivo de gráficos reutilizable -->
+<script src="{% static 'js/dashboard_charts.js' %}"></script>
+
+<!-- Inicialización de los gráficos del dashboard -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Llama a nuestra función reutilizable para crear el gráfico de 7 días.
+    // Parámetros:
+    // 1. Selector del Div: '#d3-gauge-container-7-days' -> Dónde dibujar.
+    // 2. URL de datos: "{% url 'api_perdida_potencial' %}" -> De dónde sacar el valor.
+    // 3. Máximo del gráfico: 10000000 -> El 100% del velocímetro.
+    // 4. Etiqueta: 'Pérdida Potencial' -> El texto de abajo.
+    initGaugeChart(
+        '#d3-gauge-container-7-days',
+        "{% url 'api_perdida_potencial' %}",
+        10000000,
+        'Pérdida Potencial'
+    );
+
+
+});
+</script>
 {% endblock %}

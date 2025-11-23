@@ -1,0 +1,7 @@
+Valida que estamos haciendo la cosas de historia de usuario
+
+Estandares de calidad y de seguridad
+- HUVEN01
+-- Concretar el cobro y generar el movimiento de stock
+--> se cumple con el carrito de compras
+

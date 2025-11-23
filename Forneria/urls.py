@@ -4,6 +4,7 @@ from ventas.views import home, login_view, register_view, dashboard_view, agrega
 from ventas.views import proximamente_view
 from ventas.views import usuarios_list_view, usuario_editar_view, usuario_eliminar_view
 from ventas.views.views_vencimientos import productos_por_vencer_api
+from ventas.views.view_dashboard import perdida_siete_dias
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -22,4 +23,5 @@ urlpatterns = [
     path('usuarios/editar/<int:user_id>/', usuario_editar_view, name='usuario_editar'),
     path('usuarios/eliminar/<int:user_id>/', usuario_eliminar_view, name='usuario_eliminar'),
     path('api/proximos-vencimientos/', productos_por_vencer_api, name='api_proximos_vencimientos'),
+    path('api/perdida-potencial/', perdida_siete_dias, name='api_perdida_potencial'),
 ]

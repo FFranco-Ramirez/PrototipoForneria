@@ -463,12 +463,16 @@ body, html {
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-    text-align: center;
+    display: flex; /* Activa Flexbox */
+    flex-direction: column; /* Apila los elementos verticalmente */
+    justify-content: flex-start; /* Alinea al inicio (arriba) */
+    align-items: center; /* Centra horizontalmente */
+    min-height: 250px; /* Altura mínima para la tarjeta */
 }
 .dashboard-metric-card .metric-card-title {
     font-size: 16px;
     color: #6c757d;
-    margin-bottom: 10px;
+    margin-bottom: 3px;
 }
 
 .dashboard-metric-card .metric-card-value {
