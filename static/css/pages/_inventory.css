@@ -1,0 +1,56 @@
+/*
+  Página de Inventario
+  ---------------------------------
+  Estilos específicos para la página de gestión de inventario.
+  Estos estilos se aplican principalmente cuando el tema oscuro
+  (.dark-gold-theme) está activo.
+*/
+
+/* Título principal de la página de inventario */
+.dark-gold-theme .inventory-container h2 {
+  color: var(--gold); /* Color dorado para el título */
+  font-weight: 700; /* Texto más grueso */
+}
+
+/* Campo de búsqueda de inventario */
+.dark-gold-theme .inventory-container .inventory-search input[type="text"] {
+  background: var(--bg-alt); /* Fondo oscuro alternativo */
+  color: var(--text); /* Color de texto principal */
+  border: 1px solid var(--border); /* Borde sutil */
+}
+
+/* Botón principal en la sección de búsqueda */
+.dark-gold-theme .inventory-container .inventory-search .btn-primary {
+  background: var(--gold); /* Fondo dorado */
+  border-color: var(--gold); /* Borde dorado */
+  color: #111; /* Texto oscuro para contraste */
+  font-weight: 600; /* Texto semigrueso */
+}
+
+/* Botones con borde (Outline) */
+.dark-gold-theme .inventory-container .btn-outline-primary {
+  border-color: var(--gold); /* Borde dorado */
+  color: var(--gold); /* Texto dorado */
+}
+
+.dark-gold-theme .inventory-container .btn-outline-secondary {
+  border-color: #888; /* Borde gris */
+  color: #ddd; /* Texto gris claro */
+}
+
+.dark-gold-theme .inventory-container .btn-outline-danger {
+  border-color: var(--danger); /* Borde rojo de peligro */
+  color: var(--danger); /* Texto rojo de peligro */
+}
+
+/* Efecto hover para los botones con borde */
+.dark-gold-theme .inventory-container .btn-outline-primary:hover,
+.dark-gold-theme .inventory-container .btn-outline-secondary:hover {
+  background: #1e1e1e; /* Fondo ligeramente más claro al pasar el ratón */
+}
+
+/* Enlaces dentro de formularios en la página de inventario */
+.dark-gold-theme .inventory-container .form-link a {
+  color: var(--gold); /* Color dorado para los enlaces */
+  text-decoration: none; /* Sin subrayado */
+}

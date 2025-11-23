@@ -1,0 +1,74 @@
+/*
+================================================================
+=                                                              =
+=        ESTILOS PARA PÁGINAS DE EDICIÓN (PRODUCTOS/USUARIOS)  =
+=                                                              =
+================================================================
+*/
+
+/*
+  Estos estilos definen la estructura y apariencia de las páginas
+  de edición, como "Editar Producto" y "Editar Usuario".
+  La característica principal es un layout de dos columnas que se
+  adapta a una sola columna en pantallas pequeñas.
+*/
+
+/* --- Cabecera de la Página de Edición --- */
+/* Contiene el título (ej. "Editar Producto") y el enlace para volver. */
+.edit-product-container .edit-header {
+  display: flex;                 /* Usa Flexbox para alinear los elementos hijos (título y enlace). */
+  justify-content: space-between;/* Coloca el título a la izquierda y el enlace a la derecha. */
+  align-items: center;           /* Centra verticalmente el título y el enlace. */
+  margin-bottom: 12px;           /* Espacio inferior para separar la cabecera de la rejilla de contenido. */
+}
+
+/* --- Título en la Cabecera (h2) --- */
+/* Para los títulos principales como "Editar Producto". */
+.edit-product-container .edit-header h2 {
+  color: var(--gold); /* Color dorado del tema para el texto del título. */
+  margin: 0;          /* Elimina cualquier margen por defecto del h2 para un control preciso. */
+}
+
+/* --- Enlace para Volver Atrás --- */
+/* El enlace "Volver" en la cabecera. */
+.edit-product-container .back-link {
+  color: var(--gold); /* También usa el color dorado para consistencia. */
+}
+
+/* --- Rejilla Principal de Contenido --- */
+/* La estructura que organiza las tarjetas de edición en columnas. */
+.edit-grid {
+  display: grid;                  /* Usa CSS Grid para crear el layout de columnas. */
+  grid-template-columns: 1fr 1fr; /* Crea dos columnas de igual ancho. */
+  gap: 16px;                      /* Espacio de 16px entre las columnas y filas de la rejilla. */
+}
+
+/* --- Adaptación para Pantallas Pequeñas (Móviles) --- */
+/* Esta regla se aplica solo cuando el ancho de la pantalla es de 900 píxeles o menos. */
+@media (max-width: 900px) {
+  .edit-grid {
+    grid-template-columns: 1fr; /* Cambia a una sola columna para que el contenido fluya verticalmente. */
+  }
+}
+
+/* --- Contenedor de Botones de Acción --- */
+/* La sección que agrupa los botones "Guardar Cambios" y "Cancelar". */
+.edit-actions {
+  margin-top: 16px; /* Espacio superior para separarlo de la rejilla de contenido. */
+  display: flex;    /* Usa Flexbox para alinear los botones. */
+  gap: 12px;        /* Espacio de 12px entre los botones. */
+}
+
+/* --- Estilos para Inputs y Selects dentro del Tema Oscuro --- */
+/* Personaliza la apariencia de los campos de formulario en estas páginas. */
+.edit-product-container input, .edit-product-container select {
+  background-color: #141414; /* Fondo oscuro para los campos. */
+  color: #eaeaea;           /* Texto claro para que sea legible sobre el fondo oscuro. */
+  border: 1px solid #444;    /* Borde sutil que coincide con el tema. */
+}
+
+/*
+  NOTA: Las clases de formulario más genéricas como .form-grid, .form-row
+  y .field-error se definen en _forms.css. Este archivo se enfoca
+  únicamente en el layout estructural específico de las páginas de edición.
+*/
