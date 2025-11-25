@@ -1,6 +1,21 @@
+# ================================================================
+# =     IMPORTACIÓN DE TODOS LOS MODELOS DE LA APP VENTAS       =
+# ================================================================
+# 
+# Este archivo permite importar los modelos desde cualquier lugar con:
+# from ventas.models import Productos, Ventas, Clientes, etc.
+# 
+# En lugar de tener que especificar el archivo completo:
+# from ventas.models.productos import Productos
+
+# --- Modelos de Usuarios ---
 from .usuarios import Roles, Direccion, Usuarios
+
+# --- Modelos de Productos ---
 from .productos import Categorias, Nutricional, Productos
 
-# Cuando en el futuro crees más archivos de modelos como 'productos.py',
-# simplemente los importarás aquí. Por ejemplo:
-# from .productos import Producto, Categoria
+# --- Modelos de Ventas ---
+from .ventas import Clientes, Ventas, DetalleVenta
+
+# --- Modelos de Alertas (NUEVO) ---
+from .alertas import Alertas

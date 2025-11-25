@@ -21,6 +21,8 @@
 @import "pages/_welcome.css";
 @import "pages/_inventory.css";
 @import "pages/_edit_pages.css";
+@import "pages/_pos.css";  /* Estilos del Punto de Venta */
+@import "pages/_alertas.css";  /* NUEVO: Estilos del Sistema de Alertas */
 
 /* --- 2. Importación de Componentes --- */
 @import "components/_buttons.css";

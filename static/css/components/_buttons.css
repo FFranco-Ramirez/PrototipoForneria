@@ -103,39 +103,27 @@
 
 /* Botón con contorno secundario (gris) */
 .dark-gold-theme .btn-outline-secondary {
-    border-color: #888; /* El borde es de un color gris. */
-    color: #ddd;       /* El texto es de un gris más claro. */
+    border-color: #6c757d; /* Color de borde gris oscuro */
+    color: #6c757d;       /* Color de texto gris oscuro para contraste en fondos claros */
 }
 
-/* Botón con contorno de peligro (rojo) */
-.dark-gold-theme .btn-outline-danger {
-    border-color: var(--danger); /* El borde es de color rojo (definido en una variable para reusar). */
-    color: var(--danger);        /* El texto también es rojo. */
-}
-
-/* Efecto al pasar el ratón sobre los botones con contorno */
-.dark-gold-theme .btn-outline-primary:hover,
 .dark-gold-theme .btn-outline-secondary:hover {
-    background: #1e1e1e; /* Al pasar el ratón, se añade un fondo oscuro para resaltar el botón. */
+    background-color: #6c757d; /* Fondo gris oscuro al pasar el ratón */
+    color: #fff; /* Texto blanco para contraste */
 }
 
-
+/* --- Anulación para Botón Secundario en Tablas (Tema Oscuro) --- */
 /*
-================================================================
-=                                                              =
-=              ESTILOS DE BOTONES ESPECÍFICOS                  =
-=                                                              =
-================================================================
+  Ajuste específico para el botón 'Editar' (.btn-outline-secondary) cuando está
+  dentro de una tabla en el tema oscuro, para asegurar su visibilidad
+  sobre los fondos de fila claros de .table-striped.
 */
+.dark-gold-theme .inventory-table .btn-outline-secondary {
+  color: #6c757d; /* Color de texto gris oscuro estándar de Bootstrap */
+  border-color: #6c757d; /* Color de borde gris oscuro */
+}
 
-/* --- Botón en la Tarjeta de Vencimientos --- */
-/* Estilo para el botón "Ver todos" en la tarjeta de productos por vencer. */
-#vencimientos-card .metric-card-button {
-    background: #D4AF37; /* Fondo dorado. */
-    color: #111;         /* Texto oscuro. */
-    border: none;        /* Sin borde. */
-    border-radius: 6px;  /* Esquinas ligeramente redondeadas. */
-    padding: 6px 12px;   /* Espacio interior, haciéndolo un botón más pequeño y compacto. */
-    font-weight: 600;    /* Texto semi-negrita. */
-    cursor: pointer;     /* Cursor de mano. */
+.dark-gold-theme .inventory-table .btn-outline-secondary:hover {
+  background-color: #6c757d; /* Fondo gris oscuro al pasar el ratón */
+  color: #fff; /* Texto blanco para contraste */
 }

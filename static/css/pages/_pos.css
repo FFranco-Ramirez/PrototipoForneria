@@ -1,0 +1,526 @@
+/*
+================================================================
+=                                                              =
+=           ESTILOS PARA EL PUNTO DE VENTA (POS)               =
+=                                                              =
+================================================================
+
+Este archivo contiene todos los estilos específicos para
+la página del Punto de Venta (POS).
+
+SECCIONES:
+1. Tarjetas de productos
+2. Carrito de compras
+3. Efectos hover e interacciones
+4. Estilos para modales
+5. Animaciones
+*/
+
+
+/* ============================================================
+   1. TARJETAS DE PRODUCTOS
+   ============================================================ */
+
+/*
+   Estas clases dan estilo a cada tarjeta de producto que se
+   muestra en la cuadrícula de productos disponibles.
+*/
+
+/* --- Contenedor de la tarjeta de producto --- */
+.producto-card {
+    /* Transición suave para el efecto hover */
+    /* Cuando pasamos el mouse, los cambios serán suaves (0.3 segundos) */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    
+    /* Cursor tipo "mano" para indicar que es clickeable */
+    cursor: pointer;
+    
+    /* Borde sutil para definir los límites de la tarjeta */
+    border: 1px solid #e0e0e0;
+    
+    /* Bordes redondeados de 8 píxeles */
+    border-radius: 8px;
+    
+    /* Sombra ligera para dar efecto de profundidad */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* --- Efecto al pasar el mouse sobre la tarjeta --- */
+.producto-card:hover {
+    /* Levanta la tarjeta ligeramente (efecto 3D) */
+    /* translateY(-5px) significa "mueve hacia arriba 5 píxeles" */
+    transform: translateY(-5px);
+    
+    /* Aumenta la sombra para dar más profundidad */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    
+    /* Cambia el color del borde a dorado (color primario de Forneria) */
+    border-color: var(--gold, #D4AF37);
+}
+
+/* --- Botón "Agregar" dentro de la tarjeta --- */
+.producto-card .agregar-al-carrito {
+    /* Anima el cambio de color de fondo */
+    transition: background-color 0.2s ease;
+}
+
+/* --- Efecto al hacer clic en el botón (feedback visual) --- */
+.producto-card .agregar-al-carrito:active {
+    /* Reduce ligeramente el tamaño para dar sensación de "presión" */
+    transform: scale(0.95);
+}
+
+
+/* ============================================================
+   2. CARRITO DE COMPRAS
+   ============================================================ */
+
+/*
+   Estilos para la sección del carrito que se muestra en
+   la columna derecha del POS.
+*/
+
+/* --- Contenedor principal del carrito --- */
+#carrito-items {
+    /* Altura máxima del contenedor */
+    max-height: 400px;
+    
+    /* Si hay muchos items, permite scroll vertical */
+    overflow-y: auto;
+    
+    /* Barra de scroll personalizada (solo en navegadores webkit como Chrome) */
+    scrollbar-width: thin;
+    scrollbar-color: #D4AF37 #f0f0f0;
+}
+
+/* --- Personalizar la barra de scroll (webkit) --- */
+#carrito-items::-webkit-scrollbar {
+    /* Ancho de la barra de scroll */
+    width: 6px;
+}
+
+#carrito-items::-webkit-scrollbar-track {
+    /* Color del fondo de la barra */
+    background: #f0f0f0;
+    border-radius: 3px;
+}
+
+#carrito-items::-webkit-scrollbar-thumb {
+    /* Color de la parte deslizable */
+    background: #D4AF37;
+    border-radius: 3px;
+}
+
+#carrito-items::-webkit-scrollbar-thumb:hover {
+    /* Color más oscuro al pasar el mouse */
+    background: #C5A028;
+}
+
+/* --- Items individuales dentro del carrito --- */
+.carrito-item {
+    /* Borde inferior sutil para separar items */
+    border-bottom: 1px solid #e0e0e0;
+    
+    /* Espacio interior */
+    padding: 12px;
+    
+    /* Transición para el efecto hover */
+    transition: background-color 0.2s ease;
+}
+
+/* --- Efecto hover en cada item del carrito --- */
+.carrito-item:hover {
+    /* Fondo gris muy claro al pasar el mouse */
+    background-color: #f8f9fa;
+}
+
+/* --- Último item no necesita borde inferior --- */
+.carrito-item:last-child {
+    border-bottom: none;
+}
+
+/* --- Botones de cantidad dentro del carrito --- */
+.input-group .btn {
+    /* Tamaño de fuente más pequeño para los botones +/- */
+    font-size: 0.875rem;
+    
+    /* Evita que el borde del botón se vea grueso */
+    border-width: 1px;
+}
+
+/* --- Input numérico de cantidad --- */
+.input-cantidad {
+    /* Quita las flechas del input numérico en Chrome y Safari */
+    -moz-appearance: textfield;
+    
+    /* Ancho fijo para que no se mueva */
+    width: 60px;
+    
+    /* Texto centrado */
+    text-align: center;
+    
+    /* Fuente un poco más grande y en negrita */
+    font-weight: 600;
+}
+
+/* Quitar flechas en Chrome, Safari, Edge */
+.input-cantidad::-webkit-outer-spin-button,
+.input-cantidad::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* --- Botón para quitar item del carrito --- */
+.btn-quitar-item {
+    /* Tamaño pequeño */
+    padding: 2px 6px;
+    font-size: 0.75rem;
+    
+    /* Transición suave */
+    transition: all 0.2s ease;
+}
+
+.btn-quitar-item:hover {
+    /* Se hace más grande al pasar el mouse */
+    transform: scale(1.1);
+    
+    /* Rojo más oscuro */
+    background-color: #c82333;
+}
+
+
+/* ============================================================
+   3. EFECTOS HOVER E INTERACCIONES
+   ============================================================ */
+
+/*
+   Estilos para mejorar la experiencia de usuario con
+   efectos visuales al interactuar.
+*/
+
+/* --- Botones principales del POS --- */
+#btn-procesar-venta,
+#btn-limpiar-carrito {
+    /* Transición suave para todos los cambios */
+    transition: all 0.3s ease;
+    
+    /* Fuente en negrita */
+    font-weight: 600;
+}
+
+/* --- Botón de procesar venta al hacer hover --- */
+#btn-procesar-venta:not(:disabled):hover {
+    /* Verde más oscuro */
+    background-color: #218838;
+    
+    /* Aumenta ligeramente el tamaño */
+    transform: scale(1.02);
+    
+    /* Sombra más pronunciada */
+    box-shadow: 0 4px 12px rgba(33, 136, 56, 0.4);
+}
+
+/* --- Botón deshabilitado --- */
+#btn-procesar-venta:disabled {
+    /* Cursor "no permitido" */
+    cursor: not-allowed;
+    
+    /* Opacidad reducida */
+    opacity: 0.6;
+}
+
+/* --- Botón de limpiar carrito al hacer hover --- */
+#btn-limpiar-carrito:hover {
+    /* Fondo gris más oscuro */
+    background-color: #6c757d;
+    
+    /* Texto blanco */
+    color: white;
+}
+
+
+/* ============================================================
+   4. ESTILOS PARA MODALES
+   ============================================================ */
+
+/*
+   Estilos adicionales para los modales (ventanas emergentes)
+   del POS.
+*/
+
+/* --- Header de los modales --- */
+.modal-header.bg-primary,
+.modal-header.bg-success {
+    /* Color de texto blanco para contrastar con el fondo */
+    color: white;
+}
+
+/* --- Botones dentro de los modales --- */
+.modal-footer .btn {
+    /* Fuente en negrita */
+    font-weight: 600;
+    
+    /* Padding más generoso */
+    padding: 10px 24px;
+}
+
+/* --- Área de errores en los modales --- */
+.alert-danger.d-none {
+    /* Cuando está oculta, no ocupa espacio */
+    display: none !important;
+}
+
+
+/* ============================================================
+   5. ANIMACIONES
+   ============================================================ */
+
+/*
+   Animaciones para hacer la interfaz más dinámica y agradable.
+*/
+
+/* --- Animación de entrada para los items del carrito --- */
+@keyframes slideIn {
+    from {
+        /* Comienza fuera de la vista (arriba) */
+        transform: translateY(-20px);
+        /* Comienza invisible */
+        opacity: 0;
+    }
+    to {
+        /* Termina en su posición normal */
+        transform: translateY(0);
+        /* Termina completamente visible */
+        opacity: 1;
+    }
+}
+
+/* Aplicar la animación a los items del carrito */
+#carrito-items .card {
+    /* Animación de entrada de 0.3 segundos */
+    animation: slideIn 0.3s ease;
+}
+
+/* --- Animación de "pulso" para el contador de items --- */
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.2);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Cuando cambia el contador, aplica la animación */
+#items-count {
+    /* Fondo dorado */
+    background-color: var(--gold, #D4AF37);
+    
+    /* Bordes redondeados */
+    border-radius: 12px;
+    
+    /* Padding para que sea más visible */
+    padding: 4px 10px;
+    
+    /* Transición para el cambio de número */
+    transition: all 0.3s ease;
+}
+
+/* Clase para activar el pulso (se puede agregar con JavaScript) */
+#items-count.actualizado {
+    animation: pulse 0.5s ease;
+}
+
+
+/* ============================================================
+   6. BÚSQUEDA DE PRODUCTOS
+   ============================================================ */
+
+/*
+   Estilos para el campo de búsqueda de productos.
+*/
+
+#buscar-producto {
+    /* Borde dorado al hacer focus */
+    border: 2px solid #e0e0e0;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+#buscar-producto:focus {
+    /* Borde dorado cuando está activo */
+    border-color: var(--gold, #D4AF37);
+    
+    /* Sombra dorada alrededor */
+    box-shadow: 0 0 0 0.2rem rgba(212, 175, 55, 0.25);
+    
+    /* Quita el outline por defecto del navegador */
+    outline: none;
+}
+
+
+/* ============================================================
+   7. TOTALES Y RESUMEN
+   ============================================================ */
+
+/*
+   Estilos para la sección de totales del carrito.
+*/
+
+#total {
+    /* Tamaño de fuente grande */
+    font-size: 1.5rem;
+    
+    /* Color verde para el total */
+    color: #28a745;
+    
+    /* Fuente extra bold */
+    font-weight: 800;
+}
+
+#subtotal,
+#iva {
+    /* Tamaño de fuente mediano */
+    font-size: 1.1rem;
+    
+    /* Fuente semi-bold */
+    font-weight: 600;
+}
+
+/* --- Input de descuento --- */
+#descuento-global {
+    /* Borde suave */
+    border: 1px solid #ced4da;
+    
+    /* Transición para el focus */
+    transition: border-color 0.3s ease;
+}
+
+#descuento-global:focus {
+    /* Borde azul al hacer focus */
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+
+/* ============================================================
+   8. RESPONSIVIDAD (PARA PANTALLAS PEQUEÑAS)
+   ============================================================ */
+
+/*
+   Ajustes para que el POS se vea bien en tablets y móviles.
+*/
+
+/* --- Para tablets (pantallas menores a 992px) --- */
+@media (max-width: 991px) {
+    /* El carrito va debajo de los productos en lugar de al lado */
+    .col-lg-8,
+    .col-lg-4 {
+        width: 100%;
+    }
+    
+    /* El carrito ya no es "sticky" en pantallas pequeñas */
+    .sticky-top {
+        position: relative !important;
+        top: 0 !important;
+    }
+}
+
+/* --- Para móviles (pantallas menores a 576px) --- */
+@media (max-width: 575px) {
+    /* Reducir padding en móviles */
+    .producto-card .card-body {
+        padding: 0.75rem;
+    }
+    
+    /* Tamaño de fuente más pequeño */
+    .producto-card .card-title {
+        font-size: 0.9rem;
+    }
+    
+    /* Botones más pequeños */
+    .agregar-al-carrito {
+        font-size: 0.8rem;
+        padding: 6px 12px;
+    }
+}
+
+
+/* ============================================================
+   9. ESTADOS ESPECIALES
+   ============================================================ */
+
+/*
+   Estilos para estados especiales como productos sin stock,
+   productos próximos a vencer, etc.
+*/
+
+/* --- Producto sin stock (si se implementa en el futuro) --- */
+.producto-card.sin-stock {
+    /* Opacidad reducida */
+    opacity: 0.5;
+    
+    /* Cursor "no permitido" */
+    cursor: not-allowed;
+    
+    /* Filtro de escala de grises */
+    filter: grayscale(100%);
+}
+
+.producto-card.sin-stock:hover {
+    /* Desactivar el efecto hover */
+    transform: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* --- Producto próximo a vencer (si se implementa) --- */
+.producto-card.proximo-vencer {
+    /* Borde amarillo de advertencia */
+    border-color: #ffc107;
+    
+    /* Fondo amarillo muy claro */
+    background-color: #fff3cd;
+}
+
+
+/* ============================================================
+   10. UTILIDADES ADICIONALES
+   ============================================================ */
+
+/*
+   Clases auxiliares útiles para el POS.
+*/
+
+/* --- Texto truncado con puntos suspensivos --- */
+.text-truncate {
+    /* Texto en una sola línea */
+    white-space: nowrap;
+    
+    /* Ocultar el texto que sobresale */
+    overflow: hidden;
+    
+    /* Agregar "..." al final */
+    text-overflow: ellipsis;
+}
+
+/* --- Badge personalizado --- */
+.badge.bg-info {
+    /* Fondo azul claro */
+    background-color: #17a2b8 !important;
+}
+
+/* --- Spinner de carga --- */
+.spinner-border-sm {
+    /* Tamaño pequeño */
+    width: 1rem;
+    height: 1rem;
+    border-width: 0.15em;
+}
+
+
+/* ============================================================
+   FIN DE LOS ESTILOS DEL POS
+   ============================================================ */
+

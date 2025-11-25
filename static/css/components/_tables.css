@@ -14,16 +14,19 @@
 */
 
 /* --- Encabezados de la Tabla (Fila <th>) --- */
-/* Se aplica a las celdas de encabezado (como "Nombre", "Stock", "Precio") de las tablas que están dentro de un contenedor con el tema oscuro. */
 .dark-gold-theme .inventory-table thead th {
-  background: var(--bg-alt);      /* Color de fondo gris oscuro, ligeramente más claro que el fondo general. */
-  color: var(--gold);             /* Color de texto dorado para los títulos, creando un contraste elegante. */
-  border-bottom: 1px solid var(--border); /* Una línea sutil en la parte inferior para separar el encabezado del cuerpo de la tabla. */
+  background: var(--bg-alt);
+  color: var(--gold);
+  border-bottom: 1px solid var(--border);
 }
 
 /* --- Celdas del Cuerpo de la Tabla (Filas <td>) --- */
-/* Se aplica a las celdas de datos (el contenido de cada producto o usuario) en el cuerpo de la tabla. */
+/*
+  Se aplica a TODAS las celdas de datos para asegurar que el texto sea oscuro
+  y legible, sobreescribiendo el color de texto claro del tema oscuro.
+  Esto soluciona el conflicto con los fondos claros de .table-striped de Bootstrap.
+*/
 .dark-gold-theme .inventory-table tbody td {
-  color: var(--text);             /* Color de texto principal (generalmente blanco o gris claro) para una buena legibilidad. */
-  border-top: 1px solid var(--border); /* Una línea sutil en la parte superior de cada fila para separarlas visualmente. */
+  color: #212529 !important; /* Forzamos el color de texto oscuro estándar de Bootstrap. */
+  border-top: 1px solid var(--border);
 }

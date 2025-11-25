@@ -1,0 +1,479 @@
+/*
+================================================================
+=                                                              =
+=          ESTILOS PARA EL SISTEMA DE ALERTAS                  =
+=                                                              =
+================================================================
+
+Este archivo contiene todos los estilos específicos para
+el sistema de alertas de vencimiento de productos.
+
+TEMA: Dorado (#D4AF37) y Negro (#0e0e0e) consistente con el resto del sitio
+
+SECCIONES:
+1. Tabla de alertas
+2. Cards de estadísticas
+3. Alertas urgentes (rojas) con animación
+4. Filtros y formularios
+5. Botones de acción
+6. Estilos responsive
+*/
+
+
+/* ============================================================
+   1. TABLA DE ALERTAS
+   ============================================================ */
+
+/*
+   Estilos para la tabla que muestra el historial de alertas
+*/
+
+/* --- Tabla principal ---*/
+.alertas-table {
+    /* Color de fondo oscuro para el tema */
+    background-color: var(--bg, #0e0e0e);
+    
+    /* Color de texto claro */
+    color: var(--text, #f2f2f2);
+}
+
+/* --- Encabezado de la tabla (thead) --- */
+.alertas-table thead th {
+    /* Fondo un poco más claro que la tabla */
+    background-color: var(--bg-alt, #141414);
+    
+    /* Texto en dorado para destacar */
+    color: var(--gold, #D4AF37);
+    
+    /* Texto en negrita */
+    font-weight: 600;
+    
+    /* Borde inferior dorado sutil */
+    border-bottom: 2px solid var(--gold, #D4AF37);
+    
+    /* Padding para espacio */
+    padding: 12px;
+}
+
+/* --- Filas de la tabla (tbody tr) --- */
+.alertas-table tbody tr {
+    /* Transición suave para el hover */
+    transition: background-color 0.2s ease;
+    
+    /* Borde inferior sutil */
+    border-bottom: 1px solid #222;
+}
+
+/* --- Efecto hover en las filas --- */
+.alertas-table tbody tr:hover {
+    /* Fondo ligeramente más claro al pasar el mouse */
+    background-color: rgba(212, 175, 55, 0.1);
+    
+    /* Cursor pointer para indicar que es interactiva */
+    cursor: pointer;
+}
+
+/* --- Celdas de la tabla (td) --- */
+.alertas-table tbody td {
+    /* Padding para espacio */
+    padding: 12px;
+    
+    /* Alineación vertical al centro */
+    vertical-align: middle;
+}
+
+/* --- Filas alternas (striped) con tema oscuro --- */
+.alertas-table tbody tr:nth-child(odd) {
+    background-color: rgba(255, 255, 255, 0.02);
+}
+
+
+/* ============================================================
+   2. CARDS DE ESTADÍSTICAS
+   ============================================================ */
+
+/*
+   Cards que muestran el resumen de alertas por tipo
+   Reutiliza los estilos del dashboard pero personaliza colores
+*/
+
+/* --- Bordes personalizados para cada tipo de alerta --- */
+.dashboard-metric-card.border-danger {
+    /* Borde izquierdo rojo para alertas urgentes */
+    border-left: 4px solid #dc3545;
+}
+
+.dashboard-metric-card.border-warning {
+    /* Borde izquierdo amarillo para alertas de precaución */
+    border-left: 4px solid #ffc107;
+}
+
+.dashboard-metric-card.border-success {
+    /* Borde izquierdo verde para alertas OK */
+    border-left: 4px solid #28a745;
+}
+
+/* --- Valores numéricos en las cards --- */
+.metric-card-value.text-danger,
+.metric-card-value.text-warning,
+.metric-card-value.text-success {
+    /* Tamaño de fuente grande para los números */
+    font-size: 2.5rem;
+    
+    /* Fuente extra negrita */
+    font-weight: 800;
+}
+
+
+/* ============================================================
+   3. ALERTAS URGENTES (ROJAS) CON ANIMACIÓN
+   ============================================================ */
+
+/*
+   Estilos especiales para las alertas rojas (0-13 días)
+   que necesitan atención inmediata
+*/
+
+/* --- Fila de alerta urgente --- */
+.alerta-row[data-tipo="roja"] {
+    /* Fondo rojo muy sutil */
+    background-color: rgba(220, 53, 69, 0.05);
+    
+    /* Borde izquierdo rojo más grueso */
+    border-left: 4px solid #dc3545;
+}
+
+/* --- Clase para animación de pulso --- */
+.alerta-urgente {
+    /* Aplicar animación de pulso infinita */
+    animation: pulse-urgente 2s ease-in-out infinite;
+}
+
+/* --- Definición de la animación de pulso --- */
+@keyframes pulse-urgente {
+    0% {
+        /* Estado inicial: opacidad normal */
+        background-color: rgba(220, 53, 69, 0.05);
+    }
+    50% {
+        /* A la mitad: más opaco */
+        background-color: rgba(220, 53, 69, 0.15);
+    }
+    100% {
+        /* Al final: vuelve al estado inicial */
+        background-color: rgba(220, 53, 69, 0.05);
+    }
+}
+
+
+/* ============================================================
+   4. FILTROS Y FORMULARIOS
+   ============================================================ */
+
+/*
+   Estilos para el panel de filtros de búsqueda
+*/
+
+/* --- Inputs y selects en el tema oscuro --- */
+.dark-gold-theme .form-control,
+.dark-gold-theme .form-select {
+    /* Fondo oscuro */
+    background-color: var(--bg-alt, #141414);
+    
+    /* Texto claro */
+    color: var(--text, #f2f2f2);
+    
+    /* Borde sutil */
+    border: 1px solid #333;
+    
+    /* Transición suave */
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* --- Focus en inputs (cuando están activos) --- */
+.dark-gold-theme .form-control:focus,
+.dark-gold-theme .form-select:focus {
+    /* Borde dorado al hacer focus */
+    border-color: var(--gold, #D4AF37);
+    
+    /* Sombra dorada alrededor */
+    box-shadow: 0 0 0 0.2rem rgba(212, 175, 55, 0.25);
+    
+    /* Fondo un poco más claro */
+    background-color: #1a1a1a;
+    
+    /* Color de texto blanco puro */
+    color: #fff;
+}
+
+/* --- Labels de los filtros --- */
+.form-label.fw-bold {
+    /* Color dorado para los labels */
+    color: var(--gold, #D4AF37);
+    
+    /* Tamaño de fuente ligeramente más pequeño */
+    font-size: 0.9rem;
+}
+
+
+/* ============================================================
+   5. BOTONES DE ACCIÓN
+   ============================================================ */
+
+/*
+   Estilos para los botones del sistema de alertas
+*/
+
+/* --- Botón primario (dorado) --- */
+.dark-gold-theme .btn-primary {
+    /* Fondo dorado */
+    background-color: var(--gold, #D4AF37);
+    
+    /* Borde dorado */
+    border-color: var(--gold, #D4AF37);
+    
+    /* Texto negro para contrastar */
+    color: #000;
+    
+    /* Fuente en negrita */
+    font-weight: 600;
+    
+    /* Transición suave */
+    transition: all 0.3s ease;
+}
+
+.dark-gold-theme .btn-primary:hover {
+    /* Dorado más claro al hover */
+    background-color: #E5C100;
+    border-color: #E5C100;
+    
+    /* Aumentar ligeramente el tamaño */
+    transform: scale(1.02);
+    
+    /* Sombra dorada */
+    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.4);
+}
+
+/* --- Botón success (generar alertas) --- */
+.dark-gold-theme .btn-success {
+    /* Transición suave */
+    transition: all 0.3s ease;
+}
+
+.dark-gold-theme .btn-success:hover {
+    /* Aumentar tamaño */
+    transform: scale(1.02);
+    
+    /* Sombra verde */
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
+}
+
+/* --- Botones pequeños en la tabla --- */
+.btn-group-sm .btn {
+    /* Padding reducido */
+    padding: 4px 8px;
+    
+    /* Fuente más pequeña */
+    font-size: 0.875rem;
+}
+
+/* --- Dropdown de acciones --- */
+.dropdown-menu {
+    /* Fondo oscuro */
+    background-color: var(--bg-alt, #141414);
+    
+    /* Borde dorado */
+    border: 1px solid var(--gold, #D4AF37);
+}
+
+.dropdown-item {
+    /* Texto claro */
+    color: var(--text, #f2f2f2);
+    
+    /* Transición suave */
+    transition: background-color 0.2s ease;
+}
+
+.dropdown-item:hover {
+    /* Fondo dorado al hover */
+    background-color: rgba(212, 175, 55, 0.2);
+    
+    /* Mantener texto claro */
+    color: var(--text, #f2f2f2);
+}
+
+
+/* ============================================================
+   6. BADGES (ETIQUETAS)
+   ============================================================ */
+
+/*
+   Estilos para los badges que muestran estado y días
+*/
+
+/* --- Badge general --- */
+.badge {
+    /* Padding para que sea más visible */
+    padding: 6px 12px;
+    
+    /* Bordes redondeados */
+    border-radius: 4px;
+    
+    /* Fuente en negrita */
+    font-weight: 600;
+    
+    /* Tamaño de fuente */
+    font-size: 0.85rem;
+}
+
+/* --- Badge de alerta roja --- */
+.badge.bg-danger {
+    /* Fondo rojo */
+    background-color: #dc3545 !important;
+    
+    /* Texto blanco */
+    color: #fff !important;
+}
+
+/* --- Badge de alerta amarilla --- */
+.badge.bg-warning {
+    /* Fondo amarillo */
+    background-color: #ffc107 !important;
+    
+    /* Texto negro para contraste */
+    color: #000 !important;
+}
+
+/* --- Badge de alerta verde --- */
+.badge.bg-success {
+    /* Fondo verde */
+    background-color: #28a745 !important;
+    
+    /* Texto blanco */
+    color: #fff !important;
+}
+
+
+/* ============================================================
+   7. ICONOS
+   ============================================================ */
+
+/*
+   Estilos para los iconos de Bootstrap Icons
+*/
+
+/* --- Iconos grandes en la tabla --- */
+.alertas-table .bi {
+    /* Transición suave */
+    transition: transform 0.2s ease;
+}
+
+.alertas-table tr:hover .bi {
+    /* Aumentar tamaño al hover de la fila */
+    transform: scale(1.1);
+}
+
+/* --- Iconos de tipo de alerta --- */
+.bi-exclamation-triangle-fill.text-danger {
+    /* Rojo vibrante */
+    color: #dc3545 !important;
+}
+
+.bi-exclamation-circle-fill.text-warning {
+    /* Amarillo vibrante */
+    color: #ffc107 !important;
+}
+
+.bi-info-circle-fill.text-success {
+    /* Verde vibrante */
+    color: #28a745 !important;
+}
+
+
+/* ============================================================
+   8. RESPONSIVIDAD (PANTALLAS PEQUEÑAS)
+   ============================================================ */
+
+/*
+   Ajustes para tablets y móviles
+*/
+
+/* --- Para tablets (menor a 992px) --- */
+@media (max-width: 991px) {
+    /* Ocultar algunas columnas en pantallas medianas */
+    .alertas-table th:nth-child(4),
+    .alertas-table td:nth-child(4) {
+        display: none;
+    }
+}
+
+/* --- Para móviles (menor a 576px) --- */
+@media (max-width: 575px) {
+    /* Hacer la tabla scrolleable horizontalmente */
+    .table-responsive {
+        overflow-x: auto;
+    }
+    
+    /* Reducir padding en cards */
+    .dashboard-metric-card {
+        padding: 12px;
+    }
+    
+    /* Valores más pequeños en las cards */
+    .metric-card-value {
+        font-size: 1.8rem !important;
+    }
+    
+    /* Botones más pequeños */
+    .btn-group-sm .btn {
+        padding: 2px 6px;
+        font-size: 0.75rem;
+    }
+}
+
+
+/* ============================================================
+   9. ANIMACIONES ADICIONALES
+   ============================================================ */
+
+/*
+   Animaciones para mejorar la experiencia de usuario
+*/
+
+/* --- Animación de entrada para las filas --- */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.alertas-table tbody tr {
+    /* Aplicar animación de entrada */
+    animation: slideIn 0.3s ease;
+}
+
+/* --- Animación para el botón de generar alertas --- */
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Aplicar rotación al icono cuando se genera */
+#btn-generar-alertas:disabled .bi-arrow-repeat {
+    animation: spin 1s linear infinite;
+}
+
+
+/* ============================================================
+   FIN DE LOS ESTILOS DE ALERTAS
+   ============================================================ */
+

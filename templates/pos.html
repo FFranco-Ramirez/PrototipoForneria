@@ -1,131 +1,519 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Punto de Venta - La Fornería</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../static/css/forneria_design.css">
-</head>
-<body>
-    <div class="pos-container">
-        <!-- POS Header -->
-        <div class="pos-header">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <h1 style="font-size: 24px; font-weight: 700; color: var(--primary-800);">Punto de Venta</h1>
-                <div style="display: flex; gap: 16px; align-items: center;">
-                    <span style="color: var(--neutral-600);">Cajero: Juan Pérez</span>
-                    <span style="color: var(--neutral-600);">Turno: Mañana</span>
-                </div>
-            </div>
-        </div>
+<!-- 
+================================================================
+=                                                              =
+=          TEMPLATE: PUNTO DE VENTA (POS) - LA FORNERIA       =
+=                                                              =
+================================================================
 
-        <!-- POS Main (Productos) -->
-        <div class="pos-main">
-            <input type="text" class="product-search" placeholder="Buscar productos...">
+Este template muestra la interfaz del Punto de Venta (POS).
+
+ESTRUCTURA:
+1. Header: Barra superior con título e información del cajero
+2. Main: Lista de productos disponibles con búsqueda
+3. Sidebar: Carrito de compras con totales y opciones de pago
+
+FUNCIONALIDAD:
+- Buscar productos por nombre
+- Filtrar por categoría
+- Agregar productos al carrito (con validación de stock)
+- Modificar cantidades en el carrito
+- Quitar productos del carrito
+- Seleccionar/agregar cliente
+- Procesar venta completa
+- Calcular totales automáticamente (IVA, descuentos, vuelto)
+-->
+
+{% extends "base.html" %}
+{% load static %}
+
+{% block body_class %}dark-gold-theme{% endblock %}
+
+<!-- ==================== ENCABEZADO ==================== -->
+{% block encabezado %}
+<!-- 
+    Barra superior oscura con el logo y nombre del sistema
+-->
+<header class="bg-dark text-white py-3 shadow-sm">
+    <div class="container-fluid px-4">
+        <div class="d-flex justify-content-between align-items-center">
+            <!-- Título del sistema -->
+            <h1 class="h3 mb-0">
+                <i class="bi bi-shop"></i> Punto de Venta - La Fornería
+            </h1>
             
-            <div style="display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap;">
-                <button style="padding: 8px 16px; border: 1px solid var(--primary-500); background: var(--primary-500); color: white; border-radius: 6px; cursor: pointer;">Todos</button>
-                <button style="padding: 8px 16px; border: 1px solid var(--neutral-300); background: white; color: var(--neutral-700); border-radius: 6px; cursor: pointer;">Panadería</button>
-                <button style="padding: 8px 16px; border: 1px solid var(--neutral-300); background: white; color: var(--neutral-700); border-radius: 6px; cursor: pointer;">Pastelería</button>
-                <button style="padding: 8px 16px; border: 1px solid var(--neutral-300); background: white; color: var(--neutral-700); border-radius: 6px; cursor: pointer;">Bebidas</button>
-                <button style="padding: 8px 16px; border: 1px solid var(--neutral-300); background: white; color: var(--neutral-700); border-radius: 6px; cursor: pointer;">Otros</button>
+            <!-- Información del usuario actual -->
+            <div class="d-flex align-items-center gap-3">
+                <span class="text-light">
+                    <i class="bi bi-person-circle"></i> 
+                    Cajero: <strong>{{ request.user.username }}</strong>
+                </span>
+                <span class="text-light">
+                    <i class="bi bi-clock"></i> 
+                    <span id="hora-actual"></span>
+                </span>
             </div>
+        </div>
+    </div>
+</header>
+{% endblock %}
 
-            <div class="product-grid">
-                <div class="product-card">
-                    <div style="width: 100%; height: 80px; background: var(--neutral-200); border-radius: 8px; margin-bottom: 12px; display: flex; align-items: center; justify-content: center;">🍞</div>
-                    <div class="product-name">Pan Integral</div>
-                    <div class="product-price">$2.50</div>
+<!-- ==================== NAVBAR ==================== -->
+{% block navbar %}
+<!-- 
+    Barra de navegación con botones para volver al dashboard
+-->
+<nav class="navbar navbar-expand-lg navbar-dark bg-secondary">
+    <div class="container-fluid px-4">
+        <div class="navbar-nav">
+            <!-- Botón para volver al dashboard -->
+            <a href="{% url 'dashboard' %}" class="btn btn-outline-light btn-sm me-2">
+                <i class="bi bi-arrow-left"></i> Volver al Dashboard
+            </a>
+            
+            <!-- Botón para ir al inventario -->
+            <a href="{% url 'inventario' %}" class="btn btn-outline-light btn-sm">
+                <i class="bi bi-box-seam"></i> Ver Inventario
+            </a>
+        </div>
+    </div>
+</nav>
+{% endblock %}
+
+<!-- ==================== MENSAJES ==================== -->
+{% block mensajes %}
+<!-- 
+    Área para mostrar mensajes de Django (success, error, info)
+    Los mensajes se muestran automáticamente cuando usamos messages.success(), etc.
+-->
+<div class="container-fluid px-4 mt-3">
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+</div>
+{% endblock %}
+
+<!-- ==================== CONTENIDO PRINCIPAL ==================== -->
+{% block contenido %}
+<div class="container-fluid px-4 py-4">
+    <div class="row g-4">
+        
+        <!-- ==================== COLUMNA IZQUIERDA: PRODUCTOS ==================== -->
+        <!-- 
+            Esta columna muestra todos los productos disponibles
+            El usuario puede buscarlos y agregarlos al carrito
+        -->
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-grid-3x3-gap"></i> Productos Disponibles</h5>
                 </div>
-                <div class="product-card">
-                    <div style="width: 100%; height: 80px; background: var(--neutral-200); border-radius: 8px; margin-bottom: 12px; display: flex; align-items: center; justify-content: center;">🥐</div>
-                    <div class="product-name">Croissant</div>
-                    <div class="product-price">$3.00</div>
-                </div>
-                <div class="product-card">
-                    <div style="width: 100%; height: 80px; background: var(--neutral-200); border-radius: 8px; margin-bottom: 12px; display: flex; align-items: center; justify-content: center;">🥟</div>
-                    <div class="product-name">Empanada</div>
-                    <div class="product-price">$4.50</div>
-                </div>
-                <div class="product-card">
-                    <div style="width: 100%; height: 80px; background: var(--neutral-200); border-radius: 8px; margin-bottom: 12px; display: flex; align-items: center; justify-content: center;">☕</div>
-                    <div class="product-name">Café</div>
-                    <div class="product-price">$2.00</div>
-                </div>
-                <div class="product-card">
-                    <div style="width: 100%; height: 80px; background: var(--neutral-200); border-radius: 8px; margin-bottom: 12px; display: flex; align-items: center; justify-content: center;">🧁</div>
-                    <div class="product-name">Cupcake</div>
-                    <div class="product-price">$3.50</div>
-                </div>
-                <div class="product-card">
-                    <div style="width: 100%; height: 80px; background: var(--neutral-200); border-radius: 8px; margin-bottom: 12px; display: flex; align-items: center; justify-content: center;">🥤</div>
-                    <div class="product-name">Jugo Natural</div>
-                    <div class="product-price">$2.75</div>
+                <div class="card-body">
+                    
+                    <!-- Barra de búsqueda -->
+                    <div class="mb-3">
+                        <input 
+                            type="text" 
+                            id="buscar-producto" 
+                            class="form-control" 
+                            placeholder="🔍 Buscar productos por nombre, marca o tipo..."
+                        >
+                    </div>
+                    
+                    <!-- Grid de productos -->
+                    <!-- 
+                        Usamos un grid de Bootstrap para mostrar las tarjetas de productos
+                        - En pantallas grandes (lg): 3 columnas
+                        - En tablets (md): 2 columnas  
+                        - En móviles: 1 columna
+                    -->
+                    <div id="productos-grid" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
+                        
+                        <!-- 
+                            Iteramos sobre cada producto que nos envió la vista
+                            'for' es un bucle de Django Template Language
+                        -->
+
+                        {% for producto in productos %}
+                        <div class="col producto-item" 
+                             data-nombre="{{ producto.nombre|lower }}"
+                             data-marca="{{ producto.marca|lower }}"
+                             data-tipo="{{ producto.tipo|lower }}">
+                            
+                            <!-- Tarjeta de producto -->
+                            <div class="card h-100 producto-card" 
+                                 data-producto-id="{{ producto.id }}"
+                                 data-producto-nombre="{{ producto.nombre }}"
+                                 data-producto-precio="{{ producto.precio }}"
+                                 data-producto-stock="{{ producto.cantidad }}">
+                                
+                                <div class="card-body text-center">
+                                    <!-- Icono del producto (decorativo) -->
+                                    <div class="mb-2" style="font-size: 2.5rem;">
+                                        🥖
+                                    </div>
+                                    
+                                    <!-- Nombre del producto -->
+                                    <h6 class="card-title mb-1">{{ producto.nombre }}</h6>
+                                    
+                                    <!-- Marca y tipo -->
+                                    <p class="card-text small text-muted mb-2">
+                                        {% if producto.marca %}
+                                            {{ producto.marca }}
+                                        {% endif %}
+                                        {% if producto.tipo %}
+                                            &bull; {{ producto.tipo }}
+                                        {% endif %}
+                                    </p>
+                                    
+                                    <!-- Precio -->
+                                    <p class="card-text fw-bold text-primary mb-2" style="font-size: 1.2rem;">
+                                        ${{ producto.precio }}
+                                    </p>
+                                    
+                                    <!-- Stock disponible -->
+                                    <p class="card-text small mb-3">
+                                        <span class="badge bg-info text-dark">
+                                            Stock: {{ producto.cantidad }}
+                                        </span>
+                                    </p>
+                                    
+                                    <!-- Botón para agregar al carrito -->
+                                    <button 
+                                        class="btn btn-sm btn-primary w-100 agregar-al-carrito"
+                                        data-producto-id="{{ producto.id }}">
+                                        <i class="bi bi-cart-plus"></i> Agregar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        {% empty %}
+                        {# 
+                            Si no hay productos, mostramos un mensaje.
+                            'empty' es una cláusula especial del bucle 'for'
+                            que se ejecuta cuando la lista está vacía.
+                        #}
+                        <div class="col-12">
+                            <div class="alert alert-warning text-center">
+                                <i class="bi bi-exclamation-triangle"></i>
+                                No hay productos disponibles en este momento.
+                            </div>
+                        </div>
+                        {% endfor %}
+                        
+                    </div>
                 </div>
             </div>
         </div>
-
-        <!-- POS Sidebar (Carrito) -->
-        <div class="pos-sidebar">
-            <div class="cart-summary">
-                <h3 style="font-size: 18px; font-weight: 600; color: var(--neutral-800); margin-bottom: 16px;">Carrito de Compras</h3>
-                
-                <div class="cart-item">
-                    <div>
-                        <div style="font-weight: 500;">Pan Integral</div>
-                        <div style="font-size: 12px; color: var(--neutral-500);">$2.50 x 2</div>
-                    </div>
-                    <div style="font-weight: 600;">$5.00</div>
+        
+        <!-- ==================== COLUMNA DERECHA: CARRITO ==================== -->
+        <!-- 
+            Esta columna muestra el carrito de compras, los totales
+            y los controles para finalizar la venta
+        -->
+        <div class="col-lg-4">
+            <div class="card shadow-sm sticky-top" style="top: 20px;">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-cart"></i> Carrito de Compras
+                        <span id="items-count" class="badge bg-light text-dark ms-2">0</span>
+                    </h5>
                 </div>
-                
-                <div class="cart-item">
-                    <div>
-                        <div style="font-weight: 500;">Café</div>
-                        <div style="font-size: 12px; color: var(--neutral-500);">$2.00 x 1</div>
+                <div class="card-body">
+                    
+                    <!-- ========== SECCIÓN: SELECCIONAR CLIENTE ========== -->
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Cliente:</label>
+                        
+                        <!-- Selector de cliente existente -->
+                        <select id="select-cliente" class="form-select mb-2">
+                            <option value="">-- Seleccionar cliente --</option>
+                            {% for cliente in clientes %}
+                                <option value="{{ cliente.id }}">
+                                    {{ cliente.nombre }} 
+                                    {% if cliente.rut %}({{ cliente.rut }}){% endif %}
+                                </option>
+                            {% endfor %}
+                        </select>
+                        
+                        <!-- Botón para agregar nuevo cliente -->
+                        <button 
+                            type="button" 
+                            class="btn btn-sm btn-outline-primary w-100" 
+                            data-bs-toggle="modal" 
+                            data-bs-target="#modalNuevoCliente">
+                            <i class="bi bi-person-plus"></i> Nuevo Cliente
+                        </button>
                     </div>
-                    <div style="font-weight: 600;">$2.00</div>
-                </div>
-                
-                <div class="cart-item">
-                    <div>
-                        <div style="font-weight: 500;">Croissant</div>
-                        <div style="font-size: 12px; color: var(--neutral-500);">$3.00 x 1</div>
+                    
+                    <hr>
+                    
+                    <!-- ========== SECCIÓN: ITEMS DEL CARRITO ========== -->
+                    <!-- 
+                        Aquí se mostrarán dinámicamente los productos que
+                        el usuario agregue al carrito (usando JavaScript)
+                    -->
+                    <div id="carrito-items" class="mb-3" style="max-height: 300px; overflow-y: auto;">
+                        <!-- Los items se agregarán aquí con JavaScript -->
+                        <div class="text-center text-muted py-4" id="carrito-vacio">
+                            <i class="bi bi-cart-x" style="font-size: 3rem;"></i>
+                            <p class="mt-2">El carrito está vacío</p>
+                        </div>
                     </div>
-                    <div style="font-weight: 600;">$3.00</div>
+                    
+                    <hr>
+                    
+                    <!-- ========== SECCIÓN: TOTALES ========== -->
+                    <div class="mb-3">
+                        <!-- Subtotal (sin IVA) -->
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Subtotal:</span>
+                            <span id="subtotal" class="fw-bold">$0.00</span>
+                        </div>
+                        
+                        <!-- IVA (19%) -->
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>IVA (19%):</span>
+                            <span id="iva" class="fw-bold">$0.00</span>
+                        </div>
+                        
+                        <!-- Descuento (opcional) -->
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Descuento:</span>
+                            <input 
+                                type="number" 
+                                id="descuento-global" 
+                                class="form-control form-control-sm text-end" 
+                                style="width: 100px;"
+                                min="0" 
+                                step="0.01" 
+                                value="0"
+                                placeholder="0.00"
+                            >
+                        </div>
+                        
+                        <!-- Total final -->
+                        <div class="d-flex justify-content-between mb-2 py-2 border-top border-bottom">
+                            <span class="fw-bold fs-5">TOTAL:</span>
+                            <span id="total" class="fw-bold fs-5 text-success">$0.00</span>
+                        </div>
+                    </div>
+                    
+                    <!-- ========== SECCIÓN: TIPO DE VENTA ========== -->
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Tipo de venta:</label>
+                        <div class="btn-group w-100" role="group">
+                            <input type="radio" class="btn-check" name="canal_venta" id="presencial" value="presencial" checked>
+                            <label class="btn btn-outline-primary" data-for="presencial">
+                                <i class="bi bi-shop"></i> Presencial
+                            </label>
+                            
+                            <input type="radio" class="btn-check" name="canal_venta" id="delivery" value="delivery">
+                            <label class="btn btn-outline-primary" data-for="delivery">
+                                <i class="bi bi-truck"></i> Delivery
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <!-- ========== BOTONES DE ACCIÓN ========== -->
+                    <div class="d-grid gap-2">
+                        <!-- Botón principal: Procesar venta -->
+                        <button 
+                            id="btn-procesar-venta" 
+                            class="btn btn-success btn-lg" 
+                            disabled>
+                            <i class="bi bi-check-circle"></i> Procesar Venta
+                        </button>
+                        
+                        <!-- Botón secundario: Limpiar carrito -->
+                        <button 
+                            id="btn-limpiar-carrito" 
+                            class="btn btn-outline-secondary">
+                            <i class="bi bi-trash"></i> Limpiar Carrito
+                        </button>
+                    </div>
+                    
                 </div>
             </div>
+        </div>
+        
+    </div>
+</div>
 
-            <div style="margin-bottom: 16px;">
-                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                    <span>Subtotal:</span>
-                    <span>$10.00</span>
-                </div>
-                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                    <span>IVA (16%):</span>
-                    <span>$1.60</span>
-                </div>
-                <div class="cart-total">
-                    Total: $11.60
-                </div>
+<!-- ==================== MODAL: NUEVO CLIENTE ==================== -->
+<!-- 
+    Modal (ventana emergente) para agregar un nuevo cliente rápidamente
+    Se abre cuando el usuario hace clic en "Nuevo Cliente"
+-->
+<div class="modal fade" id="modalNuevoCliente" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">
+                    <i class="bi bi-person-plus"></i> Agregar Nuevo Cliente
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
-
-            <div style="space-y: 12px;">
-                <h4 style="font-size: 14px; font-weight: 600; color: var(--neutral-700); margin-bottom: 8px;">Método de Pago</h4>
-                <div style="display: flex; gap: 8px; margin-bottom: 16px;">
-                    <button style="flex: 1; padding: 8px; border: 2px solid var(--primary-500); background: var(--primary-500); color: white; border-radius: 6px; cursor: pointer;">Efectivo</button>
-                    <button style="flex: 1; padding: 8px; border: 2px solid var(--neutral-300); background: white; color: var(--neutral-700); border-radius: 6px; cursor: pointer;">Tarjeta</button>
-                </div>
-                
-                <button style="width: 100%; padding: 14px; background: var(--primary-500); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; margin-bottom: 8px;">
-                    Procesar Venta
+            <div class="modal-body">
+                <!-- Formulario para agregar cliente -->
+                <form id="form-nuevo-cliente">
+                    <!-- Campo: Nombre (obligatorio) -->
+                    <div class="mb-3">
+                        <label data-for="cliente-nombre" class="form-label">
+                            Nombre completo <span class="text-danger">*</span>
+                        </label>
+                        <input 
+                            type="text" 
+                            class="form-control" 
+                            id="cliente-nombre" 
+                            name="nombre"
+                            required
+                            placeholder="Ej: Juan Pérez"
+                        >
+                    </div>
+                    
+                    <!-- Campo: RUT (opcional) -->
+                    <div class="mb-3">
+                        <label data-for="cliente-rut" class="form-label">RUT (opcional)</label>
+                        <input 
+                            type="text" 
+                            class="form-control" 
+                            id="cliente-rut" 
+                            name="rut"
+                            placeholder="Ej: 12.345.678-9"
+                        >
+                    </div>
+                    
+                    <!-- Campo: Correo (opcional) -->
+                    <div class="mb-3">
+                        <label data-for="cliente-correo" class="form-label">Correo (opcional)</label>
+                        <input 
+                            type="email" 
+                            class="form-control" 
+                            id="cliente-correo" 
+                            name="correo"
+                            placeholder="cliente@ejemplo.com"
+                        >
+                    </div>
+                    
+                    <!-- Área para mostrar errores -->
+                    <div id="errores-cliente" class="alert alert-danger d-none"></div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    Cancelar
                 </button>
-                
-                <button style="width: 100%; padding: 12px; background: var(--neutral-200); color: var(--neutral-700); border: none; border-radius: 8px; font-size: 14px; cursor: pointer;">
-                    Limpiar Carrito
+                <button type="button" class="btn btn-primary" id="btn-guardar-cliente">
+                    <i class="bi bi-save"></i> Guardar Cliente
                 </button>
             </div>
         </div>
     </div>
-</body>
-</html>
+</div>
+
+<!-- ==================== MODAL: FINALIZAR VENTA ==================== -->
+<!-- 
+    Modal para confirmar la venta y capturar el monto pagado
+-->
+<div class="modal fade" id="modalFinalizarVenta" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title">
+                    <i class="bi bi-cash-coin"></i> Finalizar Venta
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Resumen de la venta -->
+                <div class="mb-3">
+                    <h6>Resumen de la venta:</h6>
+                    <div class="d-flex justify-content-between mb-1">
+                        <span>Total a pagar:</span>
+                        <span id="modal-total" class="fw-bold fs-5 text-success">$0.00</span>
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <!-- Campo: Monto pagado -->
+                <div class="mb-3">
+                    <label data-for="monto-pagado" class="form-label fw-bold">
+                        Monto pagado por el cliente: <span class="text-danger">*</span>
+                    </label>
+                    <input 
+                        type="number" 
+                        class="form-control form-control-lg" 
+                        id="monto-pagado"
+                        min="0" 
+                        step="0.01" 
+                        placeholder="0.00"
+                        required
+                    >
+                </div>
+                
+                <!-- Mostrar vuelto -->
+                <div class="mb-3">
+                    <div class="alert alert-info">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="fw-bold">Vuelto:</span>
+                            <span id="vuelto-calculado" class="fw-bold fs-5">$0.00</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Área para errores -->
+                <div id="errores-venta" class="alert alert-danger d-none"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    Cancelar
+                </button>
+                <button type="button" class="btn btn-success btn-lg" id="btn-confirmar-venta">
+                    <i class="bi bi-check-circle"></i> Confirmar Venta
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+<!-- ==================== JAVASCRIPT ==================== -->
+{% block javascripts %}
+<!-- 
+    Aquí incluiremos el archivo JavaScript que maneja
+    toda la lógica del carrito de compras
+-->
+<script src="{% static 'js/pos.js' %}"></script>
+
+<!-- Script para mostrar la hora actual -->
+<script>
+    // ===================================================
+    // Función para mostrar la hora actual en tiempo real
+    // ===================================================
+    function actualizarHora() {
+        // Obtener la fecha y hora actual
+        const ahora = new Date();
+        
+        // Formatear la hora en formato HH:MM:SS
+        const horas = String(ahora.getHours()).padStart(2, '0');
+        const minutos = String(ahora.getMinutes()).padStart(2, '0');
+        const segundos = String(ahora.getSeconds()).padStart(2, '0');
+        
+        // Mostrar en el elemento con id="hora-actual"
+        document.getElementById('hora-actual').textContent = `${horas}:${minutos}:${segundos}`;
+    }
+    
+    // Actualizar la hora cada segundo (1000 milisegundos)
+    setInterval(actualizarHora, 1000);
+    
+    // Llamar la función inmediatamente al cargar la página
+    actualizarHora();
+</script>
+{% endblock %}
