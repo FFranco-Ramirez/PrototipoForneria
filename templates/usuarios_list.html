@@ -1,7 +1,63 @@
 {% extends "base.html" %}
+{% load static %}
+
+{% block body_class %}dark-gold-theme{% endblock %}
+
 {% block contenido %}
-<div class="inventory-container dark-gold-theme">
-  <h2>Usuarios</h2>
+<div class="dashboard-main-container">
+    <nav class="dashboard-sidebar">
+        <div class="sidebar-header">
+            <h2 class="sidebar-title">Fornería</h2>
+        </div>
+        <ul class="sidebar-menu">
+            <li class="sidebar-item">
+                <a href="{% url 'dashboard' %}" class="sidebar-link">
+                    <span>📊</span> Dashboard
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="{% url 'pos' %}" class="sidebar-link">
+                    <span>🛒</span> Ventas (POS)
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="{% url 'inventario' %}" class="sidebar-link">
+                    <span>📦</span> Inventario
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="{% url 'agregar_producto' %}" class="sidebar-link">
+                    <span>➕</span> Agregar Producto
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="{% url 'alertas_list' %}" class="sidebar-link">
+                    <span>🔔</span> Alertas
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="{% url 'proximamente_feature' 'reportes' %}" class="sidebar-link">
+                    <span>📈</span> Reportes
+                </a>
+            </li>
+            {% if request.user.is_authenticated and request.user.is_superuser %}
+            <li class="sidebar-item">
+                <a href="{% url 'usuarios_list' %}" class="sidebar-link active">
+                    <span>👥</span> Usuarios
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+        <div class="sidebar-footer">
+            <a href="{% url 'proximamente_feature' 'configuracion' %}" class="sidebar-link">
+                <span>⚙️</span> Configuración
+            </a>
+        </div>
+    </nav>
+
+    <div class="dashboard-content-wrapper">
+        <div class="inventory-container dark-gold-theme">
+          <h2>Usuarios</h2>
 
   {% if messages %}
     <ul class="messages">
@@ -56,5 +112,7 @@
   <div class="form-link">
     <a href="{% url 'dashboard' %}">Volver al Dashboard</a>
   </div>
+        </div>
+    </div>
 </div>
 {% endblock %}

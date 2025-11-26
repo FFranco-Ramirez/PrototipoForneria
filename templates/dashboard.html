@@ -29,6 +29,11 @@
                 </a>
             </li>
             <li class="sidebar-item">
+                <a href="{% url 'alertas_list' %}" class="sidebar-link">
+                    <span>🔔</span> Alertas
+                </a>
+            </li>
+            <li class="sidebar-item">
                 <a href="{% url 'proximamente_feature' 'reportes' %}" class="sidebar-link">
                     <span>📈</span> Reportes
                 </a>
@@ -94,9 +99,9 @@
                 </div>
             </div>
 
-            <!-- Gráficos y Vencimientos -->
+            <!-- Gráficos y Vencimientos - 7 DÍAS -->
             <div class="dashboard-metrics-grid" style="margin-top: 16px;">
-                <!-- Listado por vencer -->
+                <!-- Listado por vencer 7 días -->
                 <div class="dashboard-metric-card" id="vencimientos-card">
                     <h3 class="metric-card-title">Por vencer (7 días)</h3>
                     <ul id="vencimientos-list" class="metric-list"></ul>
@@ -106,9 +111,47 @@
                     <button id="vencimientos-toggle" class="metric-card-button" style="display:none;">Ver más</button>
                 </div>
 
-                <!-- Contenedor para el gráfico de 7 días -->
+                <!-- Gráfico de pérdida 7 días -->
                 <div class="dashboard-metric-card" id="d3-gauge-container-7-days">
                     <h3 class="metric-card-title">Pérdida potencial (7 días)</h3>
+                    <!-- Aquí se renderizará el gráfico de D3.js -->
+                </div>
+            </div>
+
+            <!-- Gráficos y Vencimientos - 14 DÍAS -->
+            <div class="dashboard-metrics-grid" style="margin-top: 16px;">
+                <!-- Listado por vencer 14 días -->
+                <div class="dashboard-metric-card" id="vencimientos-14-card">
+                    <h3 class="metric-card-title">Por vencer (14 días)</h3>
+                    <ul id="vencimientos-14-list" class="metric-list"></ul>
+                    <div id="vencimientos-14-extra" style="display: none;">
+                        <ul id="vencimientos-14-extra-list" class="metric-list"></ul>
+                    </div>
+                    <button id="vencimientos-14-toggle" class="metric-card-button" style="display:none;">Ver más</button>
+                </div>
+
+                <!-- Gráfico de pérdida 14 días -->
+                <div class="dashboard-metric-card" id="d3-gauge-container-14-days">
+                    <h3 class="metric-card-title">Pérdida potencial (14 días)</h3>
+                    <!-- Aquí se renderizará el gráfico de D3.js -->
+                </div>
+            </div>
+
+            <!-- Gráficos y Vencimientos - 30 DÍAS -->
+            <div class="dashboard-metrics-grid" style="margin-top: 16px;">
+                <!-- Listado por vencer 30 días -->
+                <div class="dashboard-metric-card" id="vencimientos-30-card">
+                    <h3 class="metric-card-title">Por vencer (30 días)</h3>
+                    <ul id="vencimientos-30-list" class="metric-list"></ul>
+                    <div id="vencimientos-30-extra" style="display: none;">
+                        <ul id="vencimientos-30-extra-list" class="metric-list"></ul>
+                    </div>
+                    <button id="vencimientos-30-toggle" class="metric-card-button" style="display:none;">Ver más</button>
+                </div>
+
+                <!-- Gráfico de pérdida 30 días -->
+                <div class="dashboard-metric-card" id="d3-gauge-container-30-days">
+                    <h3 class="metric-card-title">Pérdida potencial (30 días)</h3>
                     <!-- Aquí se renderizará el gráfico de D3.js -->
                 </div>
             </div>
@@ -152,12 +195,7 @@ document.addEventListener('DOMContentLoaded', function(){
 <!-- Inicialización de los gráficos del dashboard -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Llama a nuestra función reutilizable para crear el gráfico de 7 días.
-    // Parámetros:
-    // 1. Selector del Div: '#d3-gauge-container-7-days' -> Dónde dibujar.
-    // 2. URL de datos: "{% url 'api_perdida_potencial' %}" -> De dónde sacar el valor.
-    // 3. Máximo del gráfico: 10000000 -> El 100% del velocímetro.
-    // 4. Etiqueta: 'Pérdida Potencial' -> El texto de abajo.
+    // Gráfico de 7 días
     initGaugeChart(
         '#d3-gauge-container-7-days',
         "{% url 'api_perdida_potencial' %}",
@@ -165,7 +203,21 @@ document.addEventListener('DOMContentLoaded', function() {
         'Pérdida Potencial'
     );
 
+    // Gráfico de 14 días
+    initGaugeChart(
+        '#d3-gauge-container-14-days',
+        "{% url 'api_perdida_potencial_14' %}",
+        10000000,
+        'Pérdida Potencial'
+    );
 
+    // Gráfico de 30 días
+    initGaugeChart(
+        '#d3-gauge-container-30-days',
+        "{% url 'api_perdida_potencial_30' %}",
+        10000000,
+        'Pérdida Potencial'
+    );
 });
 </script>
 {% endblock %}

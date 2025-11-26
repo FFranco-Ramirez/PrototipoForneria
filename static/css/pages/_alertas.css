@@ -178,16 +178,22 @@ SECCIONES:
 .dark-gold-theme .form-control,
 .dark-gold-theme .form-select {
     /* Fondo oscuro */
-    background-color: var(--bg-alt, #141414);
+    background-color: var(--bg-alt, #141414) !important;
     
     /* Texto claro */
-    color: var(--text, #f2f2f2);
+    color: var(--text, #f2f2f2) !important;
     
     /* Borde sutil */
-    border: 1px solid #333;
+    border: 1px solid #333 !important;
     
     /* Transición suave */
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Asegurar que las opciones del select también sean visibles */
+.dark-gold-theme .form-select option {
+    background-color: var(--bg-alt, #141414);
+    color: var(--text, #f2f2f2);
 }
 
 /* --- Focus en inputs (cuando están activos) --- */

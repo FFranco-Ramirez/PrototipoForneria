@@ -60,3 +60,14 @@ body, html {
   border-radius: 12px;
 }
 
+/* Ajuste para el POS - sin padding ni border-radius en el body */
+body.dark-gold-theme {
+  padding: 0;
+  border-radius: 0;
+  margin: 0;
+}
+
+body.dark-gold-theme .container-fluid {
+  padding: 0;
+}
+

@@ -1,122 +1,239 @@
 // ================================================================
 // =                                                              =
-// =     JAVASCRIPT PARA EL SISTEMA POS (PUNTO DE VENTA)         =
+// =            JAVASCRIPT: PUNTO DE VENTA (POS)                  =
 // =                                                              =
 // ================================================================
 //
-// Este archivo maneja toda la lógica del carrito de compras:
-// - Agregar productos al carrito
-// - Quitar productos del carrito
-// - Actualizar cantidades
-// - Calcular totales (subtotal, IVA, total)
-// - Validar stock antes de agregar
-// - Procesar la venta completa
-// - Agregar nuevos clientes
+// Este archivo maneja TODA la lógica del lado del cliente (navegador)
+// para el sistema de Punto de Venta.
 //
-// NOTA: Este código usa JavaScript moderno (ES6+) con const, let, arrow functions, etc.
+// FUNCIONALIDADES PRINCIPALES:
+// 1. Gestión del carrito de compras (agregar, quitar, modificar cantidades)
+// 2. Cálculo automático de totales (subtotal, IVA, descuentos, vuelto)
+// 3. Validación de productos (stock, disponibilidad)
+// 4. Procesamiento de ventas (envío a Django vía AJAX)
+// 5. Gestión de clientes (crear clientes rápidos)
+// 6. Búsqueda y filtrado de productos
+// 7. Descuentos individuales por producto
+// 8. Generación de comprobantes de venta
+//
+// ================================================================
+
 
 // ================================================================
-// =                 VARIABLES GLOBALES                           =
+// =                    VARIABLES GLOBALES                        =
 // ================================================================
 
-// --- Carrito de compras ---
-// Es un array (lista) que contiene los productos agregados al carrito
-// Cada producto es un objeto con: {producto_id, nombre, precio, cantidad, stock}
+// Array que almacena todos los productos agregados al carrito
+// Estructura de cada item:
+// {
+//     producto_id: número,
+//     nombre: texto,
+//     precio: número (precio unitario),
+//     stock: número (disponible),
+//     cantidad: número (cuántos se están comprando),
+//     descuento: número (% de descuento, 0-100)
+// }
 let carrito = [];
 
-// --- Constante: Tasa de IVA en Chile ---
-// En Chile el IVA es del 19% (0.19 en decimal)
-const IVA_RATE = 0.19;
+// Tipo de venta seleccionado: 'presencial' o 'delivery'
+let tipoVenta = 'presencial';
+
+// Token CSRF de Django (para seguridad en peticiones AJAX)
+// Lo obtenemos del template HTML
+const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
 
 // ================================================================
-// =              EVENTO: CUANDO LA PÁGINA CARGA                  =
+// =              INICIALIZACIÓN AL CARGAR LA PÁGINA              =
 // ================================================================
-// 
-// DOMContentLoaded es un evento que se dispara cuando el navegador
-// termina de cargar todo el HTML. Aquí inicializamos todo.
+//
+// Este código se ejecuta cuando el DOM está completamente cargado
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Llama la función que configura todos los eventos
-    inicializarEventos();
     
-    // Actualizar totales al cargar (inicialmente todo en $0)
-    actualizarTotales();
+    // --- Reloj en tiempo real ---
+    // Actualiza la hora cada segundo
+    actualizarHora();
+    setInterval(actualizarHora, 1000);
+    
+    // --- Botones de Presencial/Delivery ---
+    // Asignar eventos a los botones de tipo de venta
+    document.getElementById('btn-presencial').addEventListener('click', function() {
+        seleccionarTipoVenta('presencial');
+    });
+    
+    document.getElementById('btn-delivery').addEventListener('click', function() {
+        seleccionarTipoVenta('delivery');
+    });
+    
+    // --- Buscar productos ---
+    // Evento del campo de búsqueda
+    const inputBuscar = document.getElementById('input-buscar-producto');
+    if (inputBuscar) {
+        inputBuscar.addEventListener('input', function() {
+            filtrarProductos(this.value);
+        });
+    }
+    
+    // --- Botón de cancelar venta ---
+    // Evento para el botón de cancelar venta completa
+    document.getElementById('btn-cancelar-venta').addEventListener('click', cancelarVenta);
+    
+    // --- Botón de procesar venta ---
+    // Evento para finalizar la venta
+    document.getElementById('btn-procesar-venta').addEventListener('click', abrirModalConfirmacion);
+    
+    // --- Botón de cliente rápido ---
+    // Evento para abrir el modal de agregar cliente
+    document.getElementById('btn-agregar-cliente-rapido').addEventListener('click', function() {
+        document.getElementById('form-cliente-rapido').reset();
+    });
+    
+    // --- Evento: Agregar todos los productos al carrito ---
+    // Delegación de eventos: esperamos clicks en cualquier botón "agregar al carrito"
+    document.querySelectorAll('.btn-agregar-producto, .btn-agregar-carrito').forEach(boton => {
+        boton.addEventListener('click', agregarProductoAlCarrito);
+    });
+    
+    // --- Aplicar descuento en el modal ---
+    document.getElementById('btn-aplicar-descuento').addEventListener('click', aplicarDescuentoIndividual);
+    
+    // --- Confirmar venta en el modal ---
+    document.getElementById('btn-confirmar-venta-final').addEventListener('click', procesarVenta);
+    
+    // --- Toggle de IVA ---
+    const toggleIva = document.getElementById('toggle-iva');
+    if (toggleIva) {
+        toggleIva.addEventListener('change', function() {
+            actualizarTotales();
+        });
+    }
 });
 
 
 // ================================================================
-// =          FUNCIÓN: INICIALIZAR TODOS LOS EVENTOS              =
+// =                 FUNCIÓN: ACTUALIZAR HORA                     =
 // ================================================================
 //
-// Esta función busca todos los elementos HTML y les asigna
-// funciones que se ejecutarán cuando el usuario haga clic,
-// escriba algo, etc.
+// Muestra la hora actual en formato HH:MM:SS en el header
 
-function inicializarEventos() {
+function actualizarHora() {
+    const ahora = new Date();
+    const horas = String(ahora.getHours()).padStart(2, '0');
+    const minutos = String(ahora.getMinutes()).padStart(2, '0');
+    const segundos = String(ahora.getSeconds()).padStart(2, '0');
     
-    // --- Evento: Agregar producto al carrito ---
-    // Busca TODOS los botones con clase "agregar-al-carrito"
-    // y les asigna la función agregarProductoAlCarrito cuando se hace clic
-    document.querySelectorAll('.agregar-al-carrito').forEach(boton => {
-        boton.addEventListener('click', agregarProductoAlCarrito);
-    });
+    const horaActual = `${horas}:${minutos}:${segundos}`;
     
-    // --- Evento: Buscar productos ---
-    // Cuando el usuario escribe en el buscador, filtra los productos
-    const inputBuscar = document.getElementById('buscar-producto');
-    if (inputBuscar) {
-        inputBuscar.addEventListener('input', filtrarProductos);
-    }
-    
-    // --- Evento: Limpiar carrito ---
-    const btnLimpiar = document.getElementById('btn-limpiar-carrito');
-    if (btnLimpiar) {
-        btnLimpiar.addEventListener('click', limpiarCarrito);
-    }
-    
-    // --- Evento: Procesar venta ---
-    const btnProcesar = document.getElementById('btn-procesar-venta');
-    if (btnProcesar) {
-        btnProcesar.addEventListener('click', abrirModalFinalizarVenta);
-    }
-    
-    // --- Evento: Guardar nuevo cliente ---
-    const btnGuardarCliente = document.getElementById('btn-guardar-cliente');
-    if (btnGuardarCliente) {
-        btnGuardarCliente.addEventListener('click', guardarNuevoCliente);
-    }
-    
-    // --- Evento: Confirmar venta ---
-    const btnConfirmarVenta = document.getElementById('btn-confirmar-venta');
-    if (btnConfirmarVenta) {
-        btnConfirmarVenta.addEventListener('click', confirmarVenta);
-    }
-    
-    // --- Evento: Calcular vuelto en tiempo real ---
-    const inputMontoPagado = document.getElementById('monto-pagado');
-    if (inputMontoPagado) {
-        inputMontoPagado.addEventListener('input', calcularVuelto);
-    }
-    
-    // --- Evento: Recalcular totales cuando cambia el descuento ---
-    const inputDescuento = document.getElementById('descuento-global');
-    if (inputDescuento) {
-        inputDescuento.addEventListener('input', actualizarTotales);
+    const elementoHora = document.getElementById('hora-actual');
+    if (elementoHora) {
+        elementoHora.textContent = horaActual;
     }
 }
 
 
 // ================================================================
-// =       FUNCIÓN: AGREGAR PRODUCTO AL CARRITO                   =
+// =           FUNCIÓN: SELECCIONAR TIPO DE VENTA                 =
 // ================================================================
 //
-// Esta función se ejecuta cuando el usuario hace clic en el botón
-// "Agregar" de un producto.
+// Cambia entre 'presencial' y 'delivery'
 //
-// PASOS:
-// 1. Obtener información del producto desde el botón (usando data-attributes)
-// 2. Validar que el producto tenga stock (llamada AJAX al servidor)
+// @param {string} tipo - 'presencial' o 'delivery'
+
+function seleccionarTipoVenta(tipo) {
+    // Actualizar variable global
+    tipoVenta = tipo;
+    
+    // Obtener los botones
+    const btnPresencial = document.getElementById('btn-presencial');
+    const btnDelivery = document.getElementById('btn-delivery');
+    
+    // Remover la clase activa de ambos botones
+    btnPresencial.classList.remove('active');
+    btnDelivery.classList.remove('active');
+    
+    // Agregar clase activa al botón seleccionado
+    if (tipo === 'presencial') {
+        btnPresencial.classList.add('active');
+    } else {
+        btnDelivery.classList.add('active');
+    }
+    
+    console.log('Tipo de venta seleccionado:', tipo);
+}
+
+
+// ================================================================
+// =         FUNCIÓN: AGREGAR AL CARRITO (WRAPPER)                =
+// ================================================================
+//
+// Función wrapper que se llama desde el onclick del HTML
+// Recibe el ID del producto directamente
+//
+// @param {number} productoId - ID del producto a agregar
+
+function agregarAlCarrito(productoId) {
+    // Buscar la tarjeta del producto
+    const card = document.querySelector(`.producto-card[data-producto-id="${productoId}"]`);
+    
+    if (!card) {
+        mostrarAlerta('error', 'Producto no encontrado');
+        return;
+    }
+    
+    // Extraer información del producto
+    const producto = {
+        producto_id: parseInt(productoId),
+        nombre: card.dataset.productoNombre,
+        precio: parseFloat(card.dataset.productoPrecio),
+        stock: parseInt(card.dataset.productoStock),
+        cantidad: 1,
+        descuento: 0
+    };
+    
+    // Validar stock
+    if (producto.stock <= 0) {
+        mostrarAlerta('error', 'Este producto no tiene stock disponible');
+        return;
+    }
+    
+    // Verificar si ya está en el carrito
+    const indiceExistente = carrito.findIndex(item => item.producto_id === producto.producto_id);
+    
+    if (indiceExistente >= 0) {
+        // Ya está en el carrito
+        const cantidadActual = carrito[indiceExistente].cantidad;
+        
+        if (cantidadActual >= producto.stock) {
+            mostrarAlerta('warning', `Solo hay ${producto.stock} unidades disponibles de ${producto.nombre}`);
+            return;
+        }
+        
+        carrito[indiceExistente].cantidad += 1;
+        mostrarAlerta('success', `Cantidad de ${producto.nombre} aumentada a ${carrito[indiceExistente].cantidad}`);
+    } else {
+        // Agregar nuevo producto
+        carrito.push(producto);
+        mostrarAlerta('success', `${producto.nombre} agregado al carrito`);
+    }
+    
+    // Actualizar visualización
+    renderizarCarrito();
+    actualizarTotales();
+}
+
+
+// ================================================================
+// =         FUNCIÓN: AGREGAR PRODUCTO AL CARRITO                 =
+// ================================================================
+//
+// Esta es una de las funciones más importantes.
+// Se ejecuta cuando el usuario hace click en "Agregar" en un producto.
+//
+// PROCESO:
+// 1. Obtener información del producto clickeado
+// 2. Validar que haya stock disponible
 // 3. Si ya está en el carrito, aumentar la cantidad
 // 4. Si no está, agregarlo al carrito
 // 5. Actualizar la visualización del carrito
@@ -159,16 +276,18 @@ function agregarProductoAlCarrito(evento) {
         
         if (cantidadActual >= producto.stock) {
             // No hay más stock disponible
-            mostrarAlerta('warning', `Solo hay ${producto.stock} unidades disponibles`);
+            mostrarAlerta('warning', `Solo hay ${producto.stock} unidades disponibles de ${producto.nombre}`);
             return;
         }
         
         // Aumentamos la cantidad en 1
         carrito[indiceExistente].cantidad += 1;
+        mostrarAlerta('success', `Cantidad de ${producto.nombre} aumentada a ${carrito[indiceExistente].cantidad}`);
         
     } else {
         // El producto NO está en el carrito, lo agregamos
         carrito.push(producto);
+        mostrarAlerta('success', `${producto.nombre} agregado al carrito`);
     }
     
     // Actualizar la visualización del carrito en la pantalla
@@ -176,9 +295,6 @@ function agregarProductoAlCarrito(evento) {
     
     // Recalcular los totales
     actualizarTotales();
-    
-    // Mostrar mensaje de éxito
-    mostrarAlerta('success', `${producto.nombre} agregado al carrito`);
 }
 
 
@@ -232,16 +348,19 @@ function renderizarCarrito() {
         // Sumar la cantidad de este item al total
         totalItems += item.cantidad;
         
+        // Calcular el precio con descuento
+        const precioConDescuento = item.precio * (1 - item.descuento / 100);
+        
         // Calcular el subtotal de este item (precio × cantidad)
-        const subtotalItem = item.precio * item.cantidad;
+        const subtotalItem = precioConDescuento * item.cantidad;
         
         // Crear el HTML para este item del carrito
         const itemHTML = `
-            <div class="card mb-2" data-item-index="${indice}">
-                <div class="card-body p-2">
-                    <!-- Nombre del producto -->
+            <div class="carrito-item-card mb-2" data-item-index="${indice}">
+                <div class="carrito-item-body">
+                    <!-- Nombre del producto y botón quitar -->
                     <div class="d-flex justify-content-between align-items-start mb-2">
-                        <strong class="text-truncate" style="max-width: 200px;">
+                        <strong class="text-truncate text-white" style="max-width: 180px;">
                             ${item.nombre}
                         </strong>
                         <!-- Botón para quitar del carrito -->
@@ -252,53 +371,78 @@ function renderizarCarrito() {
                         </button>
                     </div>
                     
-                    <!-- Controles de cantidad y precio -->
+                    <!-- Precio unitario con descuento si aplica -->
+                    <div class="mb-2">
+                        ${item.descuento > 0 ? `
+                            <small class="text-muted text-decoration-line-through">
+                                $${formatearPrecio(item.precio)}
+                            </small>
+                            <span class="badge bg-success ms-1">${item.descuento}% OFF</span>
+                            <div class="text-warning fw-bold">
+                                $${formatearPrecio(precioConDescuento)} c/u
+                            </div>
+                        ` : `
+                            <small class="text-muted">
+                                $${formatearPrecio(item.precio)} c/u
+                            </small>
+                        `}
+                    </div>
+                    
+                    <!-- Controles de cantidad y subtotal -->
                     <div class="d-flex justify-content-between align-items-center">
-                        <div class="input-group input-group-sm" style="width: 120px;">
+                        <div class="btn-group btn-group-sm" role="group">
                             <!-- Botón para disminuir cantidad -->
-                            <button class="btn btn-outline-secondary btn-disminuir" 
+                            <button class="btn btn-outline-warning btn-disminuir" 
                                     data-index="${indice}"
-                                    type="button">
+                                    type="button"
+                                    title="Disminuir cantidad">
                                 <i class="bi bi-dash"></i>
                             </button>
                             
                             <!-- Input de cantidad -->
                             <input type="number" 
-                                   class="form-control text-center input-cantidad" 
+                                   class="form-control form-control-sm text-center input-cantidad" 
                                    data-index="${indice}"
                                    value="${item.cantidad}" 
                                    min="1" 
-                                   max="${item.stock}">
+                                   max="${item.stock}"
+                                   style="width: 60px;">
                             
                             <!-- Botón para aumentar cantidad -->
-                            <button class="btn btn-outline-secondary btn-aumentar" 
+                            <button class="btn btn-outline-warning btn-aumentar" 
                                     data-index="${indice}"
-                                    type="button">
+                                    type="button"
+                                    title="Aumentar cantidad">
                                 <i class="bi bi-plus"></i>
                             </button>
                         </div>
                         
-                        <!-- Precio × cantidad -->
+                        <!-- Subtotal del item -->
                         <div class="text-end">
-                            <small class="text-muted">$${item.precio.toFixed(2)} c/u</small>
-                            <div class="fw-bold text-primary">
-                                $${subtotalItem.toFixed(2)}
+                            <div class="fw-bold text-warning" style="font-size: 1.1rem;">
+                                $${formatearPrecio(subtotalItem)}
                             </div>
                         </div>
                     </div>
                     
-                    <!-- Indicador de stock disponible -->
-                    <div class="mt-1">
+                    <!-- Indicadores adicionales -->
+                    <div class="mt-2 d-flex justify-content-between align-items-center">
                         <small class="text-muted">
                             <i class="bi bi-box"></i> Stock: ${item.stock}
                         </small>
+                        <!-- Botón para aplicar descuento individual -->
+                        <button class="btn btn-sm btn-outline-warning btn-descuento-item"
+                                data-index="${indice}"
+                                title="Aplicar descuento">
+                            <i class="bi bi-percent"></i> Descuento
+                        </button>
                     </div>
                 </div>
             </div>
         `;
         
         // Agregar este item al contenedor
-        contenedor.innerHTML += itemHTML;
+        contenedor.insertAdjacentHTML('beforeend', itemHTML);
     });
     
     // Actualizar el contador de items
@@ -317,7 +461,7 @@ function renderizarCarrito() {
 // ================================================================
 //
 // Después de renderizar el carrito, necesitamos asignar eventos
-// a todos los botones nuevos (quitar, aumentar, disminuir)
+// a todos los botones nuevos (quitar, aumentar, disminuir, descuento)
 
 function asignarEventosCarrito() {
     
@@ -353,6 +497,14 @@ function asignarEventosCarrito() {
             establecerCantidad(indice, nuevaCantidad);
         });
     });
+    
+    // --- Botones para aplicar descuento individual ---
+    document.querySelectorAll('.btn-descuento-item').forEach(boton => {
+        boton.addEventListener('click', function() {
+            const indice = parseInt(this.dataset.index);
+            abrirModalDescuento(indice);
+        });
+    });
 }
 
 
@@ -374,14 +526,16 @@ function cambiarCantidad(indice, cambio) {
     
     // Validar que la cantidad esté en el rango válido
     if (nuevaCantidad < 1) {
-        // Si intentan poner menos de 1, mejor quitar del carrito
-        quitarDelCarrito(indice);
+        // Si intentan poner menos de 1, preguntar si desea quitar
+        if (confirm(`¿Desea quitar "${item.nombre}" del carrito?`)) {
+            quitarDelCarrito(indice);
+        }
         return;
     }
     
     if (nuevaCantidad > item.stock) {
         // No hay suficiente stock
-        mostrarAlerta('warning', `Solo hay ${item.stock} unidades disponibles`);
+        mostrarAlerta('warning', `Solo hay ${item.stock} unidades disponibles de ${item.nombre}`);
         return;
     }
     
@@ -420,12 +574,15 @@ function establecerCantidad(indice, cantidad) {
     if (cantidad > item.stock) {
         // Restaurar la cantidad anterior
         renderizarCarrito();
-        mostrarAlerta('warning', `Solo hay ${item.stock} unidades disponibles`);
+        mostrarAlerta('warning', `Solo hay ${item.stock} unidades disponibles de ${item.nombre}`);
         return;
     }
     
     // Actualizar la cantidad
     item.cantidad = cantidad;
+    
+    // Re-renderizar el carrito
+    renderizarCarrito();
     
     // Recalcular totales
     actualizarTotales();
@@ -441,11 +598,10 @@ function establecerCantidad(indice, cantidad) {
 // @param {number} indice - Posición del producto en el array carrito
 
 function quitarDelCarrito(indice) {
-    // Obtener el nombre del producto antes de quitarlo
+    // Obtener nombre del producto para el mensaje
     const nombreProducto = carrito[indice].nombre;
     
-    // Quitar el elemento del array usando splice()
-    // splice(indice, 1) significa: "desde 'indice', quita 1 elemento"
+    // Eliminar el producto del array
     carrito.splice(indice, 1);
     
     // Re-renderizar el carrito
@@ -460,478 +616,627 @@ function quitarDelCarrito(indice) {
 
 
 // ================================================================
-// =              FUNCIÓN: LIMPIAR TODO EL CARRITO                =
+// =       FUNCIÓN: ABRIR MODAL DE DESCUENTO INDIVIDUAL           =
 // ================================================================
 //
-// Vacía completamente el carrito (elimina todos los productos)
+// Abre el modal para aplicar un descuento a un producto específico
+//
+// @param {number} indice - Posición del producto en el array carrito
 
-function limpiarCarrito() {
-    // Confirmar con el usuario
+function abrirModalDescuento(indice) {
+    const item = carrito[indice];
+    
+    // Guardar el índice actual para usarlo después
+    document.getElementById('modal-descuento-item').dataset.itemIndex = indice;
+    
+    // Mostrar nombre del producto en el modal
+    document.getElementById('nombre-producto-descuento').textContent = item.nombre;
+    
+    // Establecer el descuento actual en el input
+    document.getElementById('input-descuento-individual').value = item.descuento;
+    
+    // Abrir el modal
+    const modal = new bootstrap.Modal(document.getElementById('modal-descuento-item'));
+    modal.show();
+}
+
+
+// ================================================================
+// =       FUNCIÓN: APLICAR DESCUENTO A PRODUCTO INDIVIDUAL       =
+// ================================================================
+//
+// Aplica el descuento ingresado por el usuario a un producto específico
+
+function aplicarDescuentoIndividual() {
+    // Obtener el índice del producto
+    const indice = parseInt(document.getElementById('modal-descuento-item').dataset.itemIndex);
+    
+    // Obtener el descuento ingresado
+    const descuento = parseFloat(document.getElementById('input-descuento-individual').value);
+    
+    // Validar descuento
+    if (isNaN(descuento) || descuento < 0 || descuento > 100) {
+        mostrarAlerta('error', 'El descuento debe estar entre 0 y 100');
+        return;
+    }
+    
+    // Aplicar el descuento al producto
+    carrito[indice].descuento = descuento;
+    
+    // Cerrar el modal
+    const modal = bootstrap.Modal.getInstance(document.getElementById('modal-descuento-item'));
+    modal.hide();
+    
+    // Re-renderizar carrito y actualizar totales
+    renderizarCarrito();
+    actualizarTotales();
+    
+    mostrarAlerta('success', `Descuento del ${descuento}% aplicado`);
+}
+
+
+// ================================================================
+// =              FUNCIÓN: ACTUALIZAR TOTALES                     =
+// ================================================================
+//
+// Calcula y muestra los totales del carrito:
+// - Subtotal (suma de todos los items CON descuentos individuales)
+// - IVA (19%)
+// - Total final
+// - Vuelto (si el cliente pagó más)
+
+function actualizarTotales() {
+    // --- Calcular Subtotal ---
+    // Suma del precio × cantidad de cada producto (con sus descuentos individuales)
+    let subtotal = 0;
+    
+    carrito.forEach(item => {
+        // Aplicar descuento individual al precio
+        const precioConDescuento = item.precio * (1 - item.descuento / 100);
+        subtotal += precioConDescuento * item.cantidad;
+    });
+    
+    // --- Verificar si el IVA está activado ---
+    const toggleIva = document.getElementById('toggle-iva');
+    const incluirIva = toggleIva ? toggleIva.checked : true;
+    
+    // --- Calcular IVA (19%) solo si está activado ---
+    const iva = incluirIva ? subtotal * 0.19 : 0;
+    
+    // --- Total Final ---
+    const total = subtotal + iva;
+    
+    // --- Actualizar en el HTML ---
+    document.getElementById('subtotal').textContent = formatearPrecio(subtotal);
+    document.getElementById('iva').textContent = formatearPrecio(iva);
+    document.getElementById('total').textContent = formatearPrecio(total);
+    
+    // --- Calcular Vuelto ---
+    // El vuelto solo se calcula si el usuario ingresó el monto pagado
+    const montoPagadoInput = document.getElementById('monto-pagado-input');
+    if (montoPagadoInput) {
+        const montoPagado = parseFloat(montoPagadoInput.value) || 0;
+        const vuelto = montoPagado - total;
+        
+        const vueltoElemento = document.getElementById('vuelto');
+        if (vueltoElemento) {
+            vueltoElemento.textContent = vuelto >= 0 ? formatearPrecio(vuelto) : '0';
+            
+            // Cambiar color si es negativo (pago insuficiente)
+            if (vuelto < 0) {
+                vueltoElemento.classList.add('text-danger');
+            } else {
+                vueltoElemento.classList.remove('text-danger');
+            }
+        }
+    }
+}
+
+
+// ================================================================
+// =              FUNCIÓN: FORMATEAR PRECIO                       =
+// ================================================================
+//
+// Convierte un número a formato de precio sin decimales
+// Ejemplo: 1500 → "1500"
+//
+// @param {number} valor - El número a formatear
+// @returns {string} - El precio formateado
+
+function formatearPrecio(valor) {
+    return Math.round(valor).toLocaleString('es-CL');
+}
+
+
+// ================================================================
+// =              FUNCIÓN: CANCELAR VENTA COMPLETA                =
+// ================================================================
+//
+// Vacía el carrito completamente y restaura todo al estado inicial
+
+function cancelarVenta() {
+    // Verificar si hay productos en el carrito
     if (carrito.length === 0) {
         mostrarAlerta('info', 'El carrito ya está vacío');
         return;
     }
     
-    // Pedir confirmación
-    if (!confirm('¿Estás seguro de que deseas limpiar el carrito?')) {
-        return;  // El usuario canceló
-    }
-    
-    // Vaciar el array del carrito
-    carrito = [];
-    
-    // Re-renderizar el carrito
-    renderizarCarrito();
-    
-    // Recalcular totales
-    actualizarTotales();
-    
-    // Mostrar mensaje
-    mostrarAlerta('success', 'Carrito limpiado correctamente');
-}
-
-
-// ================================================================
-// =            FUNCIÓN: ACTUALIZAR TOTALES                       =
-// ================================================================
-//
-// Calcula y muestra el subtotal, IVA y total del carrito
-
-function actualizarTotales() {
-    // --- Paso 1: Calcular el subtotal (suma de todos los items) ---
-    let subtotal = 0;
-    
-    carrito.forEach(item => {
-        subtotal += item.precio * item.cantidad;
-    });
-    
-    // --- Paso 2: Obtener el descuento global (si hay) ---
-    const inputDescuento = document.getElementById('descuento-global');
-    const descuentoGlobal = inputDescuento ? parseFloat(inputDescuento.value) || 0 : 0;
-    
-    // Aplicar descuento al subtotal
-    subtotal = subtotal - descuentoGlobal;
-    
-    // Asegurar que el subtotal no sea negativo
-    if (subtotal < 0) subtotal = 0;
-    
-    // --- Paso 3: Calcular el IVA (19% del subtotal) ---
-    const iva = subtotal * IVA_RATE;
-    
-    // --- Paso 4: Calcular el total (subtotal + IVA) ---
-    const total = subtotal + iva;
-    
-    // --- Paso 5: Actualizar los elementos HTML ---
-    document.getElementById('subtotal').textContent = `$${subtotal.toFixed(2)}`;
-    document.getElementById('iva').textContent = `$${iva.toFixed(2)}`;
-    document.getElementById('total').textContent = `$${total.toFixed(2)}`;
-    
-    // También actualizar el total en el modal de finalizar venta
-    const modalTotal = document.getElementById('modal-total');
-    if (modalTotal) {
-        modalTotal.textContent = `$${total.toFixed(2)}`;
-    }
-}
-
-
-// ================================================================
-// =           FUNCIÓN: FILTRAR PRODUCTOS (BÚSQUEDA)              =
-// ================================================================
-//
-// Filtra los productos mostrados según lo que el usuario escribe
-
-function filtrarProductos(evento) {
-    // Obtener el texto que el usuario escribió (en minúsculas)
-    const textoBusqueda = evento.target.value.toLowerCase().trim();
-    
-    // Obtener todos los items de productos
-    const items = document.querySelectorAll('.producto-item');
-    
-    // Recorrer cada producto
-    items.forEach(item => {
-        // Obtener los datos del producto
-        const nombre = item.dataset.nombre || '';
-        const marca = item.dataset.marca || '';
-        const tipo = item.dataset.tipo || '';
-        
-        // Verificar si el texto de búsqueda está en nombre, marca o tipo
-        const coincide = nombre.includes(textoBusqueda) || 
-                        marca.includes(textoBusqueda) || 
-                        tipo.includes(textoBusqueda);
-        
-        // Mostrar u ocultar el producto según si coincide
-        if (coincide) {
-            item.style.display = '';  // Mostrar
-        } else {
-            item.style.display = 'none';  // Ocultar
-        }
-    });
-}
-
-
-// ================================================================
-// =       FUNCIÓN: ABRIR MODAL PARA FINALIZAR VENTA              =
-// ================================================================
-//
-// Abre el modal para capturar el monto pagado y confirmar la venta
-
-function abrirModalFinalizarVenta() {
-    // Validar que haya un cliente seleccionado
-    const selectCliente = document.getElementById('select-cliente');
-    if (!selectCliente.value) {
-        mostrarAlerta('error', 'Debes seleccionar un cliente antes de procesar la venta');
+    // Confirmar con el usuario
+    if (!confirm('¿Está seguro de cancelar la venta? Se perderán todos los productos del carrito.')) {
         return;
     }
     
+    // Vaciar el carrito
+    carrito = [];
+    
+    // Resetear tipo de venta a presencial
+    seleccionarTipoVenta('presencial');
+    
+    // Limpiar campo de cliente
+    document.getElementById('select-cliente').value = '';
+    
+    // Re-renderizar el carrito (mostrará mensaje de vacío)
+    renderizarCarrito();
+    
+    // Actualizar totales a 0
+    actualizarTotales();
+    
+    // Mensaje de confirmación
+    mostrarAlerta('info', 'Venta cancelada. El carrito ha sido vaciado.');
+}
+
+
+// ================================================================
+// =         FUNCIÓN: ABRIR MODAL DE CONFIRMACIÓN                 =
+// ================================================================
+//
+// Abre el modal de confirmación final antes de procesar la venta
+
+function abrirModalConfirmacion() {
     // Validar que el carrito no esté vacío
     if (carrito.length === 0) {
         mostrarAlerta('error', 'El carrito está vacío');
         return;
     }
     
+    // Validar que se haya seleccionado un cliente
+    const clienteId = document.getElementById('select-cliente').value;
+    if (!clienteId) {
+        mostrarAlerta('error', 'Debe seleccionar un cliente');
+        return;
+    }
+    
+    // Calcular totales actuales
+    let subtotal = 0;
+    carrito.forEach(item => {
+        const precioConDescuento = item.precio * (1 - item.descuento / 100);
+        subtotal += precioConDescuento * item.cantidad;
+    });
+    
+    const iva = subtotal * 0.19;
+    const total = subtotal + iva;
+    
+    // Mostrar totales en el modal
+    document.getElementById('modal-subtotal').textContent = formatearPrecio(subtotal);
+    document.getElementById('modal-iva').textContent = formatearPrecio(iva);
+    document.getElementById('modal-total').textContent = formatearPrecio(total);
+    
     // Limpiar el input de monto pagado
-    document.getElementById('monto-pagado').value = '';
-    document.getElementById('vuelto-calculado').textContent = '$0.00';
+    document.getElementById('monto-pagado-input').value = '';
+    document.getElementById('modal-vuelto').textContent = '0';
     
-    // Ocultar errores anteriores
-    document.getElementById('errores-venta').classList.add('d-none');
+    // Agregar evento para calcular vuelto en tiempo real
+    const montoPagadoInput = document.getElementById('monto-pagado-input');
+    montoPagadoInput.removeEventListener('input', calcularVueltoModal); // Evitar duplicados
+    montoPagadoInput.addEventListener('input', function() {
+        calcularVueltoModal(total);
+    });
     
-    // Abrir el modal usando Bootstrap
-    const modal = new bootstrap.Modal(document.getElementById('modalFinalizarVenta'));
+    // Abrir el modal
+    const modal = new bootstrap.Modal(document.getElementById('modal-confirmar-venta'));
     modal.show();
 }
 
 
 // ================================================================
-// =             FUNCIÓN: CALCULAR VUELTO                         =
+// =         FUNCIÓN: CALCULAR VUELTO EN EL MODAL                 =
 // ================================================================
 //
 // Calcula el vuelto en tiempo real mientras el usuario escribe
+//
+// @param {number} total - El total de la venta
 
-function calcularVuelto() {
-    // Obtener el monto pagado
-    const montoPagado = parseFloat(document.getElementById('monto-pagado').value) || 0;
-    
-    // Obtener el total de la venta
-    const totalTexto = document.getElementById('total').textContent.replace('$', '');
-    const total = parseFloat(totalTexto);
-    
-    // Calcular el vuelto
+function calcularVueltoModal(total) {
+    const montoPagado = parseFloat(document.getElementById('monto-pagado-input').value) || 0;
     const vuelto = montoPagado - total;
     
-    // Mostrar el vuelto
-    const elementoVuelto = document.getElementById('vuelto-calculado');
-    elementoVuelto.textContent = `$${vuelto.toFixed(2)}`;
+    const vueltoElemento = document.getElementById('modal-vuelto');
+    vueltoElemento.textContent = vuelto >= 0 ? formatearPrecio(vuelto) : '0';
     
-    // Cambiar el color según si es positivo o negativo
+    // Cambiar color si es negativo
     if (vuelto < 0) {
-        elementoVuelto.classList.remove('text-success');
-        elementoVuelto.classList.add('text-danger');
+        vueltoElemento.classList.add('text-danger');
+        vueltoElemento.classList.remove('text-success');
     } else {
-        elementoVuelto.classList.remove('text-danger');
-        elementoVuelto.classList.add('text-success');
+        vueltoElemento.classList.add('text-success');
+        vueltoElemento.classList.remove('text-danger');
     }
 }
 
 
 // ================================================================
-// =          FUNCIÓN: CONFIRMAR Y PROCESAR VENTA                 =
+// =              FUNCIÓN: PROCESAR VENTA FINAL                   =
 // ================================================================
 //
-// Envía la venta al servidor para procesarla y guardarla
+// Envía la venta al servidor (Django) vía AJAX
 
-async function confirmarVenta() {
-    // --- Paso 1: Obtener todos los datos necesarios ---
+function procesarVenta() {
+    // --- Validaciones finales ---
     
     const clienteId = document.getElementById('select-cliente').value;
-    const canalVenta = document.querySelector('input[name="canal_venta"]:checked').value;
-    const montoPagado = parseFloat(document.getElementById('monto-pagado').value) || 0;
-    const descuentoGlobal = parseFloat(document.getElementById('descuento-global').value) || 0;
-    
-    // --- Paso 2: Validaciones ---
-    
     if (!clienteId) {
-        mostrarError('errores-venta', 'Debes seleccionar un cliente');
+        mostrarAlerta('error', 'Debe seleccionar un cliente');
         return;
     }
     
     if (carrito.length === 0) {
-        mostrarError('errores-venta', 'El carrito está vacío');
+        mostrarAlerta('error', 'El carrito está vacío');
         return;
     }
     
-    // Obtener el total
-    const totalTexto = document.getElementById('total').textContent.replace('$', '');
-    const total = parseFloat(totalTexto);
+    // Validar monto pagado
+    const montoPagado = parseFloat(document.getElementById('monto-pagado-input').value);
+    if (isNaN(montoPagado) || montoPagado <= 0) {
+        mostrarAlerta('error', 'Debe ingresar el monto pagado por el cliente');
+        return;
+    }
     
+    // Calcular total
+    let subtotal = 0;
+    carrito.forEach(item => {
+        const precioConDescuento = item.precio * (1 - item.descuento / 100);
+        subtotal += precioConDescuento * item.cantidad;
+    });
+    const iva = subtotal * 0.19;
+    const total = subtotal + iva;
+    
+    // Validar que el pago sea suficiente
     if (montoPagado < total) {
-        mostrarError('errores-venta', `Monto insuficiente. Falta: $${(total - montoPagado).toFixed(2)}`);
+        mostrarAlerta('error', 'El monto pagado es insuficiente');
         return;
     }
     
-    // --- Paso 3: Preparar los datos para enviar ---
+    // Deshabilitar el botón para evitar doble click
+    const btnConfirmar = document.getElementById('btn-confirmar-venta-final');
+    btnConfirmar.disabled = true;
+    btnConfirmar.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Procesando...';
+    
+    // --- Preparar datos para enviar ---
+    // Preparar el carrito en el formato que espera Django
+    const carritoParaEnviar = carrito.map(item => ({
+        producto_id: item.producto_id,
+        cantidad: item.cantidad,
+        precio_unitario: item.precio,
+        descuento: item.descuento
+    }));
     
     const datosVenta = {
-        cliente_id: parseInt(clienteId),
-        canal_venta: canalVenta,
-        carrito: carrito,
+        cliente_id: clienteId,
+        canal_venta: tipoVenta,  // 'presencial' o 'delivery'
+        carrito: carritoParaEnviar,
         monto_pagado: montoPagado,
-        descuento: descuentoGlobal
+        descuento: 0  // Descuento global (no lo usamos, solo descuentos individuales)
     };
     
-    // --- Paso 4: Deshabilitar el botón para evitar doble clic ---
-    const btnConfirmar = document.getElementById('btn-confirmar-venta');
-    btnConfirmar.disabled = true;
-    btnConfirmar.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Procesando...';
-    
-    try {
-        // --- Paso 5: Enviar la venta al servidor (AJAX) ---
-        
-        const response = await fetch('/api/procesar-venta/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': getCookie('csrftoken')  // Token de seguridad de Django
-            },
-            body: JSON.stringify(datosVenta)
-        });
-        
-        const resultado = await response.json();
-        
-        // --- Paso 6: Manejar la respuesta ---
-        
-        if (resultado.success) {
-            // ¡Venta exitosa!
-            
+    // --- Enviar petición AJAX a Django ---
+    fetch('/api/procesar-venta/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken
+        },
+        body: JSON.stringify(datosVenta)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
             // Cerrar el modal
-            bootstrap.Modal.getInstance(document.getElementById('modalFinalizarVenta')).hide();
+            const modal = bootstrap.Modal.getInstance(document.getElementById('modal-confirmar-venta'));
+            modal.hide();
             
-            // Mostrar mensaje de éxito
-            mostrarAlerta('success', `¡Venta procesada! Folio: ${resultado.venta.folio}`);
+            // Obtener información de la venta procesada
+            const ventaInfo = data.venta || {};
+            const ventaId = ventaInfo.id || data.id;
+            const folio = ventaInfo.folio || 'N/A';
             
-            // Limpiar el carrito
+            // Generar comprobante
+            generarComprobante(ventaId, folio, datosVenta);
+            
+            // Limpiar carrito
             carrito = [];
             renderizarCarrito();
             actualizarTotales();
             
-            // Limpiar selección de cliente
+            // Mostrar mensaje de éxito
+            mostrarAlerta('success', `✓ Venta procesada exitosamente. Folio: ${folio}`);
+            
+            // Resetear formulario
             document.getElementById('select-cliente').value = '';
-            
-            // Opcionalmente, mostrar un resumen de la venta
-            mostrarResumenVenta(resultado.venta);
-            
+            seleccionarTipoVenta('presencial');
         } else {
-            // Hubo un error
-            mostrarError('errores-venta', resultado.mensaje);
+            // Mostrar error
+            mostrarAlerta('error', data.mensaje || 'Error al procesar la venta');
         }
-        
-    } catch (error) {
-        // Error de conexión o del servidor
-        console.error('Error al procesar la venta:', error);
-        mostrarError('errores-venta', 'Error de conexión. Intenta nuevamente.');
-        
-    } finally {
-        // Rehabilitar el botón
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        mostrarAlerta('error', 'Error de conexión con el servidor');
+    })
+    .finally(() => {
+        // Re-habilitar el botón
         btnConfirmar.disabled = false;
-        btnConfirmar.innerHTML = '<i class="bi bi-check-circle"></i> Confirmar Venta';
-    }
+        btnConfirmar.textContent = 'Confirmar Venta';
+    });
 }
 
 
 // ================================================================
-// =          FUNCIÓN: GUARDAR NUEVO CLIENTE (AJAX)               =
+// =              FUNCIÓN: GENERAR COMPROBANTE                    =
 // ================================================================
 //
-// Envía los datos del nuevo cliente al servidor
+// Genera un comprobante de venta en formato de texto y lo descarga
+//
+// @param {number} ventaId - ID de la venta registrada
+// @param {string} folio - Folio de la venta
+// @param {object} datosVenta - Objeto con toda la información de la venta
 
-async function guardarNuevoCliente() {
-    // --- Paso 1: Obtener los datos del formulario ---
+function generarComprobante(ventaId, folio, datosVenta) {
+    // Obtener fecha y hora actual
+    const ahora = new Date();
+    const fecha = ahora.toLocaleDateString('es-CL');
+    const hora = ahora.toLocaleTimeString('es-CL');
     
-    const nombre = document.getElementById('cliente-nombre').value.trim();
-    const rut = document.getElementById('cliente-rut').value.trim();
-    const correo = document.getElementById('cliente-correo').value.trim();
+    // Obtener nombre del cliente
+    const selectCliente = document.getElementById('select-cliente');
+    const nombreCliente = selectCliente.options[selectCliente.selectedIndex].text;
     
-    // --- Paso 2: Validación básica ---
+    // Calcular totales
+    let subtotal = 0;
+    carrito.forEach(item => {
+        const precioConDescuento = item.precio * (1 - item.descuento / 100);
+        subtotal += precioConDescuento * item.cantidad;
+    });
+    const iva = subtotal * 0.19;
+    const total = subtotal + iva;
     
-    if (!nombre) {
-        mostrarError('errores-cliente', 'El nombre es obligatorio');
-        return;
-    }
-    
-    // --- Paso 3: Preparar los datos ---
-    
-    const datosCliente = {
-        nombre: nombre,
-        rut: rut,
-        correo: correo
-    };
-    
-    // --- Paso 4: Deshabilitar el botón ---
-    const btnGuardar = document.getElementById('btn-guardar-cliente');
-    btnGuardar.disabled = true;
-    btnGuardar.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Guardando...';
-    
-    try {
-        // --- Paso 5: Enviar al servidor ---
+    // Construir el texto del comprobante
+    let comprobante = `
+═══════════════════════════════════════════════
+         LA FORNERÍA - COMPROBANTE DE VENTA
+═══════════════════════════════════════════════
+
+FOLIO: ${folio}
+FECHA: ${fecha}
+HORA: ${hora}
+TIPO: ${tipoVenta.toUpperCase()}
+
+───────────────────────────────────────────────
+CLIENTE: ${nombreCliente}
+───────────────────────────────────────────────
+
+PRODUCTOS:
+`;
+
+    // Agregar cada producto del carrito
+    carrito.forEach(item => {
+        const precioConDescuento = item.precio * (1 - item.descuento / 100);
+        const subtotalItem = precioConDescuento * item.cantidad;
         
-        const response = await fetch('/api/agregar-cliente/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': getCookie('csrftoken')
-            },
-            body: JSON.stringify(datosCliente)
-        });
+        comprobante += `
+  ${item.nombre}
+  Cantidad: ${item.cantidad} x $${formatearPrecio(item.precio)}`;
         
-        const resultado = await response.json();
-        
-        // --- Paso 6: Manejar la respuesta ---
-        
-        if (resultado.success) {
-            // ¡Cliente guardado!
-            
-            // Cerrar el modal
-            bootstrap.Modal.getInstance(document.getElementById('modalNuevoCliente')).hide();
-            
-            // Limpiar el formulario
-            document.getElementById('form-nuevo-cliente').reset();
-            
-            // Agregar el cliente al selector
-            const selectCliente = document.getElementById('select-cliente');
-            const option = document.createElement('option');
-            option.value = resultado.cliente.id;
-            option.textContent = `${resultado.cliente.nombre}${resultado.cliente.rut ? ' (' + resultado.cliente.rut + ')' : ''}`;
-            selectCliente.appendChild(option);
-            
-            // Seleccionar automáticamente el nuevo cliente
-            selectCliente.value = resultado.cliente.id;
-            
-            // Mostrar mensaje de éxito
-            mostrarAlerta('success', resultado.mensaje);
-            
-        } else {
-            // Mostrar errores
-            let mensajeError = resultado.mensaje;
-            if (resultado.errores) {
-                mensajeError += '<ul>';
-                for (let campo in resultado.errores) {
-                    mensajeError += `<li>${resultado.errores[campo].join(' ')}</li>`;
-                }
-                mensajeError += '</ul>';
-            }
-            mostrarError('errores-cliente', mensajeError);
+        if (item.descuento > 0) {
+            comprobante += ` (-${item.descuento}%)`;
         }
         
-    } catch (error) {
-        console.error('Error al guardar cliente:', error);
-        mostrarError('errores-cliente', 'Error de conexión. Intenta nuevamente.');
-        
-    } finally {
-        // Rehabilitar el botón
-        btnGuardar.disabled = false;
-        btnGuardar.innerHTML = '<i class="bi bi-save"></i> Guardar Cliente';
-    }
+        comprobante += `
+  Subtotal: $${formatearPrecio(subtotalItem)}
+`;
+    });
+    
+    // Calcular vuelto
+    const vuelto = datosVenta.monto_pagado - total;
+    
+    // Agregar totales
+    comprobante += `
+───────────────────────────────────────────────
+  SUBTOTAL:        $${formatearPrecio(subtotal)}
+  IVA (19%):       $${formatearPrecio(iva)}
+───────────────────────────────────────────────
+  TOTAL:           $${formatearPrecio(total)}
+───────────────────────────────────────────────
+  PAGO:            $${formatearPrecio(datosVenta.monto_pagado)}
+  VUELTO:          $${formatearPrecio(vuelto)}
+═══════════════════════════════════════════════
+
+          ¡Gracias por su compra!
+      Visite nuestras redes sociales
+             @LaForneria
+
+═══════════════════════════════════════════════
+`;
+    
+    // Crear un archivo de texto y descargarlo
+    const blob = new Blob([comprobante], { type: 'text/plain;charset=utf-8' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    const fechaArchivo = fecha.replace(/\//g, '-');
+    a.download = `Forneria_${folio}_${fechaArchivo}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+    
+    console.log('📄 Comprobante generado y descargado:', folio);
 }
 
 
 // ================================================================
-// =              FUNCIONES AUXILIARES (HELPERS)                  =
+// =              FUNCIÓN: FILTRAR PRODUCTOS                      =
 // ================================================================
+//
+// Filtra los productos mostrados según el texto de búsqueda
+//
+// @param {string} textoBusqueda - Texto ingresado por el usuario
 
-/**
- * Muestra una alerta temporal en la parte superior
- * 
- * @param {string} tipo - 'success', 'error', 'warning', 'info'
- * @param {string} mensaje - El mensaje a mostrar
- */
+function filtrarProductos(textoBusqueda) {
+    // Convertir a minúsculas para búsqueda case-insensitive
+    const busqueda = textoBusqueda.toLowerCase();
+    
+    // Obtener todas las tarjetas de productos
+    const productos = document.querySelectorAll('.producto-card');
+    
+    productos.forEach(card => {
+        // Obtener el nombre del producto
+        const nombreProducto = card.dataset.productoNombre.toLowerCase();
+        
+        // Mostrar u ocultar según coincidencia
+        if (nombreProducto.includes(busqueda)) {
+            card.parentElement.style.display = '';  // Mostrar
+        } else {
+            card.parentElement.style.display = 'none';  // Ocultar
+        }
+    });
+}
+
+
+// ================================================================
+// =              FUNCIÓN: MOSTRAR ALERTA (TOAST)                 =
+// ================================================================
+//
+// Muestra un mensaje toast en la esquina de la pantalla
+// Solo muestra un toast a la vez para evitar saturar la pantalla
+//
+// @param {string} tipo - 'success', 'error', 'warning', 'info'
+// @param {string} mensaje - Texto a mostrar
+
 function mostrarAlerta(tipo, mensaje) {
-    // Mapear tipos a clases de Bootstrap
-    const claseBootstrap = {
-        'success': 'success',
-        'error': 'danger',
-        'warning': 'warning',
-        'info': 'info'
+    // Mapeo de tipos a clases de Bootstrap
+    const clases = {
+        'success': 'bg-success text-white',
+        'error': 'bg-danger text-white',
+        'warning': 'bg-warning text-dark',
+        'info': 'bg-info text-white'
     };
     
-    // Crear el HTML de la alerta
-    const alertaHTML = `
-        <div class="alert alert-${claseBootstrap[tipo]} alert-dismissible fade show position-fixed top-0 end-0 m-3" 
-             role="alert" 
-             style="z-index: 9999; max-width: 400px;">
-            ${mensaje}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    // Mapeo de tipos a iconos
+    const iconos = {
+        'success': 'bi-check-circle-fill',
+        'error': 'bi-x-circle-fill',
+        'warning': 'bi-exclamation-triangle-fill',
+        'info': 'bi-info-circle-fill'
+    };
+    
+    // Buscar o crear el contenedor de toasts
+    let contenedorToasts = document.getElementById('toast-container');
+    if (!contenedorToasts) {
+        contenedorToasts = document.createElement('div');
+        contenedorToasts.id = 'toast-container';
+        contenedorToasts.className = 'toast-container position-fixed top-0 end-0 p-3';
+        contenedorToasts.style.zIndex = '9999';
+        document.body.appendChild(contenedorToasts);
+    }
+    
+    // IMPORTANTE: Limpiar todos los toasts anteriores para evitar saturación
+    contenedorToasts.innerHTML = '';
+    
+    // Crear el elemento toast
+    const toastHTML = `
+        <div class="toast align-items-center ${clases[tipo]} border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    <i class="bi ${iconos[tipo]} me-2"></i>
+                    ${mensaje}
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+            </div>
         </div>
     `;
     
-    // Agregar la alerta al body
-    document.body.insertAdjacentHTML('beforeend', alertaHTML);
+    // Agregar el toast al contenedor
+    contenedorToasts.insertAdjacentHTML('beforeend', toastHTML);
     
-    // Eliminar la alerta automáticamente después de 5 segundos
-    setTimeout(() => {
-        const alertas = document.querySelectorAll('.alert');
-        if (alertas.length > 0) {
-            alertas[alertas.length - 1].remove();
+    // Obtener el toast recién creado y mostrarlo
+    const toastElement = contenedorToasts.lastElementChild;
+    const toast = new bootstrap.Toast(toastElement, {
+        autohide: true,
+        delay: 3000  // 3 segundos
+    });
+    toast.show();
+    
+    // Eliminar el toast del DOM después de que se oculte
+    toastElement.addEventListener('hidden.bs.toast', function() {
+        toastElement.remove();
+        // Si no quedan más toasts, limpiar el contenedor
+        if (contenedorToasts.children.length === 0) {
+            contenedorToasts.innerHTML = '';
         }
-    }, 5000);
-}
-
-/**
- * Muestra un mensaje de error en un contenedor específico
- * 
- * @param {string} elementoId - ID del elemento donde mostrar el error
- * @param {string} mensaje - El mensaje de error
- */
-function mostrarError(elementoId, mensaje) {
-    const elemento = document.getElementById(elementoId);
-    if (elemento) {
-        elemento.innerHTML = mensaje;
-        elemento.classList.remove('d-none');
-    }
-}
-
-/**
- * Muestra un resumen de la venta procesada
- * 
- * @param {object} venta - Datos de la venta
- */
-function mostrarResumenVenta(venta) {
-    alert(`
-🎉 ¡VENTA EXITOSA! 🎉
-
-Folio: ${venta.folio}
-Fecha: ${venta.fecha}
-Total: $${venta.total.toFixed(2)}
-Vuelto: $${venta.vuelto.toFixed(2)}
-
-¡Gracias por su compra!
-    `);
-}
-
-/**
- * Obtiene una cookie por su nombre (necesario para el CSRF token de Django)
- * 
- * @param {string} name - Nombre de la cookie
- * @returns {string} - Valor de la cookie
- */
-function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
-    }
-    return cookieValue;
+    });
 }
 
 
 // ================================================================
-// =                     FIN DEL ARCHIVO                          =
+// =              FUNCIÓN: AGREGAR CLIENTE RÁPIDO                 =
 // ================================================================
+//
+// Envía el formulario de cliente rápido vía AJAX
 
-console.log('✅ Sistema POS cargado correctamente');
+function agregarClienteRapido() {
+    const form = document.getElementById('form-cliente-rapido');
+    const formData = new FormData(form);
+    
+    // Enviar petición AJAX
+    fetch('/api/agregar-cliente/', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': csrfToken
+        },
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Cerrar el modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('modal-cliente-rapido'));
+            modal.hide();
+            
+            // Agregar el nuevo cliente al select
+            const selectCliente = document.getElementById('select-cliente');
+            const option = document.createElement('option');
+            option.value = data.cliente_id;
+            option.textContent = data.cliente_nombre;
+            option.selected = true;
+            selectCliente.appendChild(option);
+            
+            // Mostrar mensaje de éxito
+            mostrarAlerta('success', 'Cliente agregado correctamente');
+            
+            // Limpiar el formulario
+            form.reset();
+        } else {
+            // Mostrar errores
+            mostrarAlerta('error', data.mensaje || 'Error al agregar el cliente');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        mostrarAlerta('error', 'Error de conexión con el servidor');
+    });
+}
 
+
+// ================================================================
+// =                    FIN DEL ARCHIVO                           =
+// ================================================================

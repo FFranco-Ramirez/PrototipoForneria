@@ -1,8 +1,64 @@
 {% extends "base.html" %}
+{% load static %}
+
+{% block body_class %}dark-gold-theme{% endblock %}
+
 {% block contenido %}
-<div class="edit-product-container dark-gold-theme">
-  <div class="edit-header">
-    <h2>Editar Producto: {{ producto.nombre }}</h2>
+<div class="dashboard-main-container">
+    <nav class="dashboard-sidebar">
+        <div class="sidebar-header">
+            <h2 class="sidebar-title">Fornería</h2>
+        </div>
+        <ul class="sidebar-menu">
+            <li class="sidebar-item">
+                <a href="{% url 'dashboard' %}" class="sidebar-link">
+                    <span>📊</span> Dashboard
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="{% url 'pos' %}" class="sidebar-link">
+                    <span>🛒</span> Ventas (POS)
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="{% url 'inventario' %}" class="sidebar-link active">
+                    <span>📦</span> Inventario
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="{% url 'agregar_producto' %}" class="sidebar-link">
+                    <span>➕</span> Agregar Producto
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="{% url 'alertas_list' %}" class="sidebar-link">
+                    <span>🔔</span> Alertas
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="{% url 'proximamente_feature' 'reportes' %}" class="sidebar-link">
+                    <span>📈</span> Reportes
+                </a>
+            </li>
+            {% if request.user.is_authenticated and request.user.is_superuser %}
+            <li class="sidebar-item">
+                <a href="{% url 'usuarios_list' %}" class="sidebar-link">
+                    <span>👥</span> Usuarios
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+        <div class="sidebar-footer">
+            <a href="{% url 'proximamente_feature' 'configuracion' %}" class="sidebar-link">
+                <span>⚙️</span> Configuración
+            </a>
+        </div>
+    </nav>
+
+    <div class="dashboard-content-wrapper">
+        <div class="edit-product-container dark-gold-theme">
+          <div class="edit-header">
+            <h2>Editar Producto: {{ producto.nombre }}</h2>
     <a href="{% url 'inventario' %}" class="btn btn-link back-link">Volver al Inventario</a>
   </div>
 
@@ -116,5 +172,7 @@
       <a href="{% url 'inventario' %}" class="btn btn-link">Cancelar</a>
     </div>
   </form>
+        </div>
+    </div>
 </div>
 {% endblock %}

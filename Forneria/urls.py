@@ -40,8 +40,16 @@ from ventas.views import (
 )
 
 # Vistas de APIs para el dashboard
-from ventas.views.views_vencimientos import productos_por_vencer_api
-from ventas.views.view_dashboard import perdida_siete_dias
+from ventas.views.views_vencimientos import (
+    productos_por_vencer_api,
+    productos_por_vencer_14_dias_api,
+    productos_por_vencer_30_dias_api
+)
+from ventas.views.view_dashboard import (
+    perdida_siete_dias,
+    perdida_catorce_dias,
+    perdida_treinta_dias
+)
 
 # ================================================================
 # =                     DEFINICIÓN DE RUTAS                      =
@@ -109,11 +117,15 @@ urlpatterns = [
     # ============================================================
     # APIs PARA EL DASHBOARD
     # ============================================================
-    # API que retorna productos próximos a vencer
+    # APIs de productos próximos a vencer
     path('api/proximos-vencimientos/', productos_por_vencer_api, name='api_proximos_vencimientos'),
+    path('api/proximos-vencimientos-14/', productos_por_vencer_14_dias_api, name='api_proximos_vencimientos_14'),
+    path('api/proximos-vencimientos-30/', productos_por_vencer_30_dias_api, name='api_proximos_vencimientos_30'),
     
-    # API que calcula la pérdida potencial por vencimiento
+    # APIs de pérdida potencial por vencimiento
     path('api/perdida-potencial/', perdida_siete_dias, name='api_perdida_potencial'),
+    path('api/perdida-potencial-14/', perdida_catorce_dias, name='api_perdida_potencial_14'),
+    path('api/perdida-potencial-30/', perdida_treinta_dias, name='api_perdida_potencial_30'),
     
     # ============================================================
     # SISTEMA DE ALERTAS (NUEVO)

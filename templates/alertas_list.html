@@ -1,35 +1,10 @@
-{# 
-================================================================
-=                                                              =
-=         TEMPLATE: LISTA DE ALERTAS CON FILTROS              =
-=                                                              =
-================================================================
-
-Este template muestra el historial de alertas de vencimiento de productos.
-
-FUNCIONALIDADES:
-- Listado de alertas ordenadas por urgencia y fecha
-- Filtros por tipo, estado, producto y fecha
-- Cards con estadísticas (cantidad por tipo y estado)
-- Botones para crear, editar, eliminar alertas
-- Cambiar estado de alertas (activa, resuelta, ignorada)
-- Tema dorado y negro consistente con el resto del sitio
-#}
-
 {% extends "base.html" %}
 {% load static %}
 
 {% block body_class %}dark-gold-theme{% endblock %}
 
-{# ==================== CONTENIDO ==================== #}
 {% block contenido %}
 <div class="dashboard-main-container">
-    
-    {# ==================== SIDEBAR (NAVEGACIÓN) ==================== #}
-    {# 
-        Sidebar reutilizada del dashboard para mantener la navegación
-        consistente en todo el sitio
-    #}
     <nav class="dashboard-sidebar">
         <div class="sidebar-header">
             <h2 class="sidebar-title">Fornería</h2>
@@ -55,7 +30,6 @@ FUNCIONALIDADES:
                     <span>➕</span> Agregar Producto
                 </a>
             </li>
-            {# NUEVA SECCIÓN: Alertas (activa) #}
             <li class="sidebar-item">
                 <a href="{% url 'alertas_list' %}" class="sidebar-link active">
                     <span>🔔</span> Alertas
@@ -81,10 +55,7 @@ FUNCIONALIDADES:
         </div>
     </nav>
     
-    {# ==================== CONTENIDO PRINCIPAL ==================== #}
     <div class="dashboard-content-wrapper">
-        
-        {# ==================== ENCABEZADO ==================== #}
         <header class="dashboard-header">
             <h1 class="dashboard-main-title">
                 <i class="bi bi-bell"></i> Sistema de Alertas
@@ -106,7 +77,6 @@ FUNCIONALIDADES:
             </div>
         </header>
         
-        {# ==================== MENSAJES ==================== #}
         {% if messages %}
             <div class="px-4 py-3">
                 {% for message in messages %}
@@ -118,115 +88,99 @@ FUNCIONALIDADES:
             </div>
         {% endif %}
         
-        {# ==================== CONTENIDO ==================== #}
         <main class="dashboard-content">
-            
-            {# ==================== TARJETAS DE ESTADÍSTICAS ==================== #}
-            {#
-                Cards que muestran el resumen de alertas por tipo y estado
-                Similar a las del dashboard principal
-            #}
             <div class="dashboard-metrics-grid mb-4">
-                {# Card: Alertas Rojas #}
-                <div class="dashboard-metric-card border-danger">
+                <div class="dashboard-metric-card border-danger" style="background-color: var(--bg-alt); color: var(--text);">
                     <h3 class="metric-card-title text-danger">
                         <i class="bi bi-exclamation-triangle-fill"></i> Alertas Rojas
                     </h3>
-                    <p class="metric-card-value text-danger">{{ stats_tipo.roja }}</p>
-                    <p class="metric-card-subtitle">0-13 días (Urgente)</p>
+                    <p class="metric-card-value text-danger">{{ stats_tipo.roja|default:0 }}</p>
+                    <p class="metric-card-subtitle" style="color: var(--muted);">0-13 días (Urgente)</p>
                 </div>
                 
-                {# Card: Alertas Amarillas #}
-                <div class="dashboard-metric-card border-warning">
+                <div class="dashboard-metric-card border-warning" style="background-color: var(--bg-alt); color: var(--text);">
                     <h3 class="metric-card-title text-warning">
                         <i class="bi bi-exclamation-circle-fill"></i> Alertas Amarillas
                     </h3>
-                    <p class="metric-card-value text-warning">{{ stats_tipo.amarilla }}</p>
-                    <p class="metric-card-subtitle">14-29 días (Precaución)</p>
+                    <p class="metric-card-value text-warning">{{ stats_tipo.amarilla|default:0 }}</p>
+                    <p class="metric-card-subtitle" style="color: var(--muted);">14-29 días (Precaución)</p>
                 </div>
                 
-                {# Card: Alertas Verdes #}
-                <div class="dashboard-metric-card border-success">
+                <div class="dashboard-metric-card border-success" style="background-color: var(--bg-alt); color: var(--text);">
                     <h3 class="metric-card-title text-success">
                         <i class="bi bi-info-circle-fill"></i> Alertas Verdes
                     </h3>
-                    <p class="metric-card-value text-success">{{ stats_tipo.verde }}</p>
-                    <p class="metric-card-subtitle">30+ días (OK)</p>
+                    <p class="metric-card-value text-success">{{ stats_tipo.verde|default:0 }}</p>
+                    <p class="metric-card-subtitle" style="color: var(--muted);">30+ días (OK)</p>
                 </div>
                 
-                {# Card: Total Activas #}
-                <div class="dashboard-metric-card">
+                <div class="dashboard-metric-card" style="background-color: var(--bg-alt); color: var(--text);">
                     <h3 class="metric-card-title" style="color: var(--gold);">
                         <i class="bi bi-bell-fill"></i> Alertas Activas
                     </h3>
-                    <p class="metric-card-value" style="color: var(--gold);">{{ stats_estado.activa }}</p>
-                    <p class="metric-card-subtitle">Pendientes de acción</p>
+                    <p class="metric-card-value" style="color: var(--gold);">{{ stats_estado.activa|default:0 }}</p>
+                    <p class="metric-card-subtitle" style="color: var(--muted);">Pendientes de acción</p>
                 </div>
             </div>
             
-            {# ==================== BOTONES DE ACCIÓN PRINCIPAL ==================== #}
             <div class="mb-4 d-flex gap-2 flex-wrap">
-                {# Botón: Crear nueva alerta #}
                 <a href="{% url 'alerta_crear' %}" class="btn btn-primary">
                     <i class="bi bi-plus-circle"></i> Nueva Alerta
                 </a>
                 
-                {# Botón: Generar alertas automáticas #}
                 <button type="button" class="btn btn-success" id="btn-generar-alertas">
                     <i class="bi bi-arrow-repeat"></i> Generar Alertas Automáticas
                 </button>
                 
-                {# Botón: Volver al inventario #}
                 <a href="{% url 'inventario' %}" class="btn btn-outline-secondary">
                     <i class="bi bi-arrow-left"></i> Volver al Inventario
                 </a>
             </div>
             
-            {# ==================== PANEL DE FILTROS ==================== #}
-            {#
-                Formulario de filtros para buscar alertas específicas
-                Similar al filtro del inventario
-            #}
-            <div class="card mb-4 shadow-sm">
+            <div class="card mb-4 shadow-sm" style="background-color: var(--bg-alt); border: 1px solid var(--border);">
                 <div class="card-header" style="background-color: var(--gold); color: #000;">
                     <h5 class="mb-0">
                         <i class="bi bi-funnel"></i> Filtros de Búsqueda
                     </h5>
                 </div>
-                <div class="card-body">
+                <div class="card-body" style="background-color: var(--bg-alt);">
                     <form method="GET" action="{% url 'alertas_list' %}" id="form-filtros">
                         <div class="row g-3">
-                            {# Filtro: Tipo de alerta #}
                             <div class="col-md-3">
-                                <label class="form-label fw-bold">Tipo de Alerta:</label>
-                                {{ form_filtro.tipo_alerta }}
+                                <label class="form-label fw-bold" style="color: var(--gold);">Tipo de Alerta:</label>
+                                <div class="form-control-wrapper">
+                                    {{ form_filtro.tipo_alerta }}
+                                </div>
                             </div>
                             
-                            {# Filtro: Estado #}
                             <div class="col-md-3">
-                                <label class="form-label fw-bold">Estado:</label>
-                                {{ form_filtro.estado }}
+                                <label class="form-label fw-bold" style="color: var(--gold);">Estado:</label>
+                                <div class="form-control-wrapper">
+                                    {{ form_filtro.estado }}
+                                </div>
                             </div>
                             
-                            {# Filtro: Fecha desde #}
                             <div class="col-md-3">
-                                <label class="form-label fw-bold">Fecha Desde:</label>
-                                {{ form_filtro.fecha_desde }}
+                                <label class="form-label fw-bold" style="color: var(--gold);">Fecha Desde:</label>
+                                <div class="form-control-wrapper">
+                                    {{ form_filtro.fecha_desde }}
+                                </div>
                             </div>
                             
-                            {# Filtro: Fecha hasta #}
                             <div class="col-md-3">
-                                <label class="form-label fw-bold">Fecha Hasta:</label>
-                                {{ form_filtro.fecha_hasta }}
+                                <label class="form-label fw-bold" style="color: var(--gold);">Fecha Hasta:</label>
+                                <div class="form-control-wrapper">
+                                    {{ form_filtro.fecha_hasta }}
+                                </div>
                             </div>
                             
-                            {# Filtro: Búsqueda por producto #}
                             <div class="col-md-9">
-                                <label class="form-label fw-bold">Buscar Producto:</label>
-                                {{ form_filtro.producto }}
+                                <label class="form-label fw-bold" style="color: var(--gold);">Buscar Producto:</label>
+                                <div class="form-control-wrapper">
+                                    {{ form_filtro.producto }}
+                                </div>
                             </div>
                             
-                            {# Botones del formulario #}
                             <div class="col-md-3 d-flex align-items-end gap-2">
                                 <button type="submit" class="btn btn-primary flex-grow-1">
                                     <i class="bi bi-search"></i> Filtrar
@@ -240,18 +194,16 @@ FUNCIONALIDADES:
                 </div>
             </div>
             
-            {# ==================== TABLA DE ALERTAS ==================== #}
-            <div class="card shadow-sm">
-                <div class="card-header" style="background-color: var(--bg-alt);">
+            <div class="card shadow-sm" style="background-color: var(--bg-alt); border: 1px solid var(--border);">
+                <div class="card-header" style="background-color: var(--bg-alt); border-bottom: 2px solid var(--gold);">
                     <h5 class="mb-0" style="color: var(--text);">
                         <i class="bi bi-list-ul"></i> Historial de Alertas 
                         <span class="badge" style="background-color: var(--gold); color: #000;">
-                            {{ total_alertas }} alertas
+                            {{ total_alertas|default:0 }} alertas
                         </span>
                     </h5>
                 </div>
-                <div class="card-body p-0">
-                    {# Verificar si hay alertas #}
+                <div class="card-body p-0" style="background-color: var(--bg);">
                     {% if alertas %}
                         <div class="table-responsive">
                             <table class="table table-hover table-striped mb-0 alertas-table">
@@ -269,41 +221,30 @@ FUNCIONALIDADES:
                                 <tbody>
                                     {% for alerta in alertas %}
                                     <tr class="alerta-row" data-tipo="{{ alerta.tipo_alerta }}">
-                                        {# Columna: Tipo (icono con color) #}
                                         <td class="text-center">
                                             <i class="bi {{ alerta.get_icono }} text-{{ alerta.get_color_badge }} fs-4" 
                                                title="{{ alerta.get_tipo_alerta_display }}"></i>
                                         </td>
-                                        
-                                        {# Columna: Mensaje #}
                                         <td>
                                             <strong>{{ alerta.mensaje }}</strong>
                                         </td>
-                                        
-                                        {# Columna: Producto #}
                                         <td>
                                             {{ alerta.productos.nombre }}
                                             {% if alerta.productos.marca %}
                                                 <br><small class="text-muted">{{ alerta.productos.marca }}</small>
                                             {% endif %}
                                         </td>
-                                        
-                                        {# Columna: Días hasta vencer #}
                                         <td class="text-center">
                                             <span class="badge bg-{{ alerta.get_color_badge }}">
                                                 {{ alerta.get_dias_hasta_vencer }} días
                                             </span>
                                         </td>
-                                        
-                                        {# Columna: Fecha generada #}
                                         <td>
                                             <small>
                                                 {{ alerta.fecha_generada|date:"d/m/Y" }}<br>
                                                 {{ alerta.fecha_generada|date:"H:i" }}
                                             </small>
                                         </td>
-                                        
-                                        {# Columna: Estado #}
                                         <td>
                                             {% if alerta.estado == 'activa' %}
                                                 <span class="badge bg-primary">Activa</span>
@@ -313,25 +254,18 @@ FUNCIONALIDADES:
                                                 <span class="badge bg-secondary">Ignorada</span>
                                             {% endif %}
                                         </td>
-                                        
-                                        {# Columna: Acciones #}
                                         <td>
                                             <div class="btn-group btn-group-sm" role="group">
-                                                {# Botón: Editar #}
                                                 <a href="{% url 'alerta_editar' alerta.id %}" 
                                                    class="btn btn-outline-primary btn-sm"
                                                    title="Editar alerta">
                                                     <i class="bi bi-pencil"></i>
                                                 </a>
-                                                
-                                                {# Botón: Eliminar #}
                                                 <a href="{% url 'alerta_eliminar' alerta.id %}" 
                                                    class="btn btn-outline-danger btn-sm"
                                                    title="Eliminar alerta">
                                                     <i class="bi bi-trash"></i>
                                                 </a>
-                                                
-                                                {# Botón: Cambiar estado (dropdown) #}
                                                 <div class="btn-group btn-group-sm" role="group">
                                                     <button type="button" 
                                                             class="btn btn-outline-secondary btn-sm dropdown-toggle" 
@@ -373,15 +307,22 @@ FUNCIONALIDADES:
                             </table>
                         </div>
                     {% else %}
-                        {# No hay alertas #}
-                        <div class="text-center py-5">
-                            <i class="bi bi-bell-slash text-muted" style="font-size: 4rem;"></i>
-                            <p class="text-muted mt-3">
+                        <div class="text-center py-5" style="background-color: var(--bg); color: var(--text);">
+                            <i class="bi bi-bell-slash" style="font-size: 4rem; color: var(--muted);"></i>
+                            <p class="mt-3" style="color: var(--muted); font-size: 1.1rem;">
                                 No se encontraron alertas con los filtros aplicados.
                             </p>
-                            <a href="{% url 'alertas_list' %}" class="btn btn-primary mt-2">
-                                Ver todas las alertas
-                            </a>
+                            <p style="color: var(--text); margin-top: 1rem;">
+                                <strong>¿Quieres generar alertas automáticamente?</strong>
+                            </p>
+                            <div class="d-flex gap-2 justify-content-center mt-3">
+                                <button type="button" class="btn btn-success" id="btn-generar-alertas-vacio">
+                                    <i class="bi bi-arrow-repeat"></i> Generar Alertas Automáticas
+                                </button>
+                                <a href="{% url 'alertas_list' %}" class="btn btn-outline-secondary">
+                                    <i class="bi bi-x-circle"></i> Limpiar Filtros
+                                </a>
+                            </div>
                         </div>
                     {% endif %}
                 </div>
@@ -390,12 +331,10 @@ FUNCIONALIDADES:
         </main>
     </div>
 </div>
+{% endblock %}
 
-{# ==================== JAVASCRIPT ==================== #}
 {% block javascripts %}
 <script src="{% static 'js/alertas.js' %}"></script>
-
-{# Script para el menú de usuario (reutilizado del dashboard) #}
 <script>
     const userMenuButton = document.getElementById('userMenuButton');
     const userMenu = document.getElementById('userMenu');
@@ -414,8 +353,21 @@ FUNCIONALIDADES:
             }
         });
     }
-</script>
-{% endblock %}
 
+    // Script para el botón de generar alertas cuando la lista está vacía
+    const btnGenerarVacio = document.getElementById('btn-generar-alertas-vacio');
+    if (btnGenerarVacio) {
+        btnGenerarVacio.addEventListener('click', function() {
+            // Reutilizar la misma función del archivo alertas.js
+            const btnOriginal = document.getElementById('btn-generar-alertas');
+            if (btnOriginal) {
+                btnOriginal.click();
+            } else {
+                // Si no existe el botón original, hacer la llamada directamente
+                generarAlertasAutomaticas();
+            }
+        });
+    }
+</script>
 {% endblock %}
 

@@ -1,526 +1,803 @@
-/*
-================================================================
-=                                                              =
-=           ESTILOS PARA EL PUNTO DE VENTA (POS)               =
-=                                                              =
-================================================================
+/* ================================================================
+   =                                                              =
+   =           ESTILOS: PUNTO DE VENTA (POS)                      =
+   =                                                              =
+   ================================================================
 
-Este archivo contiene todos los estilos específicos para
-la página del Punto de Venta (POS).
-
-SECCIONES:
-1. Tarjetas de productos
-2. Carrito de compras
-3. Efectos hover e interacciones
-4. Estilos para modales
-5. Animaciones
+   Este archivo contiene todos los estilos CSS específicos
+   para la interfaz del Punto de Venta (POS).
+   
+   TEMA: Negro y Dorado (Dark Gold Theme)
+   - Fondo principal: #1a1a1a (negro oscuro)
+   - Acentos: #d4af37 (dorado) y #ffd700 (dorado claro)
+   - Texto: Blanco y grises
 */
 
 
-/* ============================================================
-   1. TARJETAS DE PRODUCTOS
-   ============================================================ */
+/* ================================================================
+   CONTENEDOR PRINCIPAL
+   ================================================================ */
 
-/*
-   Estas clases dan estilo a cada tarjeta de producto que se
-   muestra en la cuadrícula de productos disponibles.
-*/
-
-/* --- Contenedor de la tarjeta de producto --- */
-.producto-card {
-    /* Transición suave para el efecto hover */
-    /* Cuando pasamos el mouse, los cambios serán suaves (0.3 segundos) */
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    
-    /* Cursor tipo "mano" para indicar que es clickeable */
-    cursor: pointer;
-    
-    /* Borde sutil para definir los límites de la tarjeta */
-    border: 1px solid #e0e0e0;
-    
-    /* Bordes redondeados de 8 píxeles */
-    border-radius: 8px;
-    
-    /* Sombra ligera para dar efecto de profundidad */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+.pos-container {
+    background-color: #1a1a1a;
+    min-height: 100vh;
+    color: #ffffff;
 }
 
-/* --- Efecto al pasar el mouse sobre la tarjeta --- */
-.producto-card:hover {
-    /* Levanta la tarjeta ligeramente (efecto 3D) */
-    /* translateY(-5px) significa "mueve hacia arriba 5 píxeles" */
-    transform: translateY(-5px);
-    
-    /* Aumenta la sombra para dar más profundidad */
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    
-    /* Cambia el color del borde a dorado (color primario de Forneria) */
-    border-color: var(--gold, #D4AF37);
+/* Layout con Sidebar */
+.pos-container.d-flex {
+    display: flex !important;
+    flex-direction: row;
 }
 
-/* --- Botón "Agregar" dentro de la tarjeta --- */
-.producto-card .agregar-al-carrito {
-    /* Anima el cambio de color de fondo */
-    transition: background-color 0.2s ease;
-}
-
-/* --- Efecto al hacer clic en el botón (feedback visual) --- */
-.producto-card .agregar-al-carrito:active {
-    /* Reduce ligeramente el tamaño para dar sensación de "presión" */
-    transform: scale(0.95);
+.pos-container .main-content {
+    flex-grow: 1;
+    background-color: #1a1a1a;
+    overflow-x: hidden;
 }
 
 
-/* ============================================================
-   2. CARRITO DE COMPRAS
-   ============================================================ */
+/* ================================================================
+   SIDEBAR DEL DASHBOARD EN EL POS
+   ================================================================ */
 
-/*
-   Estilos para la sección del carrito que se muestra en
-   la columna derecha del POS.
-*/
-
-/* --- Contenedor principal del carrito --- */
-#carrito-items {
-    /* Altura máxima del contenedor */
-    max-height: 400px;
-    
-    /* Si hay muchos items, permite scroll vertical */
+.dashboard-sidebar {
+    width: 260px;
+    min-width: 260px;
+    background: linear-gradient(180deg, #1a1a1a, #0e0e0e);
+    color: #ffffff;
+    height: 100vh;
+    position: sticky;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 4px 0 15px rgba(0, 0, 0, 0.5);
     overflow-y: auto;
-    
-    /* Barra de scroll personalizada (solo en navegadores webkit como Chrome) */
-    scrollbar-width: thin;
-    scrollbar-color: #D4AF37 #f0f0f0;
 }
 
-/* --- Personalizar la barra de scroll (webkit) --- */
-#carrito-items::-webkit-scrollbar {
-    /* Ancho de la barra de scroll */
+/* Header del sidebar */
+.sidebar-header {
+    padding: 1.5rem 1rem;
+    text-align: center;
+    border-bottom: 2px solid #d4af37;
+    background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
+}
+
+.sidebar-header h4 {
+    color: #ffd700;
+    font-weight: bold;
+    font-size: 1.5rem;
+    margin: 0.5rem 0 0 0;
+}
+
+.sidebar-header i {
+    font-size: 2rem;
+    color: #d4af37;
+}
+
+/* Menú del sidebar */
+.sidebar-menu {
+    list-style: none;
+    padding: 1rem 0.5rem;
+    margin: 0;
+    flex-grow: 1;
+}
+
+.sidebar-menu li {
+    margin-bottom: 0.5rem;
+}
+
+.sidebar-menu a {
+    display: flex;
+    align-items: center;
+    padding: 0.8rem 1rem;
+    color: #ffffff;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.sidebar-menu a:hover {
+    background-color: rgba(212, 175, 55, 0.1);
+    color: #ffd700;
+    transform: translateX(5px);
+}
+
+.sidebar-menu li.active a {
+    background: linear-gradient(145deg, #d4af37, #c19b2e);
+    color: #1a1a1a;
+    font-weight: bold;
+    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+}
+
+.sidebar-menu a i {
+    margin-right: 0.8rem;
+    font-size: 1.2rem;
+    min-width: 24px;
+    text-align: center;
+}
+
+/* Footer del sidebar */
+.sidebar-footer {
+    padding: 1rem;
+    border-top: 1px solid #3a3a3a;
+    background-color: #0e0e0e;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.user-info i {
+    font-size: 2rem;
+    color: #d4af37;
+}
+
+.user-name {
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.user-role {
+    color: #888;
+    font-size: 0.8rem;
+}
+
+/* Scrollbar del sidebar */
+.dashboard-sidebar::-webkit-scrollbar {
     width: 6px;
 }
 
-#carrito-items::-webkit-scrollbar-track {
-    /* Color del fondo de la barra */
-    background: #f0f0f0;
+.dashboard-sidebar::-webkit-scrollbar-track {
+    background: #1a1a1a;
+}
+
+.dashboard-sidebar::-webkit-scrollbar-thumb {
+    background: #d4af37;
     border-radius: 3px;
 }
 
-#carrito-items::-webkit-scrollbar-thumb {
-    /* Color de la parte deslizable */
-    background: #D4AF37;
-    border-radius: 3px;
-}
-
-#carrito-items::-webkit-scrollbar-thumb:hover {
-    /* Color más oscuro al pasar el mouse */
-    background: #C5A028;
-}
-
-/* --- Items individuales dentro del carrito --- */
-.carrito-item {
-    /* Borde inferior sutil para separar items */
-    border-bottom: 1px solid #e0e0e0;
-    
-    /* Espacio interior */
-    padding: 12px;
-    
-    /* Transición para el efecto hover */
-    transition: background-color 0.2s ease;
-}
-
-/* --- Efecto hover en cada item del carrito --- */
-.carrito-item:hover {
-    /* Fondo gris muy claro al pasar el mouse */
-    background-color: #f8f9fa;
-}
-
-/* --- Último item no necesita borde inferior --- */
-.carrito-item:last-child {
-    border-bottom: none;
-}
-
-/* --- Botones de cantidad dentro del carrito --- */
-.input-group .btn {
-    /* Tamaño de fuente más pequeño para los botones +/- */
-    font-size: 0.875rem;
-    
-    /* Evita que el borde del botón se vea grueso */
-    border-width: 1px;
-}
-
-/* --- Input numérico de cantidad --- */
-.input-cantidad {
-    /* Quita las flechas del input numérico en Chrome y Safari */
-    -moz-appearance: textfield;
-    
-    /* Ancho fijo para que no se mueva */
-    width: 60px;
-    
-    /* Texto centrado */
-    text-align: center;
-    
-    /* Fuente un poco más grande y en negrita */
-    font-weight: 600;
-}
-
-/* Quitar flechas en Chrome, Safari, Edge */
-.input-cantidad::-webkit-outer-spin-button,
-.input-cantidad::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-}
-
-/* --- Botón para quitar item del carrito --- */
-.btn-quitar-item {
-    /* Tamaño pequeño */
-    padding: 2px 6px;
-    font-size: 0.75rem;
-    
-    /* Transición suave */
-    transition: all 0.2s ease;
-}
-
-.btn-quitar-item:hover {
-    /* Se hace más grande al pasar el mouse */
-    transform: scale(1.1);
-    
-    /* Rojo más oscuro */
-    background-color: #c82333;
+.dashboard-sidebar::-webkit-scrollbar-thumb:hover {
+    background: #ffd700;
 }
 
 
-/* ============================================================
-   3. EFECTOS HOVER E INTERACCIONES
-   ============================================================ */
+/* ================================================================
+   BARRA DE BÚSQUEDA Y FILTROS
+   ================================================================ */
 
-/*
-   Estilos para mejorar la experiencia de usuario con
-   efectos visuales al interactuar.
-*/
+.pos-search-bar {
+    background-color: #2a2a2a;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
 
-/* --- Botones principales del POS --- */
-#btn-procesar-venta,
-#btn-limpiar-carrito {
-    /* Transición suave para todos los cambios */
+.pos-search-bar .form-control {
+    background-color: #1a1a1a;
+    border: 2px solid #d4af37;
+    color: #ffffff;
     transition: all 0.3s ease;
-    
-    /* Fuente en negrita */
-    font-weight: 600;
 }
 
-/* --- Botón de procesar venta al hacer hover --- */
-#btn-procesar-venta:not(:disabled):hover {
-    /* Verde más oscuro */
-    background-color: #218838;
-    
-    /* Aumenta ligeramente el tamaño */
+.pos-search-bar .form-control:focus {
+    background-color: #2a2a2a;
+    border-color: #ffd700;
+    box-shadow: 0 0 0 0.2rem rgba(212, 175, 55, 0.25);
+    color: #ffffff;
+}
+
+.pos-search-bar .form-control::placeholder {
+    color: #888;
+}
+
+
+/* ================================================================
+   TARJETAS DE PRODUCTOS
+   ================================================================ */
+
+.producto-card {
+    background: linear-gradient(145deg, #2a2a2a, #1f1f1f);
+    border: 1px solid #3a3a3a;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    height: 100%;
+    min-height: 200px;
+    max-height: 220px;
+    padding: 0.8rem;
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.producto-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(212, 175, 55, 0.3);
+    border-color: #d4af37;
+}
+
+.producto-nombre {
+    color: #ffd700;
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-bottom: 0.3rem;
+    line-height: 1.2;
+    max-height: 2.4em;
+    overflow: hidden;
+}
+
+.producto-precio {
+    color: #d4af37;
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin: 0.3rem 0;
+}
+
+.producto-stock {
+    background-color: rgba(212, 175, 55, 0.15);
+    color: #ffd700;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    display: inline-block;
+    margin-bottom: 0.4rem;
+    border: 1px solid rgba(212, 175, 55, 0.3);
+}
+
+.producto-stock small {
+    color: #ffd700 !important;
+    font-weight: 500;
+}
+
+.producto-stock i {
+    color: #d4af37;
+}
+
+.producto-stock.sin-stock {
+    background-color: rgba(220, 53, 69, 0.15);
+    color: #ff6b6b;
+    border-color: rgba(220, 53, 69, 0.3);
+}
+
+.producto-stock.sin-stock small {
+    color: #ff6b6b !important;
+}
+
+/* Botón de agregar al carrito */
+.btn-agregar-carrito,
+.btn-agregar-producto {
+    background: linear-gradient(145deg, #d4af37, #c19b2e);
+    border: none;
+    color: #1a1a1a;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    width: 100%;
+    padding: 0.4rem 0.6rem;
+    border-radius: 6px;
+    margin-top: 0.3rem;
+    font-size: 0.85rem;
+}
+
+.btn-agregar-carrito:hover,
+.btn-agregar-producto:hover {
+    background: linear-gradient(145deg, #ffd700, #d4af37);
     transform: scale(1.02);
-    
-    /* Sombra más pronunciada */
-    box-shadow: 0 4px 12px rgba(33, 136, 56, 0.4);
+    box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
+    color: #000;
 }
 
-/* --- Botón deshabilitado --- */
-#btn-procesar-venta:disabled {
-    /* Cursor "no permitido" */
+.btn-agregar-carrito:disabled,
+.btn-agregar-producto:disabled {
+    background: #3a3a3a;
+    color: #666;
     cursor: not-allowed;
-    
-    /* Opacidad reducida */
-    opacity: 0.6;
-}
-
-/* --- Botón de limpiar carrito al hacer hover --- */
-#btn-limpiar-carrito:hover {
-    /* Fondo gris más oscuro */
-    background-color: #6c757d;
-    
-    /* Texto blanco */
-    color: white;
 }
 
 
-/* ============================================================
-   4. ESTILOS PARA MODALES
-   ============================================================ */
+/* ================================================================
+   SIDEBAR DEL CARRITO
+   ================================================================ */
 
-/*
-   Estilos adicionales para los modales (ventanas emergentes)
-   del POS.
-*/
-
-/* --- Header de los modales --- */
-.modal-header.bg-primary,
-.modal-header.bg-success {
-    /* Color de texto blanco para contrastar con el fondo */
-    color: white;
+.pos-sidebar {
+    background: #ffffff;
+    border: 2px solid #d4af37;
+    border-radius: 10px;
+    height: auto;
+    max-height: calc(100vh - 140px);
+    position: sticky;
+    top: 20px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    display: flex;
+    flex-direction: column;
 }
 
-/* --- Botones dentro de los modales --- */
-.modal-footer .btn {
-    /* Fuente en negrita */
+.carrito-header {
+    background: linear-gradient(145deg, #d4af37, #c19b2e);
+    color: #1a1a1a;
+    padding: 0.8rem;
+    font-size: 1.1rem;
+    font-weight: bold;
+    text-align: center;
+    border-bottom: 2px solid #ffd700;
+    border-radius: 8px 8px 0 0;
+    flex-shrink: 0;
+}
+
+.carrito-items {
+    padding: 0.8rem;
+    flex: 1;
+    overflow-y: auto;
+    background-color: #ffffff;
+    min-height: 250px;
+    max-height: 350px;
+}
+
+/* Scrollbar personalizada para el carrito */
+.carrito-items::-webkit-scrollbar {
+    width: 8px;
+}
+
+.carrito-items::-webkit-scrollbar-track {
+    background: #f8f9fa;
+}
+
+.carrito-items::-webkit-scrollbar-thumb {
+    background: #d4af37;
+    border-radius: 4px;
+}
+
+.carrito-items::-webkit-scrollbar-thumb:hover {
+    background: #ffd700;
+}
+
+.pos-sidebar::-webkit-scrollbar {
+    width: 8px;
+}
+
+.pos-sidebar::-webkit-scrollbar-track {
+    background: #f8f9fa;
+}
+
+.pos-sidebar::-webkit-scrollbar-thumb {
+    background: #d4af37;
+    border-radius: 4px;
+}
+
+.pos-sidebar::-webkit-scrollbar-thumb:hover {
+    background: #ffd700;
+}
+
+
+/* ================================================================
+   ITEMS DEL CARRITO
+   ================================================================ */
+
+.carrito-item-card {
+    background: #ffffff;
+    border: 1px solid #d4af37;
+    border-radius: 6px;
+    padding: 0.6rem;
+    margin-bottom: 0.6rem;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+}
+
+.carrito-item-card:hover {
+    border-color: #ffd700;
+    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+}
+
+.carrito-item-body {
+    color: #1a1a1a;
+}
+
+/* Botones de control de cantidad */
+.btn-outline-warning {
+    border-color: #d4af37;
+    color: #d4af37;
+}
+
+.btn-outline-warning:hover {
+    background-color: #d4af37;
+    color: #1a1a1a;
+}
+
+/* Input de cantidad */
+.input-cantidad {
+    background-color: #ffffff !important;
+    border: 1px solid #d4af37 !important;
+    color: #1a1a1a !important;
+    text-align: center;
+    font-weight: bold;
+}
+
+.input-cantidad:focus {
+    background-color: #ffffff !important;
+    border-color: #ffd700 !important;
+    box-shadow: 0 0 0 0.2rem rgba(212, 175, 55, 0.25) !important;
+}
+
+
+/* ================================================================
+   SECCIÓN DE CLIENTE Y TIPO DE VENTA
+   ================================================================ */
+
+.cliente-section {
+    background-color: #f8f9fa;
+    padding: 0.8rem;
+    border-radius: 0;
+    margin: 0;
+    border: none;
+    border-bottom: 1px solid #d4af37;
+    flex-shrink: 0;
+}
+
+.cliente-section label {
+    color: #1a1a1a;
     font-weight: 600;
+    margin-bottom: 0.3rem;
+    font-size: 0.9rem;
+}
+
+.cliente-section .form-select {
+    background-color: #ffffff;
+    border: 2px solid #d4af37;
+    color: #1a1a1a;
+}
+
+.cliente-section .form-select:focus {
+    background-color: #ffffff;
+    border-color: #ffd700;
+    box-shadow: 0 0 0 0.2rem rgba(212, 175, 55, 0.25);
+}
+
+.cliente-section .form-select option {
+    background-color: #ffffff;
+    color: #1a1a1a;
+}
+
+/* Botones de Presencial/Delivery */
+.tipo-venta-btns .btn {
+    background-color: #ffffff;
+    border: 2px solid #d4af37;
+    color: #1a1a1a;
+    transition: all 0.3s ease;
+}
+
+.tipo-venta-btns .btn:hover {
+    background-color: #f8f9fa;
+    border-color: #ffd700;
+    color: #1a1a1a;
+}
+
+.tipo-venta-btns .btn.active {
+    background: linear-gradient(145deg, #d4af37, #c19b2e);
+    border-color: #ffd700;
+    color: #1a1a1a;
+    font-weight: bold;
+}
+
+
+/* ================================================================
+   SECCIÓN DE TOTALES
+   ================================================================ */
+
+.totales-section {
+    background: #f8f9fa;
+    padding: 0.8rem;
+    border-radius: 0;
+    border: none;
+    border-top: 2px solid #d4af37;
+    margin: 0;
+    flex-shrink: 0;
+}
+
+.totales-section .row {
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+}
+
+.totales-section strong {
+    color: #1a1a1a;
+}
+
+.totales-section span {
+    color: #1a1a1a;
+    font-size: 1.1rem;
+}
+
+/* Total destacado */
+.totales-section .border-top {
+    border-top: 2px solid #d4af37 !important;
+    padding-top: 1rem;
+    margin-top: 1rem;
+}
+
+.totales-section .fs-4 {
+    color: #d4af37;
+    font-weight: bold;
+}
+
+.totales-section .text-gold-light {
+    color: #d4af37 !important;
+}
+
+/* Toggle de IVA */
+.totales-section .form-check-input {
+    background-color: #ffffff;
+    border-color: #d4af37;
+    cursor: pointer;
+}
+
+.totales-section .form-check-input:checked {
+    background-color: #d4af37;
+    border-color: #d4af37;
+}
+
+.totales-section .form-check-input:focus {
+    border-color: #ffd700;
+    box-shadow: 0 0 0 0.2rem rgba(212, 175, 55, 0.25);
+}
+
+.totales-section .form-check-label {
+    cursor: pointer;
+    user-select: none;
+}
+
+
+/* ================================================================
+   BOTONES DE ACCIÓN FIJOS
+   ================================================================ */
+
+.carrito-botones-fijos {
+    position: sticky;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #ffffff;
+    padding: 0.8rem;
+    border-top: 2px solid #d4af37;
+    box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+}
+
+.btn-procesar-venta {
+    background: linear-gradient(145deg, #28a745, #218838);
+    border: none;
+    color: #ffffff;
+    font-weight: bold;
+    font-size: 1rem;
+    padding: 0.6rem;
+    transition: all 0.3s ease;
+}
+
+.btn-procesar-venta:hover:not(:disabled) {
+    background: linear-gradient(145deg, #34ce57, #28a745);
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+}
+
+.btn-procesar-venta:disabled {
+    background: #3a3a3a;
+    color: #666;
+    cursor: not-allowed;
+}
+
+.btn-cancelar-venta {
+    background: linear-gradient(145deg, #dc3545, #c82333);
+    border: none;
+    color: #ffffff;
+    font-weight: bold;
+    font-size: 0.95rem;
+    padding: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.btn-cancelar-venta:hover {
+    background: linear-gradient(145deg, #e4606d, #dc3545);
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
+}
+
+
+/* ================================================================
+   MODALES
+   ================================================================ */
+
+.modal-content {
+    background-color: #1f1f1f;
+    border: 2px solid #d4af37;
+    color: #ffffff;
+}
+
+.modal-header {
+    background: linear-gradient(145deg, #d4af37, #c19b2e);
+    color: #1a1a1a;
+    border-bottom: 2px solid #ffd700;
+}
+
+.modal-header .btn-close {
+    filter: brightness(0);
+}
+
+.modal-body {
+    background-color: #1f1f1f;
+}
+
+.modal-footer {
+    background-color: #1a1a1a;
+    border-top: 1px solid #3a3a3a;
+}
+
+/* Inputs en modales */
+.modal-body .form-control,
+.modal-body .form-select {
+    background-color: #2a2a2a;
+    border: 2px solid #d4af37;
+    color: #ffffff;
+}
+
+.modal-body .form-control:focus,
+.modal-body .form-select:focus {
+    background-color: #3a3a3a;
+    border-color: #ffd700;
+    box-shadow: 0 0 0 0.2rem rgba(212, 175, 55, 0.25);
+    color: #ffffff;
+}
+
+.modal-body .form-label {
+    color: #d4af37;
+    font-weight: 600;
+}
+
+
+/* ================================================================
+   MENSAJES Y ALERTAS
+   ================================================================ */
+
+.alert-info {
+    background-color: rgba(23, 162, 184, 0.1);
+    border-color: #17a2b8;
+    color: #17a2b8;
+}
+
+.carrito-vacio {
+    text-align: center;
+    padding: 2rem;
+    color: #6c757d;
+    background-color: #ffffff;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.carrito-vacio i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    color: #adb5bd;
+}
+
+
+/* ================================================================
+   BADGES Y ETIQUETAS
+   ================================================================ */
+
+.badge {
+    padding: 0.4rem 0.7rem;
+    font-size: 0.85rem;
+    border-radius: 5px;
+}
+
+.badge.bg-success {
+    background: linear-gradient(145deg, #28a745, #218838) !important;
+}
+
+.badge.bg-warning {
+    background: linear-gradient(145deg, #ffc107, #e0a800) !important;
+    color: #1a1a1a !important;
+}
+
+
+/* ================================================================
+   RESPONSIVE
+   ================================================================ */
+
+@media (max-width: 992px) {
+    .pos-sidebar {
+        position: relative;
+        height: auto;
+        border-left: none;
+        border-top: 3px solid #d4af37;
+    }
     
-    /* Padding más generoso */
-    padding: 10px 24px;
-}
-
-/* --- Área de errores en los modales --- */
-.alert-danger.d-none {
-    /* Cuando está oculta, no ocupa espacio */
-    display: none !important;
-}
-
-
-/* ============================================================
-   5. ANIMACIONES
-   ============================================================ */
-
-/*
-   Animaciones para hacer la interfaz más dinámica y agradable.
-*/
-
-/* --- Animación de entrada para los items del carrito --- */
-@keyframes slideIn {
-    from {
-        /* Comienza fuera de la vista (arriba) */
-        transform: translateY(-20px);
-        /* Comienza invisible */
-        opacity: 0;
-    }
-    to {
-        /* Termina en su posición normal */
-        transform: translateY(0);
-        /* Termina completamente visible */
-        opacity: 1;
+    .carrito-items {
+        max-height: 400px;
     }
 }
 
-/* Aplicar la animación a los items del carrito */
-#carrito-items .card {
-    /* Animación de entrada de 0.3 segundos */
-    animation: slideIn 0.3s ease;
+@media (max-width: 768px) {
+    .producto-card {
+        margin-bottom: 1rem;
+    }
+    
+    .pos-search-bar {
+        padding: 1rem;
+    }
+    
+    .carrito-header {
+        font-size: 1.1rem;
+    }
 }
 
-/* --- Animación de "pulso" para el contador de items --- */
-@keyframes pulse {
+
+/* ================================================================
+   ANIMACIONES
+   ================================================================ */
+
+@keyframes pulse-gold {
     0% {
-        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.7);
     }
-    50% {
-        transform: scale(1.2);
+    70% {
+        box-shadow: 0 0 0 15px rgba(212, 175, 55, 0);
     }
     100% {
-        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(212, 175, 55, 0);
     }
 }
 
-/* Cuando cambia el contador, aplica la animación */
-#items-count {
-    /* Fondo dorado */
-    background-color: var(--gold, #D4AF37);
-    
-    /* Bordes redondeados */
-    border-radius: 12px;
-    
-    /* Padding para que sea más visible */
-    padding: 4px 10px;
-    
-    /* Transición para el cambio de número */
-    transition: all 0.3s ease;
-}
-
-/* Clase para activar el pulso (se puede agregar con JavaScript) */
-#items-count.actualizado {
-    animation: pulse 0.5s ease;
+.btn-procesar-venta:not(:disabled) {
+    animation: pulse-gold 2s infinite;
 }
 
 
-/* ============================================================
-   6. BÚSQUEDA DE PRODUCTOS
-   ============================================================ */
+/* ================================================================
+   UTILIDADES ADICIONALES
+   ================================================================ */
 
-/*
-   Estilos para el campo de búsqueda de productos.
-*/
-
-#buscar-producto {
-    /* Borde dorado al hacer focus */
-    border: 2px solid #e0e0e0;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+.text-gold {
+    color: #d4af37 !important;
 }
 
-#buscar-producto:focus {
-    /* Borde dorado cuando está activo */
-    border-color: var(--gold, #D4AF37);
-    
-    /* Sombra dorada alrededor */
-    box-shadow: 0 0 0 0.2rem rgba(212, 175, 55, 0.25);
-    
-    /* Quita el outline por defecto del navegador */
-    outline: none;
+.text-gold-light {
+    color: #ffd700 !important;
 }
 
-
-/* ============================================================
-   7. TOTALES Y RESUMEN
-   ============================================================ */
-
-/*
-   Estilos para la sección de totales del carrito.
-*/
-
-#total {
-    /* Tamaño de fuente grande */
-    font-size: 1.5rem;
-    
-    /* Color verde para el total */
-    color: #28a745;
-    
-    /* Fuente extra bold */
-    font-weight: 800;
+.bg-dark-custom {
+    background-color: #1a1a1a !important;
 }
 
-#subtotal,
-#iva {
-    /* Tamaño de fuente mediano */
-    font-size: 1.1rem;
-    
-    /* Fuente semi-bold */
-    font-weight: 600;
+.bg-dark-custom-light {
+    background-color: #2a2a2a !important;
 }
 
-/* --- Input de descuento --- */
-#descuento-global {
-    /* Borde suave */
-    border: 1px solid #ced4da;
-    
-    /* Transición para el focus */
-    transition: border-color 0.3s ease;
+.border-gold {
+    border-color: #d4af37 !important;
 }
 
-#descuento-global:focus {
-    /* Borde azul al hacer focus */
-    border-color: #80bdff;
-    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+/* Clases específicas para inputs y spans en el header */
+.input-group-text.bg-dark-custom {
+    background-color: #1a1a1a !important;
+    border-color: #d4af37 !important;
+}
+
+.input-group-text.text-gold {
+    color: #d4af37 !important;
 }
 
 
-/* ============================================================
-   8. RESPONSIVIDAD (PARA PANTALLAS PEQUEÑAS)
-   ============================================================ */
-
-/*
-   Ajustes para que el POS se vea bien en tablets y móviles.
-*/
-
-/* --- Para tablets (pantallas menores a 992px) --- */
-@media (max-width: 991px) {
-    /* El carrito va debajo de los productos en lugar de al lado */
-    .col-lg-8,
-    .col-lg-4 {
-        width: 100%;
-    }
-    
-    /* El carrito ya no es "sticky" en pantallas pequeñas */
-    .sticky-top {
-        position: relative !important;
-        top: 0 !important;
-    }
-}
-
-/* --- Para móviles (pantallas menores a 576px) --- */
-@media (max-width: 575px) {
-    /* Reducir padding en móviles */
-    .producto-card .card-body {
-        padding: 0.75rem;
-    }
-    
-    /* Tamaño de fuente más pequeño */
-    .producto-card .card-title {
-        font-size: 0.9rem;
-    }
-    
-    /* Botones más pequeños */
-    .agregar-al-carrito {
-        font-size: 0.8rem;
-        padding: 6px 12px;
-    }
-}
-
-
-/* ============================================================
-   9. ESTADOS ESPECIALES
-   ============================================================ */
-
-/*
-   Estilos para estados especiales como productos sin stock,
-   productos próximos a vencer, etc.
-*/
-
-/* --- Producto sin stock (si se implementa en el futuro) --- */
-.producto-card.sin-stock {
-    /* Opacidad reducida */
-    opacity: 0.5;
-    
-    /* Cursor "no permitido" */
-    cursor: not-allowed;
-    
-    /* Filtro de escala de grises */
-    filter: grayscale(100%);
-}
-
-.producto-card.sin-stock:hover {
-    /* Desactivar el efecto hover */
-    transform: none;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-}
-
-/* --- Producto próximo a vencer (si se implementa) --- */
-.producto-card.proximo-vencer {
-    /* Borde amarillo de advertencia */
-    border-color: #ffc107;
-    
-    /* Fondo amarillo muy claro */
-    background-color: #fff3cd;
-}
-
-
-/* ============================================================
-   10. UTILIDADES ADICIONALES
-   ============================================================ */
-
-/*
-   Clases auxiliares útiles para el POS.
-*/
-
-/* --- Texto truncado con puntos suspensivos --- */
-.text-truncate {
-    /* Texto en una sola línea */
-    white-space: nowrap;
-    
-    /* Ocultar el texto que sobresale */
-    overflow: hidden;
-    
-    /* Agregar "..." al final */
-    text-overflow: ellipsis;
-}
-
-/* --- Badge personalizado --- */
-.badge.bg-info {
-    /* Fondo azul claro */
-    background-color: #17a2b8 !important;
-}
-
-/* --- Spinner de carga --- */
-.spinner-border-sm {
-    /* Tamaño pequeño */
-    width: 1rem;
-    height: 1rem;
-    border-width: 0.15em;
-}
-
-
-/* ============================================================
-   FIN DE LOS ESTILOS DEL POS
-   ============================================================ */
-
+/* ================================================================
+   FIN DE ESTILOS POS
+   ================================================================ */
