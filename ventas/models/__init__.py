@@ -17,5 +17,8 @@ from .productos import Categorias, Nutricional, Productos
 # --- Modelos de Ventas ---
 from .ventas import Clientes, Ventas, DetalleVenta
 
-# --- Modelos de Alertas (NUEVO) ---
+# --- Modelos de Alertas ---
 from .alertas import Alertas
+
+# --- Modelos de Movimientos de Inventario (NUEVO) ---
+from .movimientos import MovimientosInventario

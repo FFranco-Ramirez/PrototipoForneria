@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block contenido %}
+<!-- ================================================================ -->
+<!-- =                                                              = -->
+<!-- =           PÁGINA DE HISTORIAL DE MOVIMIENTOS                 = -->
+<!-- =                                                              = -->
+<!-- ================================================================ -->
+<!--
+    Esta página muestra el historial completo de movimientos del inventario.
+    
+    FUNCIONALIDADES:
+    - Ver todos los movimientos de entrada y salida
+    - Filtrar por tipo de movimiento
+    - Ver detalles de cada movimiento (producto, cantidad, fecha)
+-->
+
+<div class="dashboard-main-container">
+    <!-- Sidebar Reutilizable -->
+    {% include 'includes/sidebar.html' with active_page='movimientos' %}
+
+    <!-- ============================================================ -->
+    <!-- CONTENIDO PRINCIPAL                                          -->
+    <!-- ============================================================ -->
+    <div class="dashboard-content-wrapper">
+        <!-- Header con título -->
+        <header class="dashboard-header">
+            <h1 class="dashboard-main-title">Historial de Movimientos</h1>
+        </header>
+
+        <!-- Contenido de la página -->
+        <main class="dashboard-content">
+            <!-- ============================================ -->
+            <!-- SECCIÓN DE FILTROS                           -->
+            <!-- ============================================ -->
+            <div class="movimientos-filtros">
+                <form method="get" class="row g-3 align-items-end">
+                    <!-- Filtro por tipo de movimiento -->
+                    <div class="col-md-4">
+                        <label for="tipo-filtro" class="form-label">Tipo de Movimiento</label>
+                        <select name="tipo" id="tipo-filtro" class="form-select">
+                            <option value="">Todos los movimientos</option>
+                            <option value="entrada" {% if tipo_filtro == 'entrada' %}selected{% endif %}>
+                                Entradas
+                            </option>
+                            <option value="salida" {% if tipo_filtro == 'salida' %}selected{% endif %}>
+                                Salidas
+                            </option>
+                        </select>
+                    </div>
+                    
+                    <!-- Botón de filtrar -->
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="bi bi-funnel"></i> Filtrar
+                        </button>
+                    </div>
+                    
+                    <!-- Botón para limpiar filtros -->
+                    {% if tipo_filtro %}
+                    <div class="col-md-2">
+                        <a href="{% url 'movimientos' %}" class="btn btn-secondary w-100">
+                            <i class="bi bi-x-circle"></i> Limpiar
+                        </a>
+                    </div>
+                    {% endif %}
+                </form>
+            </div>
+
+            <!-- ============================================ -->
+            <!-- TABLA DE MOVIMIENTOS                         -->
+            <!-- ============================================ -->
+            <div class="movimientos-tabla-container">
+                <div class="table-responsive">
+                    <table class="table table-hover movimientos-tabla">
+                        <!-- Encabezado de la tabla -->
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Producto</th>
+                                <th>Tipo</th>
+                                <th>Cantidad</th>
+                            </tr>
+                        </thead>
+                        
+                        <!-- Cuerpo de la tabla -->
+                        <tbody>
+                            {% for mov in movimientos %}
+                            <tr>
+                                <!-- Columna: Fecha del movimiento -->
+                                <td>
+                                    <span class="col-fecha-completa">
+                                        {{ mov.fecha|date:"d/m/Y H:i" }}
+                                    </span>
+                                    <span class="col-fecha-corta" style="display: none;">
+                                        {{ mov.fecha|date:"d/m" }}
+                                    </span>
+                                </td>
+                                
+                                <!-- Columna: Nombre del producto -->
+                                <td>
+                                    <strong>{{ mov.productos.nombre }}</strong>
+                                </td>
+                                
+                                <!-- Columna: Tipo de movimiento (con badge de color) -->
+                                <td>
+                                    {% if mov.tipo_movimiento == 'entrada' %}
+                                        <span class="badge badge-entrada">
+                                            <i class="bi bi-arrow-down-circle"></i> Entrada
+                                        </span>
+                                    {% else %}
+                                        <span class="badge badge-salida">
+                                            <i class="bi bi-arrow-up-circle"></i> Salida
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                
+                                <!-- Columna: Cantidad del movimiento -->
+                                <td>
+                                    <strong>{{ mov.cantidad }}</strong> unidades
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <!-- Mensaje cuando no hay movimientos -->
+                            <tr>
+                                <td colspan="4" class="movimientos-vacio">
+                                    <i class="bi bi-inbox"></i>
+                                    <p>No hay movimientos registrados</p>
+                                    {% if tipo_filtro %}
+                                    <small>Intenta cambiar los filtros</small>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+{% endblock %}

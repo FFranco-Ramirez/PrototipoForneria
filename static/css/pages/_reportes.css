@@ -1,0 +1,365 @@
+/* static/css/pages/_reportes.css */
+/*
+    Estilos para la página del Sistema de Reportes
+*/
+/*
+================================================================
+=                                                              =
+=           ESTILOS PARA LA PÁGINA DE REPORTES                 =
+=                                                              =
+================================================================
+*/
+
+/* --- Contenedor Principal de Reportes --- */
+.reportes-container {
+    padding: 30px;              /* Espacio interior */
+}
+
+/*
+================================================================
+=                                                              =
+=              SECCIÓN DE FILTROS Y GENERACIÓN                 =
+=                                                              =
+================================================================
+*/
+
+/* --- Tarjeta de Filtros --- */
+/* Contenedor donde el usuario selecciona fechas y tablas */
+.reportes-filtros-card {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); /* Gradiente negro */
+    color: #ffffff;             /* Texto blanco */
+    padding: 30px;              /* Espacio interior generoso */
+    border-radius: 12px;        /* Esquinas redondeadas */
+    margin-bottom: 30px;        /* Espacio inferior */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* Sombra pronunciada */
+}
+
+/* --- Título de la Tarjeta de Filtros --- */
+.reportes-filtros-card h3 {
+    color: #ffd700;             /* Dorado */
+    font-size: 20px;            /* Tamaño de fuente */
+    font-weight: 600;           /* Texto semi-negrita */
+    margin-bottom: 20px;        /* Espacio inferior */
+    text-transform: uppercase;  /* Texto en mayúsculas */
+    letter-spacing: 1px;        /* Espaciado entre letras */
+    border-bottom: 2px solid #ffd700; /* Línea dorada inferior */
+    padding-bottom: 10px;       /* Espacio antes de la línea */
+}
+
+/* --- Inputs de Fecha --- */
+/* Estilo para los campos de fecha */
+.reportes-filtros-card input[type="date"] {
+    background-color: #ffffff;  /* Fondo blanco */
+    border: 2px solid #ffd700;  /* Borde dorado */
+    color: #1a1a1a;             /* Texto negro */
+    padding: 10px 15px;         /* Espacio interior */
+    border-radius: 6px;         /* Esquinas redondeadas */
+    font-size: 14px;            /* Tamaño de fuente */
+    transition: all 0.3s ease;  /* Transición suave */
+}
+
+/* --- Efecto Focus en Inputs --- */
+.reportes-filtros-card input[type="date"]:focus {
+    outline: none;              /* Quitar borde por defecto */
+    border-color: #e6c200;      /* Dorado más oscuro */
+    box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.2); /* Sombra dorada */
+}
+
+/* --- Checkboxes Personalizados --- */
+/* Contenedor de cada checkbox */
+.reportes-checkbox {
+    display: flex;              /* Flexbox para alinear */
+    align-items: center;        /* Centrar verticalmente */
+    padding: 12px 15px;         /* Espacio interior */
+    background-color: rgba(255, 255, 255, 0.1); /* Fondo semi-transparente */
+    border-radius: 8px;         /* Esquinas redondeadas */
+    margin-bottom: 10px;        /* Espacio inferior */
+    cursor: pointer;            /* Cursor de mano */
+    transition: all 0.3s ease;  /* Transición suave */
+}
+
+/* --- Efecto Hover en Checkboxes --- */
+.reportes-checkbox:hover {
+    background-color: rgba(255, 215, 0, 0.2); /* Fondo dorado semi-transparente */
+}
+
+/* --- Input Checkbox --- */
+.reportes-checkbox input[type="checkbox"] {
+    width: 20px;                /* Ancho */
+    height: 20px;               /* Alto */
+    margin-right: 12px;         /* Espacio a la derecha */
+    cursor: pointer;            /* Cursor de mano */
+    accent-color: #ffd700;      /* Color dorado (navegadores modernos) */
+}
+
+/* --- Label del Checkbox --- */
+.reportes-checkbox label {
+    color: #ffffff;             /* Texto blanco */
+    font-size: 15px;            /* Tamaño de fuente */
+    cursor: pointer;            /* Cursor de mano */
+    margin: 0;                  /* Sin margen */
+    user-select: none;          /* No seleccionar texto */
+}
+
+/* --- Botón de Generar Reporte --- */
+.btn-generar-reporte {
+    background-color: #ffd700;  /* Dorado */
+    border: none;               /* Sin borde */
+    color: #1a1a1a;             /* Texto negro */
+    font-weight: 700;           /* Texto en negrita */
+    font-size: 16px;            /* Tamaño de fuente */
+    padding: 15px 40px;         /* Espacio interior generoso */
+    border-radius: 8px;         /* Esquinas redondeadas */
+    text-transform: uppercase;  /* Texto en mayúsculas */
+    letter-spacing: 1px;        /* Espaciado entre letras */
+    cursor: pointer;            /* Cursor de mano */
+    transition: all 0.3s ease;  /* Transición suave */
+    box-shadow: 0 4px 8px rgba(255, 215, 0, 0.3); /* Sombra dorada */
+}
+
+/* --- Efecto Hover del Botón --- */
+.btn-generar-reporte:hover {
+    background-color: #e6c200;  /* Dorado más oscuro */
+    transform: translateY(-2px); /* Efecto de elevación */
+    box-shadow: 0 6px 12px rgba(255, 215, 0, 0.4); /* Sombra más pronunciada */
+}
+
+/* --- Efecto Active del Botón --- */
+.btn-generar-reporte:active {
+    transform: translateY(0);   /* Volver a posición original */
+}
+
+/*
+================================================================
+=                                                              =
+=              SECCIÓN DE REPORTE GENERADO                     =
+=                                                              =
+================================================================
+*/
+
+/* --- Contenedor del Reporte --- */
+.reporte-resultado {
+    background-color: #ffffff;  /* Fondo blanco */
+    border-radius: 12px;        /* Esquinas redondeadas */
+    padding: 30px;              /* Espacio interior */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+}
+
+/* --- Encabezado del Reporte --- */
+.reporte-header {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); /* Gradiente negro */
+    color: #ffffff;             /* Texto blanco */
+    padding: 25px;              /* Espacio interior */
+    border-radius: 8px;         /* Esquinas redondeadas */
+    margin-bottom: 30px;        /* Espacio inferior */
+    text-align: center;         /* Texto centrado */
+}
+
+/* --- Título del Reporte --- */
+.reporte-header h2 {
+    color: #ffd700;             /* Dorado */
+    font-size: 28px;            /* Tamaño de fuente grande */
+    font-weight: bold;          /* Texto en negrita */
+    margin-bottom: 10px;        /* Espacio inferior */
+    text-transform: uppercase;  /* Texto en mayúsculas */
+}
+
+/* --- Información del Período --- */
+.reporte-periodo {
+    color: #ffffff;             /* Texto blanco */
+    font-size: 16px;            /* Tamaño de fuente */
+    margin-bottom: 5px;         /* Espacio inferior */
+}
+
+/* --- Fecha de Generación --- */
+.reporte-fecha-generacion {
+    color: #cccccc;             /* Texto gris claro */
+    font-size: 14px;            /* Tamaño de fuente pequeño */
+}
+
+/*
+================================================================
+=                                                              =
+=              SECCIONES DE MINI-REPORTES                      =
+=                                                              =
+================================================================
+*/
+
+/* --- Contenedor de Cada Mini-Reporte --- */
+.mini-reporte {
+    background-color: #f8f9fa;  /* Fondo gris muy claro */
+    border-left: 4px solid #ffd700; /* Borde izquierdo dorado */
+    padding: 25px;              /* Espacio interior */
+    margin-bottom: 25px;        /* Espacio inferior */
+    border-radius: 8px;         /* Esquinas redondeadas */
+}
+
+/* --- Título del Mini-Reporte --- */
+.mini-reporte h3 {
+    color: #1a1a1a;             /* Texto negro */
+    font-size: 22px;            /* Tamaño de fuente */
+    font-weight: 600;           /* Texto semi-negrita */
+    margin-bottom: 15px;        /* Espacio inferior */
+    display: flex;              /* Flexbox para alinear */
+    align-items: center;        /* Centrar verticalmente */
+}
+
+/* --- Icono del Mini-Reporte --- */
+.mini-reporte h3 i {
+    color: #ffd700;             /* Dorado */
+    margin-right: 10px;         /* Espacio a la derecha */
+    font-size: 24px;            /* Tamaño del icono */
+}
+
+/* --- Resumen de Estadísticas --- */
+.reporte-stats {
+    display: grid;              /* Grid layout */
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Columnas responsivas */
+    gap: 15px;                  /* Espacio entre elementos */
+    margin-bottom: 20px;        /* Espacio inferior */
+}
+
+/* --- Cada Estadística Individual --- */
+.stat-item {
+    background-color: #ffffff;  /* Fondo blanco */
+    padding: 15px;              /* Espacio interior */
+    border-radius: 6px;         /* Esquinas redondeadas */
+    text-align: center;         /* Texto centrado */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Sombra sutil */
+}
+
+/* --- Valor de la Estadística --- */
+.stat-value {
+    font-size: 28px;            /* Tamaño de fuente grande */
+    font-weight: bold;          /* Texto en negrita */
+    color: #ffd700;             /* Dorado */
+    margin-bottom: 5px;         /* Espacio inferior */
+}
+
+/* --- Label de la Estadística --- */
+.stat-label {
+    font-size: 14px;            /* Tamaño de fuente pequeño */
+    color: #6c757d;             /* Texto gris */
+    text-transform: uppercase;  /* Texto en mayúsculas */
+    letter-spacing: 0.5px;      /* Espaciado entre letras */
+}
+
+/* --- Tabla del Reporte --- */
+.reporte-tabla {
+    width: 100%;                /* Ancho completo */
+    margin-top: 20px;           /* Espacio superior */
+}
+
+/* --- Encabezado de la Tabla --- */
+.reporte-tabla thead {
+    background-color: #1a1a1a;  /* Fondo negro */
+    color: #ffd700;             /* Texto dorado */
+}
+
+/* --- Celdas del Encabezado --- */
+.reporte-tabla thead th {
+    padding: 12px;              /* Espacio interior */
+    font-weight: 600;           /* Texto semi-negrita */
+    text-transform: uppercase;  /* Texto en mayúsculas */
+    font-size: 13px;            /* Tamaño de fuente */
+    letter-spacing: 0.5px;      /* Espaciado entre letras */
+}
+
+/* --- Filas del Cuerpo --- */
+.reporte-tabla tbody tr {
+    border-bottom: 1px solid #e9ecef; /* Línea separadora */
+}
+
+/* --- Celdas del Cuerpo --- */
+.reporte-tabla tbody td {
+    padding: 12px;              /* Espacio interior */
+    color: #343a40;             /* Texto oscuro */
+    font-size: 14px;            /* Tamaño de fuente */
+}
+
+/* --- Efecto Hover en Filas --- */
+.reporte-tabla tbody tr:hover {
+    background-color: #f8f9fa;  /* Fondo gris claro */
+}
+
+/* --- Mensaje de Sin Datos --- */
+.sin-datos {
+    text-align: center;         /* Texto centrado */
+    padding: 40px 20px;         /* Espacio interior */
+    color: #6c757d;             /* Texto gris */
+    font-size: 16px;            /* Tamaño de fuente */
+}
+
+/*
+================================================================
+=                                                              =
+=                    RESPONSIVE DESIGN                          =
+=                                                              =
+================================================================
+*/
+
+/* --- Tablets --- */
+@media (max-width: 768px) {
+    .reportes-container {
+        padding: 15px;          /* Menos padding */
+    }
+    
+    .reportes-filtros-card {
+        padding: 20px;          /* Menos padding */
+    }
+    
+    .reporte-header h2 {
+        font-size: 22px;        /* Fuente más pequeña */
+    }
+    
+    .stat-value {
+        font-size: 22px;        /* Fuente más pequeña */
+    }
+}
+
+/* --- Móviles --- */
+@media (max-width: 576px) {
+    .btn-generar-reporte {
+        width: 100%;            /* Botón de ancho completo */
+        padding: 12px 20px;     /* Menos padding */
+    }
+    
+    .reporte-stats {
+        grid-template-columns: 1fr; /* Una columna */
+    }
+}
+
+/*
+================================================================
+=                                                              =
+=                    ESTILOS PARA IMPRESIÓN                     =
+=                                                              =
+================================================================
+*/
+
+/* --- Estilos cuando se imprime la página --- */
+@media print {
+    /* Ocultar elementos no necesarios */
+    .dashboard-sidebar,
+    .dashboard-header,
+    .reportes-filtros-card,
+    .btn-generar-reporte {
+        display: none !important;
+    }
+    
+    /* Ajustar colores para impresión */
+    .reporte-header {
+        background: #ffffff !important;
+        color: #000000 !important;
+        border: 2px solid #000000;
+    }
+    
+    .reporte-header h2 {
+        color: #000000 !important;
+    }
+    
+    /* Evitar saltos de página dentro de tablas */
+    .mini-reporte {
+        page-break-inside: avoid;
+    }
+}

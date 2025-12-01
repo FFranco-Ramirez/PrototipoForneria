@@ -54,3 +54,138 @@
   color: var(--gold); /* Color dorado para los enlaces */
   text-decoration: none; /* Sin subrayado */
 }
+
+/*
+
+================================================================
+=                                                              =
+=           ESTILOS PARA ACCIONES MASIVAS                      =
+=                                                              =
+================================================================
+
+Estilos para la funcionalidad de selección múltiple y
+acciones masivas en el inventario.
+*/
+
+/* ============================================================ */
+/* CONTENEDOR DE BOTONES DE ACCIÓN MASIVA                      */
+/* ============================================================ */
+/**
+ * Contenedor que agrupa los botones de acción masiva
+ * y el contador de productos seleccionados.
+ */
+.acciones-masivas-container {
+    background-color: var(--bg-alt); /* Fondo oscuro alternativo */
+    padding: 15px;                   /* Espacio interior */
+    border-radius: 8px;              /* Esquinas redondeadas */
+    border: 1px solid var(--border); /* Borde sutil */
+    margin-bottom: 20px;             /* Espacio inferior */
+}
+
+/* ============================================================ */
+/* CONTADOR DE PRODUCTOS SELECCIONADOS                         */
+/* ============================================================ */
+/**
+ * Badge que muestra cuántos productos están seleccionados.
+ * Cambia de color según haya o no selección.
+ */
+#contador-seleccionados {
+    font-size: 14px;                 /* Tamaño de fuente */
+    padding: 6px 12px;               /* Espacio interior */
+    font-weight: 600;                /* Texto semigrueso */
+}
+
+/* ============================================================ */
+/* BOTONES DE ACCIÓN MASIVA                                    */
+/* ============================================================ */
+/**
+ * Estilos para los botones que ejecutan acciones masivas.
+ * Se deshabilitan cuando no hay productos seleccionados.
+ */
+
+/* Estado deshabilitado de los botones */
+.acciones-masivas-container button:disabled {
+    opacity: 0.5;                    /* Más transparente */
+    cursor: not-allowed;             /* Cursor de "no permitido" */
+}
+
+/* Botón de Crear Alertas (amarillo/warning) */
+#btn-crear-alertas {
+    background-color: #ffc107;       /* Amarillo */
+    border-color: #ffc107;
+    color: #000;                     /* Texto negro */
+}
+
+#btn-crear-alertas:hover:not(:disabled) {
+    background-color: #e0a800;       /* Amarillo más oscuro al hover */
+    border-color: #d39e00;
+}
+
+/* Botón de Mover a Merma (rojo/danger) */
+#btn-mover-merma {
+    background-color: #dc3545;       /* Rojo */
+    border-color: #dc3545;
+    color: #fff;                     /* Texto blanco */
+}
+
+#btn-mover-merma:hover:not(:disabled) {
+    background-color: #c82333;       /* Rojo más oscuro al hover */
+    border-color: #bd2130;
+}
+
+/* Botón de Eliminar (outline rojo) */
+#btn-eliminar {
+    border-color: #dc3545;           /* Borde rojo */
+    color: #dc3545;                  /* Texto rojo */
+    background-color: transparent;   /* Fondo transparente */
+}
+
+#btn-eliminar:hover:not(:disabled) {
+    background-color: #dc3545;       /* Fondo rojo al hover */
+    color: #fff;                     /* Texto blanco al hover */
+}
+
+/* ============================================================ */
+/* CHECKBOXES EN LA TABLA                                      */
+/* ============================================================ */
+/**
+ * Estilos para los checkboxes de selección múltiple.
+ * Incluye el checkbox del header y los checkboxes individuales.
+ */
+
+/* Checkbox en el header (seleccionar todos) */
+#checkbox-todos {
+    cursor: pointer;                 /* Cursor de mano */
+    width: 18px;                     /* Ancho del checkbox */
+    height: 18px;                    /* Alto del checkbox */
+}
+
+/* Checkboxes individuales de productos */
+.producto-checkbox {
+    cursor: pointer;                 /* Cursor de mano */
+    width: 18px;                     /* Ancho del checkbox */
+    height: 18px;                    /* Alto del checkbox */
+}
+
+/* Fila de la tabla cuando el checkbox está marcado */
+tr:has(.producto-checkbox:checked) {
+    background-color: rgba(255, 215, 0, 0.1) !important; /* Fondo dorado suave */
+}
+
+/* ============================================================ */
+/* RESPONSIVE: ADAPTACIÓN A PANTALLAS PEQUEÑAS                 */
+/* ============================================================ */
+/**
+ * En pantallas pequeñas, los botones se apilan verticalmente
+ * para mejor usabilidad en móviles.
+ */
+@media (max-width: 768px) {
+    .acciones-masivas-container .d-flex {
+        flex-direction: column;      /* Apilar verticalmente */
+        gap: 10px;                   /* Espacio entre elementos */
+    }
+    
+    .acciones-masivas-container button {
+        width: 100%;                 /* Botones de ancho completo */
+    }
+}

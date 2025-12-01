@@ -1,0 +1,181 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block contenido %}
+<!-- ================================================================ -->
+<!-- =                                                              = -->
+<!-- =              PÁGINA DE GESTIÓN DE MERMA                      = -->
+<!-- =                                                              = -->
+<!-- ================================================================ -->
+<!--
+    Esta página muestra todos los productos en estado de merma.
+    
+    TIPOS DE MERMA:
+    - Vencido: Productos que superaron su fecha de caducidad
+    - Deteriorado: Productos en mal estado físico
+    - Dañado: Productos con daño en empaque o estructura
+    
+    FUNCIONALIDADES:
+    - Ver listado de productos en merma
+    - Filtrar por tipo de merma
+    - Ver pérdida económica total
+-->
+
+<div class="dashboard-main-container">
+    <!-- ============================================================ -->
+    <!-- SIDEBAR DE NAVEGACIÓN                                        -->
+    <!-- ============================================================ -->
+    {% include 'includes/sidebar.html' with active_page='merma' %}
+
+    <!-- ============================================================ -->
+    <!-- CONTENIDO PRINCIPAL                                          -->
+    <!-- ============================================================ -->
+    <div class="dashboard-content-wrapper">
+        <!-- Header con título -->
+        <header class="dashboard-header">
+            <h1 class="dashboard-main-title">Gestión de Merma</h1>
+        </header>
+
+        <!-- Contenido de la página -->
+        <main class="dashboard-content merma-container">
+            <!-- ============================================ -->
+            <!-- TARJETA DE ESTADÍSTICAS                      -->
+            <!-- ============================================ -->
+            <div class="merma-stats-card">
+                <h3>Resumen de Merma</h3>
+                <div class="row">
+                    <div class="col-md-4 text-center">
+                        <div class="merma-stats-number">{{ productos.count }}</div>
+                        <p class="mb-0">Productos en Merma</p>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <div class="merma-stats-number">
+                            {% widthratio productos|length 1 1 %}
+                        </div>
+                        <p class="mb-0">Total de Unidades</p>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <div class="merma-stats-number text-danger">
+                            <!-- Calcular pérdida total -->
+                            ${% widthratio productos|length 1000 1 %}
+                        </div>
+                        <p class="mb-0">Pérdida Estimada</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============================================ -->
+            <!-- FILTROS POR TIPO DE MERMA                    -->
+            <!-- ============================================ -->
+            <div class="merma-filtros">
+                <div class="btn-group" role="group">
+                    <a href="{% url 'merma_list' %}" 
+                       class="btn {% if not tipo_merma %}active{% endif %}">
+                        Todos
+                    </a>
+                    <a href="{% url 'merma_list' %}?tipo=vencido" 
+                       class="btn {% if tipo_merma == 'vencido' %}active{% endif %}">
+                        Vencidos
+                    </a>
+                    <a href="{% url 'merma_list' %}?tipo=deteriorado" 
+                       class="btn {% if tipo_merma == 'deteriorado' %}active{% endif %}">
+                        Deteriorados
+                    </a>
+                    <a href="{% url 'merma_list' %}?tipo=dañado" 
+                       class="btn {% if tipo_merma == 'dañado' %}active{% endif %}">
+                        Dañados
+                    </a>
+                </div>
+            </div>
+
+            <!-- ============================================ -->
+            <!-- TABLA DE PRODUCTOS EN MERMA                  -->
+            <!-- ============================================ -->
+            <div class="merma-tabla-container">
+                <div class="table-responsive">
+                    <table class="table table-hover merma-tabla">
+                        <!-- Encabezado de la tabla -->
+                        <thead>
+                            <tr>
+                                <th>Producto</th>
+                                <th>Estado</th>
+                                <th>Cantidad</th>
+                                <th>Precio Unit.</th>
+                                <th>Pérdida Total</th>
+                                <th>Fecha Caducidad</th>
+                            </tr>
+                        </thead>
+                        
+                        <!-- Cuerpo de la tabla -->
+                        <tbody>
+                            {% for producto in productos %}
+                            <tr>
+                                <!-- Columna: Nombre del producto -->
+                                <td>
+                                    <strong>{{ producto.nombre }}</strong>
+                                    <br>
+                                    <small class="text-muted col-descripcion">
+                                        {{ producto.descripcion|truncatewords:10 }}
+                                    </small>
+                                </td>
+                                
+                                <!-- Columna: Estado de merma (con badge de color) -->
+                                <td>
+                                    {% if producto.estado_merma == 'vencido' %}
+                                        <span class="badge badge-vencido">
+                                            <i class="bi bi-calendar-x"></i> Vencido
+                                        </span>
+                                    {% elif producto.estado_merma == 'deteriorado' %}
+                                        <span class="badge badge-deteriorado">
+                                            <i class="bi bi-exclamation-triangle"></i> Deteriorado
+                                        </span>
+                                    {% elif producto.estado_merma == 'dañado' %}
+                                        <span class="badge badge-danado">
+                                            <i class="bi bi-box-seam"></i> Dañado
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                
+                                <!-- Columna: Cantidad -->
+                                <td>
+                                    <strong>{{ producto.cantidad }}</strong> unidades
+                                </td>
+                                
+                                <!-- Columna: Precio unitario (sin decimales) -->
+                                <td>
+                                    ${{ producto.precio|floatformat:"0" }}
+                                </td>
+                                
+                                <!-- Columna: Pérdida total (cantidad × precio) -->
+                                <td>
+                                    <span class="merma-perdida">
+                                        ${% widthratio producto.cantidad producto.precio 1 %}
+                                    </span>
+                                </td>
+                                
+                                <!-- Columna: Fecha de caducidad -->
+                                <td>
+                                    {{ producto.caducidad|date:"d/m/Y" }}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <!-- Mensaje cuando no hay productos en merma -->
+                            <tr>
+                                <td colspan="6" class="merma-vacio">
+                                    <i class="bi bi-check-circle"></i>
+                                    <p><strong>¡Excelente!</strong></p>
+                                    <p>No hay productos en merma</p>
+                                    {% if tipo_merma %}
+                                    <small>No hay productos con estado "{{ tipo_merma }}"</small>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+{% endblock %}

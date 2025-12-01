@@ -33,10 +33,22 @@ from ventas.views import (
     # Vistas del sistema POS (Punto de Venta)
     pos_view, agregar_cliente_ajax, validar_producto_ajax, procesar_venta_ajax,
     
-    # Vistas del sistema de Alertas (NUEVO)
+    # Vistas del sistema de Alertas
     alertas_list_view, alerta_crear_view, alerta_editar_view, alerta_eliminar_view,
     alerta_cambiar_estado_ajax, generar_alertas_automaticas_view, 
     generar_alerta_desde_producto,
+    
+    # Vistas de Movimientos de Inventario (NUEVO)
+    movimientos_view,
+    
+    # Vistas de Gestión de Merma
+    merma_list_view, mover_a_merma_ajax,
+    
+    # Vistas de Sistema de Reportes (NUEVO)
+    reportes_view,
+    
+    # Vistas de Acciones Masivas (NUEVO)
+    crear_alertas_masivo, mover_merma_masivo, eliminar_masivo,
 )
 
 # Vistas de APIs para el dashboard
@@ -148,6 +160,35 @@ urlpatterns = [
     # APIs para alertas (llamadas AJAX)
     path('api/alerta/<int:alerta_id>/cambiar-estado/', alerta_cambiar_estado_ajax, name='api_alerta_cambiar_estado'),
     path('api/generar-alertas-automaticas/', generar_alertas_automaticas_view, name='api_generar_alertas'),
+    
+    # ============================================================
+    # HISTORIAL DE MOVIMIENTOS DE INVENTARIO (NUEVO)
+    # ============================================================
+    # Página que muestra el historial completo de movimientos
+    path('movimientos/', movimientos_view, name='movimientos'),
+    
+    # ============================================================
+    # GESTIÓN DE MERMA (NUEVO)
+    # ============================================================
+    # Página que muestra productos en merma (vencidos, deteriorados, dañados)
+    path('merma/', merma_list_view, name='merma_list'),
+    
+    # API para mover productos a merma (llamada AJAX desde inventario)
+    path('api/mover-a-merma/', mover_a_merma_ajax, name='api_mover_merma'),
+    
+    # ============================================================
+    # SISTEMA DE REPORTES (NUEVO)
+    # ============================================================
+    # Página principal de reportes con filtros y visualización
+    path('reportes/', reportes_view, name='reportes'),
+    
+    # ============================================================
+    # ACCIONES MASIVAS EN INVENTARIO (NUEVO)
+    # ============================================================
+    # APIs para ejecutar acciones sobre múltiples productos
+    path('api/acciones-masivas/crear-alertas/', crear_alertas_masivo, name='api_crear_alertas_masivo'),
+    path('api/acciones-masivas/mover-merma/', mover_merma_masivo, name='api_mover_merma_masivo'),
+    path('api/acciones-masivas/eliminar/', eliminar_masivo, name='api_eliminar_masivo'),
     
     # ============================================================
     # PÁGINA "PRÓXIMAMENTE" (FUNCIONES EN DESARROLLO)

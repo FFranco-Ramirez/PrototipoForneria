@@ -226,12 +226,19 @@
     padding: 30px;             /* Espacio interior para separar el contenido de los bordes. */
 }
 
-/* --- Cuadrícula para las Tarjetas de Métricas --- */
-/* El layout que organiza las tarjetas en una grilla responsive. */
-.dashboard-metrics-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); /* Crea columnas automáticas. Cada columna tendrá un mínimo de 220px y se ajustará para ocupar el espacio. */
-    gap: 20px;                 /* Espacio entre las tarjetas. */
+/* --- Fila de Contenido (Row) --- */
+.dashboard-row {
+    display: flex;
+    gap: 20px;                 /* Espacio entre columnas */
+    margin-bottom: 20px;       /* Espacio entre filas */
+}
+
+/* --- Columna Individual (Column) --- */
+.dashboard-col {
+    flex: 1;                   /* Cada columna ocupa el mismo espacio */
+    display: flex;
+    flex-direction: column;
+    gap: 20px;                 /* Espacio entre cards dentro de la columna */
 }
 
 /* --- Estilo Base de las Tarjetas de Métricas --- */
@@ -276,4 +283,40 @@
     grid-template-columns: 1fr 1fr; /* Divide el espacio en dos columnas iguales. */
     gap: 16px;                 /* Espacio entre las dos tarjetas. */
     align-items: start;        /* Alinea las tarjetas en la parte superior de su celda. */
+}
+
+/*
+================================================================
+=                                                              =
+=         ESTILOS PARA LA SECCIÓN DE VENCIMIENTOS              =
+=                                                              =
+================================================================
+*/
+
+/* --- Columnas Vacías (Columnas 3 y 4) --- */
+.empty-column {
+    /* Espacio reservado para futuras funcionalidades */
+    min-height: 200px;
+    background-color: transparent;
+}
+
+/* --- Responsive: En pantallas pequeñas --- */
+@media (max-width: 1200px) {
+    .dashboard-row {
+        flex-wrap: wrap;       /* Permite que las columnas se envuelvan */
+    }
+    
+    .dashboard-col {
+        flex: 1 1 45%;         /* 2 columnas en tablets */
+    }
+    
+    .empty-column {
+        display: none;         /* Ocultar columnas vacías en tablets */
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboard-col {
+        flex: 1 1 100%;        /* 1 columna en móviles */
+    }
 }

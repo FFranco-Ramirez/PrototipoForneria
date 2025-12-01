@@ -22,7 +22,10 @@
 @import "pages/_inventory.css";
 @import "pages/_edit_pages.css";
 @import "pages/_pos.css";  /* Estilos del Punto de Venta */
-@import "pages/_alertas.css";  /* NUEVO: Estilos del Sistema de Alertas */
+@import "pages/_alertas.css";  /* Estilos del Sistema de Alertas */
+@import "pages/_movimientos.css";  /* Estilos de Movimientos de Inventario */
+@import "pages/_merma.css";  /* Estilos de Gestión de Merma */
+@import "pages/_reportes.css";  /* NUEVO: Estilos del Sistema de Reportes */
 
 /* --- 2. Importación de Componentes --- */
 @import "components/_buttons.css";
