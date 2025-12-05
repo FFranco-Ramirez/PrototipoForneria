@@ -17,6 +17,7 @@
 */
 
 /* --- 1. Importación de Páginas --- */
+@import "pages/_landing.css";  /* NUEVO: Estilos de la Landing Page */
 @import "pages/_dashboard.css";
 @import "pages/_welcome.css";
 @import "pages/_inventory.css";

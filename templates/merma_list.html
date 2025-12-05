@@ -50,41 +50,33 @@
                     </div>
                     <div class="col-md-4 text-center">
                         <div class="merma-stats-number">
-                            {% widthratio productos|length 1 1 %}
+                            {{ total_unidades }}
                         </div>
                         <p class="mb-0">Total de Unidades</p>
                     </div>
                     <div class="col-md-4 text-center">
                         <div class="merma-stats-number text-danger">
-                            <!-- Calcular pérdida total -->
-                            ${% widthratio productos|length 1000 1 %}
+                            ${{ perdida_total|floatformat:"0" }}
                         </div>
-                        <p class="mb-0">Pérdida Estimada</p>
+                        <p class="mb-0">Pérdida Total</p>
                     </div>
                 </div>
             </div>
 
             <!-- ============================================ -->
-            <!-- FILTROS POR TIPO DE MERMA                    -->
+            <!-- BARRA DE BÚSQUEDA                            -->
             <!-- ============================================ -->
-            <div class="merma-filtros">
-                <div class="btn-group" role="group">
-                    <a href="{% url 'merma_list' %}" 
-                       class="btn {% if not tipo_merma %}active{% endif %}">
-                        Todos
-                    </a>
-                    <a href="{% url 'merma_list' %}?tipo=vencido" 
-                       class="btn {% if tipo_merma == 'vencido' %}active{% endif %}">
-                        Vencidos
-                    </a>
-                    <a href="{% url 'merma_list' %}?tipo=deteriorado" 
-                       class="btn {% if tipo_merma == 'deteriorado' %}active{% endif %}">
-                        Deteriorados
-                    </a>
-                    <a href="{% url 'merma_list' %}?tipo=dañado" 
-                       class="btn {% if tipo_merma == 'dañado' %}active{% endif %}">
-                        Dañados
-                    </a>
+            <div class="merma-search-container">
+                <!-- Barra de búsqueda -->
+                <div class="merma-search-box">
+                    <i class="bi bi-search"></i>
+                    <input type="text" 
+                           id="searchInput" 
+                           class="merma-search-input" 
+                           placeholder="Buscar producto por nombre...">
+                    <button id="clearSearch" class="merma-clear-btn" style="display: none;">
+                        <i class="bi bi-x-circle-fill"></i>
+                    </button>
                 </div>
             </div>
 
@@ -93,23 +85,68 @@
             <!-- ============================================ -->
             <div class="merma-tabla-container">
                 <div class="table-responsive">
-                    <table class="table table-hover merma-tabla">
+                    <table class="table merma-tabla">
                         <!-- Encabezado de la tabla -->
                         <thead>
                             <tr>
-                                <th>Producto</th>
-                                <th>Estado</th>
-                                <th>Cantidad</th>
-                                <th>Precio Unit.</th>
-                                <th>Pérdida Total</th>
-                                <th>Fecha Caducidad</th>
+                                <th class="sortable-header">
+                                    <div class="header-content">
+                                        <span>PRODUCTO</span>
+                                    </div>
+                                </th>
+                                <th>
+                                    <div class="header-content">
+                                        <span>ESTADO</span>
+                                    </div>
+                                </th>
+                                <th class="sortable-header" data-sort="cantidad">
+                                    <div class="header-content">
+                                        <span>CANTIDAD</span>
+                                        <div class="sort-icons">
+                                            <i class="bi bi-caret-up-fill sort-icon"></i>
+                                            <i class="bi bi-caret-down-fill sort-icon"></i>
+                                        </div>
+                                    </div>
+                                </th>
+                                <th class="sortable-header" data-sort="precio">
+                                    <div class="header-content">
+                                        <span>PRECIO UNIT.</span>
+                                        <div class="sort-icons">
+                                            <i class="bi bi-caret-up-fill sort-icon"></i>
+                                            <i class="bi bi-caret-down-fill sort-icon"></i>
+                                        </div>
+                                    </div>
+                                </th>
+                                <th class="sortable-header" data-sort="perdida">
+                                    <div class="header-content">
+                                        <span>PÉRDIDA TOTAL</span>
+                                        <div class="sort-icons">
+                                            <i class="bi bi-caret-up-fill sort-icon"></i>
+                                            <i class="bi bi-caret-down-fill sort-icon"></i>
+                                        </div>
+                                    </div>
+                                </th>
+                                <th class="sortable-header" data-sort="fecha">
+                                    <div class="header-content">
+                                        <span>FECHA CADUCIDAD</span>
+                                        <div class="sort-icons">
+                                            <i class="bi bi-caret-up-fill sort-icon"></i>
+                                            <i class="bi bi-caret-down-fill sort-icon"></i>
+                                        </div>
+                                    </div>
+                                </th>
                             </tr>
                         </thead>
                         
                         <!-- Cuerpo de la tabla -->
-                        <tbody>
+                        <tbody id="mermaTableBody">
                             {% for producto in productos %}
-                            <tr>
+                            <tr class="merma-row" 
+                                data-nombre="{{ producto.nombre|lower }}"
+                                data-perdida="{{ producto.calcular_perdida }}"
+                                data-cantidad="{{ producto.cantidad }}"
+                                data-precio="{{ producto.precio }}"
+                                data-fecha="{{ producto.caducidad|date:'Y-m-d' }}">
                                 <!-- Columna: Nombre del producto -->
                                 <td>
                                     <strong>{{ producto.nombre }}</strong>
@@ -149,7 +186,7 @@
                                 <!-- Columna: Pérdida total (cantidad × precio) -->
                                 <td>
                                     <span class="merma-perdida">
-                                        ${% widthratio producto.cantidad producto.precio 1 %}
+                                        ${{ producto.calcular_perdida|floatformat:"0" }}
                                     </span>
                                 </td>
                                 
@@ -165,9 +202,7 @@
                                     <i class="bi bi-check-circle"></i>
                                     <p><strong>¡Excelente!</strong></p>
                                     <p>No hay productos en merma</p>
-                                    {% if tipo_merma %}
-                                    <small>No hay productos con estado "{{ tipo_merma }}"</small>
-                                    {% endif %}
+                                    <small>Todos los productos están en buen estado</small>
                                 </td>
                             </tr>
                             {% endfor %}
@@ -178,4 +213,9 @@
         </main>
     </div>
 </div>
+{% endblock %}
+
+{% block javascripts %}
+<!-- Script para filtros y búsqueda de merma -->
+<script src="{% static 'js/merma_filters.js' %}"></script>
 {% endblock %}

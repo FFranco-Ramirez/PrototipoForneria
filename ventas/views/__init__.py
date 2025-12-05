@@ -6,7 +6,7 @@
 
 # --- Vistas de Autenticación y Usuarios ---
 from .views_autentication import home, login_view, register_view, dashboard_view
-from .views_autentication import proximamente_view
+from .views_autentication import proximamente_view, recuperar_contrasena_view
 from .views_autentication import logout_view
 from .views_autentication import usuarios_list_view, usuario_editar_view, usuario_eliminar_view
 
@@ -38,3 +38,11 @@ from .view_reportes import reportes_view
 
 # --- Vistas de Acciones Masivas (NUEVO) ---
 from .view_acciones_masivas import crear_alertas_masivo, mover_merma_masivo, eliminar_masivo
+
+# --- Vistas de Métricas del Dashboard (NUEVO) ---
+from .view_dashboard_metrics import (
+    ventas_del_dia_api,
+    stock_bajo_api,
+    alertas_pendientes_api,
+    top_producto_api
+)

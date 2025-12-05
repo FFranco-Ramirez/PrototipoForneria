@@ -4,7 +4,7 @@
 {% block body_class %}dark-gold-theme{% endblock %}
 
 {% block contenido %}
-<div class="dashboard-main-container">
+<div class="dashboard-main-container alertas-page">
     <!-- Sidebar Reutilizable -->
     {% include 'includes/sidebar.html' with active_page='alertas' %}
     
@@ -43,40 +43,40 @@
         
         <main class="dashboard-content">
             <div class="dashboard-metrics-grid mb-4">
-                <div class="dashboard-metric-card border-danger" style="background-color: var(--bg-alt); color: var(--text);">
+                <div class="dashboard-metric-card border-danger">
                     <h3 class="metric-card-title text-danger">
                         <i class="bi bi-exclamation-triangle-fill"></i> Alertas Rojas
                     </h3>
                     <p class="metric-card-value text-danger">{{ stats_tipo.roja|default:0 }}</p>
-                    <p class="metric-card-subtitle" style="color: var(--muted);">0-13 días (Urgente)</p>
+                    <p class="metric-card-subtitle">0-13 días (Urgente)</p>
                 </div>
                 
-                <div class="dashboard-metric-card border-warning" style="background-color: var(--bg-alt); color: var(--text);">
+                <div class="dashboard-metric-card border-warning">
                     <h3 class="metric-card-title text-warning">
                         <i class="bi bi-exclamation-circle-fill"></i> Alertas Amarillas
                     </h3>
                     <p class="metric-card-value text-warning">{{ stats_tipo.amarilla|default:0 }}</p>
-                    <p class="metric-card-subtitle" style="color: var(--muted);">14-29 días (Precaución)</p>
+                    <p class="metric-card-subtitle">14-29 días (Precaución)</p>
                 </div>
                 
-                <div class="dashboard-metric-card border-success" style="background-color: var(--bg-alt); color: var(--text);">
+                <div class="dashboard-metric-card border-success">
                     <h3 class="metric-card-title text-success">
                         <i class="bi bi-info-circle-fill"></i> Alertas Verdes
                     </h3>
                     <p class="metric-card-value text-success">{{ stats_tipo.verde|default:0 }}</p>
-                    <p class="metric-card-subtitle" style="color: var(--muted);">30+ días (OK)</p>
+                    <p class="metric-card-subtitle">30+ días (OK)</p>
                 </div>
                 
-                <div class="dashboard-metric-card" style="background-color: var(--bg-alt); color: var(--text);">
-                    <h3 class="metric-card-title" style="color: var(--gold);">
+                <div class="dashboard-metric-card border-gold">
+                    <h3 class="metric-card-title text-gold">
                         <i class="bi bi-bell-fill"></i> Alertas Activas
                     </h3>
-                    <p class="metric-card-value" style="color: var(--gold);">{{ stats_estado.activa|default:0 }}</p>
-                    <p class="metric-card-subtitle" style="color: var(--muted);">Pendientes de acción</p>
+                    <p class="metric-card-value text-gold">{{ stats_estado.activa|default:0 }}</p>
+                    <p class="metric-card-subtitle">Pendientes de acción</p>
                 </div>
             </div>
             
-            <div class="mb-4 d-flex gap-2 flex-wrap">
+            <div class="alertas-action-buttons mb-4">
                 <a href="{% url 'alerta_crear' %}" class="btn btn-primary">
                     <i class="bi bi-plus-circle"></i> Nueva Alerta
                 </a>
@@ -85,50 +85,50 @@
                     <i class="bi bi-arrow-repeat"></i> Generar Alertas Automáticas
                 </button>
                 
-                <a href="{% url 'inventario' %}" class="btn btn-outline-secondary">
-                    <i class="bi bi-arrow-left"></i> Volver al Inventario
+                <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Volver al Dashboard
                 </a>
             </div>
             
-            <div class="card mb-4 shadow-sm" style="background-color: var(--bg-alt); border: 1px solid var(--border);">
-                <div class="card-header" style="background-color: var(--gold); color: #000;">
+            <div class="card mb-4 shadow-sm alertas-filter-card">
+                <div class="card-header">
                     <h5 class="mb-0">
                         <i class="bi bi-funnel"></i> Filtros de Búsqueda
                     </h5>
                 </div>
-                <div class="card-body" style="background-color: var(--bg-alt);">
+                <div class="card-body">
                     <form method="GET" action="{% url 'alertas_list' %}" id="form-filtros">
                         <div class="row g-3">
                             <div class="col-md-3">
-                                <label class="form-label fw-bold" style="color: var(--gold);">Tipo de Alerta:</label>
+                                <label class="form-label fw-bold">Tipo de Alerta:</label>
                                 <div class="form-control-wrapper">
                                     {{ form_filtro.tipo_alerta }}
                                 </div>
                             </div>
                             
                             <div class="col-md-3">
-                                <label class="form-label fw-bold" style="color: var(--gold);">Estado:</label>
+                                <label class="form-label fw-bold">Estado:</label>
                                 <div class="form-control-wrapper">
                                     {{ form_filtro.estado }}
                                 </div>
                             </div>
                             
                             <div class="col-md-3">
-                                <label class="form-label fw-bold" style="color: var(--gold);">Fecha Desde:</label>
+                                <label class="form-label fw-bold">Fecha Desde:</label>
                                 <div class="form-control-wrapper">
                                     {{ form_filtro.fecha_desde }}
                                 </div>
                             </div>
                             
                             <div class="col-md-3">
-                                <label class="form-label fw-bold" style="color: var(--gold);">Fecha Hasta:</label>
+                                <label class="form-label fw-bold">Fecha Hasta:</label>
                                 <div class="form-control-wrapper">
                                     {{ form_filtro.fecha_hasta }}
                                 </div>
                             </div>
                             
                             <div class="col-md-9">
-                                <label class="form-label fw-bold" style="color: var(--gold);">Buscar Producto:</label>
+                                <label class="form-label fw-bold">Buscar Producto:</label>
                                 <div class="form-control-wrapper">
                                     {{ form_filtro.producto }}
                                 </div>
@@ -147,23 +147,53 @@
                 </div>
             </div>
             
-            <div class="card shadow-sm" style="background-color: var(--bg-alt); border: 1px solid var(--border);">
-                <div class="card-header" style="background-color: var(--bg-alt); border-bottom: 2px solid var(--gold);">
-                    <h5 class="mb-0" style="color: var(--text);">
+            <!-- Barra de acciones masivas -->
+            <div id="bulk-actions-bar" class="bulk-actions-bar" style="display: none;">
+                <div class="bulk-actions-content">
+                    <span class="bulk-selected-count">
+                        <i class="bi bi-check-square"></i>
+                        <span id="selected-count">0</span> alertas seleccionadas
+                    </span>
+                    <div class="bulk-actions-buttons">
+                        <button type="button" class="btn btn-sm btn-success" id="btn-bulk-resuelta">
+                            <i class="bi bi-check-circle"></i> Marcar como Resuelta
+                        </button>
+                        <button type="button" class="btn btn-sm btn-secondary" id="btn-bulk-ignorada">
+                            <i class="bi bi-x-circle"></i> Marcar como Ignorada
+                        </button>
+                        <button type="button" class="btn btn-sm btn-primary" id="btn-bulk-activa">
+                            <i class="bi bi-arrow-repeat"></i> Marcar como Activa
+                        </button>
+                        <button type="button" class="btn btn-sm btn-danger" id="btn-bulk-delete">
+                            <i class="bi bi-trash"></i> Eliminar
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-light" id="btn-bulk-cancel">
+                            <i class="bi bi-x"></i> Cancelar
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm alertas-table-card">
+                <div class="card-header">
+                    <h5 class="mb-0">
                         <i class="bi bi-list-ul"></i> Historial de Alertas 
-                        <span class="badge" style="background-color: var(--gold); color: #000;">
+                        <span class="badge alertas-count-badge">
                             {{ total_alertas|default:0 }} alertas
                         </span>
                     </h5>
                 </div>
-                <div class="card-body p-0" style="background-color: var(--bg);">
+                <div class="card-body p-0">
                     {% if alertas %}
                         <div class="table-responsive">
-                            <table class="table table-hover table-striped mb-0 alertas-table">
-                                <thead style="background-color: var(--bg-alt); color: var(--text);">
+                            <table class="table mb-0 alertas-table">
+                                <thead>
                                     <tr>
+                                        <th width="3%">
+                                            <input type="checkbox" id="select-all-alertas" class="form-check-input">
+                                        </th>
                                         <th width="5%">Tipo</th>
-                                        <th width="30%">Mensaje</th>
+                                        <th width="27%">Mensaje</th>
                                         <th width="15%">Producto</th>
                                         <th width="10%">Días</th>
                                         <th width="12%">Fecha</th>
@@ -173,7 +203,10 @@
                                 </thead>
                                 <tbody>
                                     {% for alerta in alertas %}
-                                    <tr class="alerta-row" data-tipo="{{ alerta.tipo_alerta }}">
+                                    <tr class="alerta-row" data-tipo="{{ alerta.tipo_alerta }}" data-alerta-id="{{ alerta.id }}">
+                                        <td class="text-center">
+                                            <input type="checkbox" class="form-check-input alerta-checkbox" value="{{ alerta.id }}">
+                                        </td>
                                         <td class="text-center">
                                             <i class="bi {{ alerta.get_icono }} text-{{ alerta.get_color_badge }} fs-4" 
                                                title="{{ alerta.get_tipo_alerta_display }}"></i>
@@ -260,12 +293,12 @@
                             </table>
                         </div>
                     {% else %}
-                        <div class="text-center py-5" style="background-color: var(--bg); color: var(--text);">
-                            <i class="bi bi-bell-slash" style="font-size: 4rem; color: var(--muted);"></i>
-                            <p class="mt-3" style="color: var(--muted); font-size: 1.1rem;">
+                        <div class="text-center py-5 alertas-empty-state">
+                            <i class="bi bi-bell-slash"></i>
+                            <p class="mt-3 empty-message">
                                 No se encontraron alertas con los filtros aplicados.
                             </p>
-                            <p style="color: var(--text); margin-top: 1rem;">
+                            <p class="empty-question">
                                 <strong>¿Quieres generar alertas automáticamente?</strong>
                             </p>
                             <div class="d-flex gap-2 justify-content-center mt-3">

@@ -4,9 +4,38 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from ..funciones.formularios import RegistrationForms, LoginForm
 
-# Create your views here.
+# ================================================================
+# =                    VISTA: LANDING PAGE                       =
+# ================================================================
+# 
+# Esta es la página principal que verán los visitantes cuando
+# accedan a la raíz del sitio ("/").
+# 
+# PERSONALIZACIÓN:
+# - Puedes pasar datos adicionales en el contexto si necesitas
+#   mostrar información dinámica (ej: productos destacados)
+# - Por ahora es una página estática con el template landing.html
+
 def home(request):
-    return render(request, 'home.html')
+    """
+    Vista para la landing page principal del sitio.
+    
+    Esta página muestra:
+    - Hero section con imagen/video de fondo
+    - Sección "Sobre Nosotros" con la historia de La Forneria Emporio
+    - Footer con información de contacto, horarios y redes sociales
+    
+    Args:
+        request: HttpRequest de Django
+    
+    Returns:
+        HttpResponse: Renderiza el template landing.html
+    """
+    contexto = {
+        # Contexto vacío - toda la información está en el template
+    }
+    
+    return render(request, 'landing.html', contexto)
 
 def login_view(request):
     if request.method == 'POST':
@@ -78,7 +107,12 @@ def proximamente_view(request, feature=None):
     return render(request, "proximamente.html", contexto)
 
 def recuperar_contrasena_view(request):
-    return redirect("proximamente_feature", feature="recuperar-contrasena")
+    """
+    Vista provisional para recuperar contraseña.
+    Muestra una página informativa indicando que la funcionalidad
+    estará disponible próximamente.
+    """
+    return render(request, 'recuperar_contrasena.html')
 
 def logout_view(request):
     logout(request)

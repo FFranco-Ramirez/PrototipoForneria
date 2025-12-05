@@ -143,6 +143,15 @@ class Productos(models.Model):
             self.estado_merma = motivo
             self.save()
     
+    def calcular_perdida(self):
+        """
+        Calcula la pérdida económica del producto (cantidad × precio).
+        
+        Returns:
+            Decimal: Pérdida total del producto
+        """
+        return self.cantidad * self.precio
+    
     # ============================================================
     # CONFIGURACIÓN DEL MODELO
     # ============================================================

@@ -272,3 +272,191 @@ document.addEventListener('DOMContentLoaded', resaltarAlertasUrgentes);
 
 console.log('✅ Sistema de Alertas cargado correctamente');
 
+
+
+// ================================================================
+// =           FUNCIONALIDAD DE ACCIONES MASIVAS                  =
+// ================================================================
+
+/**
+ * Inicializa la funcionalidad de selección múltiple y acciones masivas
+ */
+function inicializarAccionesMasivas() {
+    const selectAll = document.getElementById('select-all-alertas');
+    const checkboxes = document.querySelectorAll('.alerta-checkbox');
+    const bulkActionsBar = document.getElementById('bulk-actions-bar');
+    const selectedCountSpan = document.getElementById('selected-count');
+    
+    if (!selectAll || !bulkActionsBar) return;
+    
+    // Seleccionar/deseleccionar todas
+    selectAll.addEventListener('change', function() {
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = this.checked;
+        });
+        actualizarBarraAcciones();
+    });
+    
+    // Actualizar cuando se selecciona un checkbox individual
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            actualizarBarraAcciones();
+            
+            // Actualizar el checkbox "seleccionar todo"
+            const todosSeleccionados = Array.from(checkboxes).every(cb => cb.checked);
+            const algunoSeleccionado = Array.from(checkboxes).some(cb => cb.checked);
+            selectAll.checked = todosSeleccionados;
+            selectAll.indeterminate = algunoSeleccionado && !todosSeleccionados;
+        });
+    });
+    
+    // Botones de acciones masivas
+    document.getElementById('btn-bulk-resuelta')?.addEventListener('click', () => cambiarEstadoMasivo('resuelta'));
+    document.getElementById('btn-bulk-ignorada')?.addEventListener('click', () => cambiarEstadoMasivo('ignorada'));
+    document.getElementById('btn-bulk-activa')?.addEventListener('click', () => cambiarEstadoMasivo('activa'));
+    document.getElementById('btn-bulk-delete')?.addEventListener('click', eliminarMasivo);
+    document.getElementById('btn-bulk-cancel')?.addEventListener('click', cancelarSeleccion);
+    
+    function actualizarBarraAcciones() {
+        const seleccionados = Array.from(checkboxes).filter(cb => cb.checked);
+        const count = seleccionados.length;
+        
+        if (count > 0) {
+            bulkActionsBar.style.display = 'block';
+            selectedCountSpan.textContent = count;
+        } else {
+            bulkActionsBar.style.display = 'none';
+        }
+    }
+    
+    function getAlertasSeleccionadas() {
+        return Array.from(checkboxes)
+            .filter(cb => cb.checked)
+            .map(cb => cb.value);
+    }
+    
+    function cambiarEstadoMasivo(nuevoEstado) {
+        const alertasIds = getAlertasSeleccionadas();
+        
+        if (alertasIds.length === 0) {
+            mostrarAlertaTemporal('warning', 'No hay alertas seleccionadas');
+            return;
+        }
+        
+        const estadoTexto = {
+            'activa': 'Activa',
+            'resuelta': 'Resuelta',
+            'ignorada': 'Ignorada'
+        };
+        
+        if (!confirm(`¿Marcar ${alertasIds.length} alerta(s) como ${estadoTexto[nuevoEstado]}?`)) {
+            return;
+        }
+        
+        const csrfToken = getCookie('csrftoken');
+        
+        // Procesar cada alerta
+        let procesadas = 0;
+        let errores = 0;
+        
+        alertasIds.forEach((alertaId, index) => {
+            const formData = new FormData();
+            formData.append('estado', nuevoEstado);
+            
+            fetch(`/api/alerta/${alertaId}/cambiar-estado/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrfToken
+                },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    procesadas++;
+                } else {
+                    errores++;
+                }
+                
+                // Si es la última, mostrar resultado
+                if (index === alertasIds.length - 1) {
+                    setTimeout(() => {
+                        if (errores === 0) {
+                            mostrarAlertaTemporal('success', `✅ ${procesadas} alerta(s) actualizadas correctamente`);
+                        } else {
+                            mostrarAlertaTemporal('warning', `⚠️ ${procesadas} actualizadas, ${errores} con errores`);
+                        }
+                        setTimeout(() => location.reload(), 1500);
+                    }, 500);
+                }
+            })
+            .catch(error => {
+                errores++;
+                console.error('Error:', error);
+            });
+        });
+    }
+    
+    function eliminarMasivo() {
+        const alertasIds = getAlertasSeleccionadas();
+        
+        if (alertasIds.length === 0) {
+            mostrarAlertaTemporal('warning', 'No hay alertas seleccionadas');
+            return;
+        }
+        
+        if (!confirm(`⚠️ ¿Estás seguro de eliminar ${alertasIds.length} alerta(s)?\n\nEsta acción no se puede deshacer.`)) {
+            return;
+        }
+        
+        const csrfToken = getCookie('csrftoken');
+        
+        // Procesar cada alerta
+        let eliminadas = 0;
+        let errores = 0;
+        
+        alertasIds.forEach((alertaId, index) => {
+            fetch(`/alertas/eliminar/${alertaId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrfToken
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    eliminadas++;
+                } else {
+                    errores++;
+                }
+                
+                // Si es la última, mostrar resultado
+                if (index === alertasIds.length - 1) {
+                    setTimeout(() => {
+                        if (errores === 0) {
+                            mostrarAlertaTemporal('success', `✅ ${eliminadas} alerta(s) eliminadas correctamente`);
+                        } else {
+                            mostrarAlertaTemporal('warning', `⚠️ ${eliminadas} eliminadas, ${errores} con errores`);
+                        }
+                        setTimeout(() => location.reload(), 1500);
+                    }, 500);
+                }
+            })
+            .catch(error => {
+                errores++;
+                console.error('Error:', error);
+            });
+        });
+    }
+    
+    function cancelarSeleccion() {
+        checkboxes.forEach(cb => cb.checked = false);
+        selectAll.checked = false;
+        selectAll.indeterminate = false;
+        bulkActionsBar.style.display = 'none';
+    }
+}
+
+// Inicializar acciones masivas cuando carga la página
+document.addEventListener('DOMContentLoaded', inicializarAccionesMasivas);
+
+console.log('✅ Acciones masivas de alertas cargadas correctamente');

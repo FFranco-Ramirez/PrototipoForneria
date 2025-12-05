@@ -1,41 +1,75 @@
-INSERT INTO `productos` (
-  `nombre`, `descripcion`, `marca`, `precio`, `caducidad`,
-  `tipo`, `presentacion`, `formato`, `categorias_id`,
-  `nutricional_id`, `cantidad`
-) VALUES
-('Pan integral', 'Pan integral fresco', 'Forneria', 1500.00, '2025-11-12', 'Panaderia', 'unidad', '500 g', 1, 1, 30),
-('Baguette clásico', 'Baguette crujiente', 'Forneria', 1200.00, '2025-11-12', 'Panaderia', 'unidad', '300 g', 1, 2, 25),
-('Croissant mantequilla', 'Croissant de mantequilla', 'Forneria', 900.00, '2025-11-12', 'Pasteleria', 'unidad', '1 unidad', 1, 1, 40),
-('Muffin chocolate', 'Muffin sabor chocolate', 'Forneria', 800.00, '2025-11-12', 'Pasteleria', 'unidad', '1 unidad', 1, 2, 35),
-('Galletas avena', 'Galletas de avena', 'Forneria', 1800.00, '2025-11-12', 'Snack', 'pack', '200 g', 2, 1, 50),
+-- ============================================
+-- SCRIPT DE INSERCIÓN DE 50 PRODUCTOS
+-- Base de datos: forneria
+-- ============================================
 
-('Brownie cacao', 'Brownie de cacao', 'Forneria', 1000.00, '2025-11-13', 'Pasteleria', 'unidad', '1 unidad', 1, 1, 30),
-('Empanada de queso', 'Empanada rellena de queso', 'Forneria', 1300.00, '2025-11-13', 'Panaderia', 'unidad', '1 unidad', 1, 2, 24),
-('Focaccia romero', 'Focaccia con romero', 'Forneria', 2500.00, '2025-11-13', 'Panaderia', 'unidad', '400 g', 1, 1, 18),
-('Ciabatta rústica', 'Pan ciabatta rústico', 'Forneria', 1400.00, '2025-11-13', 'Panaderia', 'unidad', '300 g', 1, 2, 28),
-('Pan de centeno', 'Pan con harina de centeno', 'Forneria', 2200.00, '2025-11-13', 'Panaderia', 'unidad', '600 g', 1, 1, 20),
+-- Primero insertamos registros en la tabla nutricional (necesarios para productos)
+INSERT INTO `nutricional` (`id`, `calorias`, `proteinas`, `grasas`, `carbohidratos`, `azucares`, `sodio`) VALUES
+(3, 250.00, 8.00, 3.50, 48.00, 5.00, 450.00),
+(4, 280.00, 9.00, 4.00, 52.00, 6.00, 480.00),
+(5, 320.00, 10.00, 12.00, 45.00, 15.00, 350.00),
+(6, 290.00, 7.50, 8.00, 50.00, 18.00, 320.00),
+(7, 180.00, 5.00, 2.00, 35.00, 8.00, 280.00),
+(8, 350.00, 6.00, 15.00, 48.00, 22.00, 300.00),
+(9, 270.00, 8.50, 5.00, 47.00, 7.00, 420.00),
+(10, 310.00, 9.50, 10.00, 46.00, 12.00, 380.00);
 
-('Pan de molde', 'Pan de molde familiar', 'Forneria', 2000.00, '2025-11-14', 'Panaderia', 'unidad', '700 g', 1, 2, 22),
-('Rollo de canela', 'Rollo de canela', 'Forneria', 1000.00, '2025-11-14', 'Pasteleria', 'unidad', '1 unidad', 1, 1, 30),
-('Pan brioche', 'Pan brioche suave', 'Forneria', 2300.00, '2025-11-14', 'Panaderia', 'unidad', '500 g', 1, 2, 16),
-('Pan pita', 'Pan pita clásico', 'Forneria', 1200.00, '2025-11-14', 'Panaderia', 'pack', '6 unidades', 1, 1, 36),
-('Pan de ajo', 'Pan con ajo y perejil', 'Forneria', 1800.00, '2025-11-14', 'Panaderia', 'pack', '4 unidades', 1, 2, 26),
+-- Ahora insertamos los 50 productos
+INSERT INTO `productos` (`nombre`, `descripcion`, `marca`, `precio`, `caducidad`, `elaboracion`, `tipo`, `stock_actual`, `stock_minimo`, `stock_maximo`, `presentacion`, `formato`, `creado`, `modificado`, `categorias_id`, `nutricional_id`, `cantidad`, `estado_merma`) VALUES
+-- Panes artesanales (1-15)
+('Pan francés tradicional', 'Pan francés crujiente por fuera, suave por dentro', 'Forneria', 1100.00, '2025-12-05', '2025-12-02', 'Panaderia', 45, 10, 100, 'unidad', '250 g', NOW(), NOW(), 1, 3, 45, 'activo'),
+('Pan amasado casero', 'Pan amasado estilo casero', 'Forneria', 1300.00, '2025-12-05', '2025-12-02', 'Panaderia', 38, 10, 80, 'unidad', '300 g', NOW(), NOW(), 1, 4, 38, 'activo'),
+('Pan de campo rústico', 'Pan rústico con corteza gruesa', 'Forneria', 1600.00, '2025-12-06', '2025-12-02', 'Panaderia', 32, 8, 70, 'unidad', '400 g', NOW(), NOW(), 1, 3, 32, 'activo'),
+('Pan de nueces', 'Pan con nueces naturales', 'Forneria', 2500.00, '2025-12-06', '2025-12-02', 'Panaderia', 28, 8, 60, 'unidad', '450 g', NOW(), NOW(), 1, 5, 28, 'activo'),
+('Pan de pasas', 'Pan dulce con pasas', 'Forneria', 2300.00, '2025-12-06', '2025-12-02', 'Panaderia', 25, 8, 60, 'unidad', '400 g', NOW(), NOW(), 1, 6, 25, 'activo'),
+('Pan de aceitunas', 'Pan mediterráneo con aceitunas', 'Forneria', 2400.00, '2025-12-06', '2025-12-02', 'Panaderia', 22, 8, 50, 'unidad', '400 g', NOW(), NOW(), 1, 4, 22, 'activo'),
+('Pan de semillas mixtas', 'Pan con chía, sésamo y linaza', 'Forneria', 2200.00, '2025-12-07', '2025-12-02', 'Panaderia', 30, 10, 70, 'unidad', '450 g', NOW(), NOW(), 1, 7, 30, 'activo'),
+('Pan de salvado', 'Pan alto en fibra', 'Forneria', 1900.00, '2025-12-07', '2025-12-02', 'Panaderia', 26, 8, 60, 'unidad', '400 g', NOW(), NOW(), 1, 3, 26, 'activo'),
+('Pan de avena integral', 'Pan con harina de avena', 'Forneria', 2100.00, '2025-12-07', '2025-12-02', 'Panaderia', 24, 8, 60, 'unidad', '450 g', NOW(), NOW(), 1, 7, 24, 'activo'),
+('Pan de espelta', 'Pan con harina de espelta', 'Forneria', 2600.00, '2025-12-07', '2025-12-02', 'Panaderia', 20, 6, 50, 'unidad', '500 g', NOW(), NOW(), 1, 4, 20, 'activo'),
+('Pan de quinoa', 'Pan con quinoa andina', 'Forneria', 2800.00, '2025-12-08', '2025-12-02', 'Panaderia', 18, 6, 45, 'unidad', '450 g', NOW(), NOW(), 1, 8, 18, 'activo'),
+('Pan de masa madre', 'Pan fermentado naturalmente', 'Forneria', 2700.00, '2025-12-08', '2025-12-02', 'Panaderia', 22, 8, 50, 'unidad', '550 g', NOW(), NOW(), 1, 3, 22, 'activo'),
+('Pan de tomate seco', 'Pan con tomates secos', 'Forneria', 2600.00, '2025-12-09', '2025-12-02', 'Panaderia', 18, 6, 45, 'unidad', '400 g', NOW(), NOW(), 1, 5, 18, 'activo'),
+('Pan de albahaca', 'Pan aromático con albahaca', 'Forneria', 2500.00, '2025-12-09', '2025-12-02', 'Panaderia', 19, 6, 45, 'unidad', '400 g', NOW(), NOW(), 1, 4, 19, 'activo'),
+('Pan de parmesano', 'Pan con queso parmesano', 'Forneria', 2800.00, '2025-12-10', '2025-12-02', 'Panaderia', 16, 6, 40, 'unidad', '400 g', NOW(), NOW(), 1, 8, 16, 'activo'),
 
-('Pan de maíz', 'Pan con harina de maíz', 'Forneria', 2100.00, '2025-11-15', 'Panaderia', 'unidad', '500 g', 1, 1, 20),
-('Pan sin gluten', 'Pan apto celíacos', 'Forneria', 2600.00, '2025-11-15', 'Panaderia', 'unidad', '500 g', 1, 2, 14),
-('Pan de queso', 'Pan con queso', 'Forneria', 2400.00, '2025-11-15', 'Panaderia', 'pack', '6 unidades', 1, 1, 30),
-('Pan de chocolate', 'Pan con chips de chocolate', 'Forneria', 2400.00, '2025-11-15', 'Panaderia', 'unidad', '500 g', 1, 2, 12),
-('Pan de coco', 'Pan sabor coco', 'Forneria', 2300.00, '2025-11-15', 'Panaderia', 'unidad', '500 g', 1, 1, 12),
+-- Bollería y pastelería (16-30)
+('Croissant de almendras', 'Croissant relleno de crema de almendras', 'Forneria', 1200.00, '2025-12-05', '2025-12-02', 'Pasteleria', 35, 10, 80, 'unidad', '1 unidad', NOW(), NOW(), 1, 8, 35, 'activo'),
+('Pain au chocolat', 'Croissant con chocolate', 'Forneria', 1100.00, '2025-12-05', '2025-12-02', 'Pasteleria', 40, 12, 90, 'unidad', '1 unidad', NOW(), NOW(), 1, 8, 40, 'activo'),
+('Palmera de hojaldre', 'Hojaldre caramelizado', 'Forneria', 800.00, '2025-12-05', '2025-12-02', 'Pasteleria', 45, 15, 100, 'unidad', '1 unidad', NOW(), NOW(), 1, 6, 45, 'activo'),
+('Napolitana de crema', 'Hojaldre con crema pastelera', 'Forneria', 950.00, '2025-12-05', '2025-12-02', 'Pasteleria', 38, 12, 85, 'unidad', '1 unidad', NOW(), NOW(), 1, 8, 38, 'activo'),
+('Caracola de canela', 'Espiral de masa con canela', 'Forneria', 900.00, '2025-12-06', '2025-12-02', 'Pasteleria', 42, 12, 90, 'unidad', '1 unidad', NOW(), NOW(), 1, 6, 42, 'activo'),
+('Berlina de crema', 'Donut relleno de crema', 'Forneria', 1000.00, '2025-12-06', '2025-12-02', 'Pasteleria', 36, 10, 80, 'unidad', '1 unidad', NOW(), NOW(), 1, 8, 36, 'activo'),
+('Berlina de chocolate', 'Donut relleno de chocolate', 'Forneria', 1000.00, '2025-12-06', '2025-12-02', 'Pasteleria', 34, 10, 80, 'unidad', '1 unidad', NOW(), NOW(), 1, 8, 34, 'activo'),
+('Donut glaseado', 'Donut con glaseado de azúcar', 'Forneria', 850.00, '2025-12-07', '2025-12-02', 'Pasteleria', 40, 12, 90, 'unidad', '1 unidad', NOW(), NOW(), 1, 6, 40, 'activo'),
+('Éclair de chocolate', 'Éclair relleno de crema de chocolate', 'Forneria', 1300.00, '2025-12-07', '2025-12-02', 'Pasteleria', 28, 8, 60, 'unidad', '1 unidad', NOW(), NOW(), 1, 8, 28, 'activo'),
+('Profiterol', 'Bolitas de masa choux con crema', 'Forneria', 1500.00, '2025-12-08', '2025-12-02', 'Pasteleria', 30, 8, 70, 'pack', '6 unidades', NOW(), NOW(), 1, 8, 30, 'activo'),
+('Milhojas de manjar', 'Hojaldre con manjar y crema', 'Forneria', 1800.00, '2025-12-08', '2025-12-02', 'Pasteleria', 24, 8, 55, 'unidad', '1 unidad', NOW(), NOW(), 1, 8, 24, 'activo'),
+('Tartaleta de frutas', 'Tartaleta con frutas frescas', 'Forneria', 1400.00, '2025-12-08', '2025-12-02', 'Pasteleria', 28, 8, 60, 'unidad', '1 unidad', NOW(), NOW(), 1, 6, 28, 'activo'),
+('Tartaleta de limón', 'Tartaleta con crema de limón', 'Forneria', 1350.00, '2025-12-09', '2025-12-02', 'Pasteleria', 26, 8, 60, 'unidad', '1 unidad', NOW(), NOW(), 1, 6, 26, 'activo'),
+('Cupcake de vainilla', 'Cupcake con frosting de vainilla', 'Forneria', 1100.00, '2025-12-09', '2025-12-02', 'Pasteleria', 32, 10, 70, 'unidad', '1 unidad', NOW(), NOW(), 1, 6, 32, 'activo'),
+('Cupcake de chocolate', 'Cupcake con frosting de chocolate', 'Forneria', 1100.00, '2025-12-09', '2025-12-02', 'Pasteleria', 30, 10, 70, 'unidad', '1 unidad', NOW(), NOW(), 1, 8, 30, 'activo'),
 
-('Magdalenas vainilla', 'Magdalenas sabor vainilla', 'Forneria', 1500.00, '2025-11-16', 'Pasteleria', 'pack', '6 unidades', 1, 2, 24),
-('Tarta de manzana', 'Tarta de manzana casera', 'Forneria', 3500.00, '2025-11-16', 'Pasteleria', 'unidad', '1 unidad', 1, 1, 8),
-('Queque de limón', 'Bizcocho de limón', 'Forneria', 2800.00, '2025-11-16', 'Pasteleria', 'unidad', '1 unidad', 1, 2, 10),
-('Alfajores', 'Alfajores rellenos', 'Forneria', 2200.00, '2025-11-16', 'Snack', 'pack', '6 unidades', 2, 1, 30),
+-- Galletas y cookies (31-40)
+('Cookies con chips de chocolate', 'Galletas con trozos de chocolate', 'Forneria', 2000.00, '2025-12-10', '2025-12-02', 'Snack', 50, 15, 120, 'pack', '300 g', NOW(), NOW(), 2, 8, 50, 'activo'),
+('Cookies de doble chocolate', 'Galletas de chocolate con chips', 'Forneria', 2100.00, '2025-12-10', '2025-12-02', 'Snack', 48, 15, 115, 'pack', '300 g', NOW(), NOW(), 2, 8, 48, 'activo'),
+('Cookies de avena y pasas', 'Galletas de avena con pasas', 'Forneria', 1900.00, '2025-12-10', '2025-12-02', 'Snack', 52, 15, 120, 'pack', '300 g', NOW(), NOW(), 2, 7, 52, 'activo'),
+('Galletas de jengibre', 'Galletas especiadas con jengibre', 'Forneria', 1850.00, '2025-12-11', '2025-12-02', 'Snack', 46, 12, 105, 'pack', '250 g', NOW(), NOW(), 2, 6, 46, 'activo'),
+('Galletas de limón', 'Galletas con ralladura de limón', 'Forneria', 1800.00, '2025-12-11', '2025-12-02', 'Snack', 48, 12, 110, 'pack', '250 g', NOW(), NOW(), 2, 6, 48, 'activo'),
+('Galletas de coco', 'Galletas con coco rallado', 'Forneria', 1900.00, '2025-12-11', '2025-12-02', 'Snack', 44, 12, 100, 'pack', '250 g', NOW(), NOW(), 2, 6, 44, 'activo'),
+('Galletas de almendra', 'Galletas con harina de almendra', 'Forneria', 2300.00, '2025-12-12', '2025-12-02', 'Snack', 42, 12, 95, 'pack', '250 g', NOW(), NOW(), 2, 7, 42, 'activo'),
+('Galletas de canela', 'Galletas especiadas con canela', 'Forneria', 1800.00, '2025-12-12', '2025-12-02', 'Snack', 48, 12, 110, 'pack', '250 g', NOW(), NOW(), 2, 6, 48, 'activo'),
+('Galletas saladas', 'Galletas saladas tipo cracker', 'Forneria', 1700.00, '2025-12-14', '2025-12-02', 'Snack', 55, 15, 125, 'pack', '300 g', NOW(), NOW(), 2, 3, 55, 'activo'),
+('Galletas de sésamo', 'Galletas con semillas de sésamo', 'Forneria', 1850.00, '2025-12-14', '2025-12-02', 'Snack', 52, 15, 120, 'pack', '250 g', NOW(), NOW(), 2, 7, 52, 'activo'),
 
-('Galletas mantequilla', 'Galletas de mantequilla', 'Forneria', 1900.00, '2025-11-17', 'Snack', 'pack', '250 g', 2, 2, 40),
-('Palitos de pan', 'Palitos horneados', 'Forneria', 1700.00, '2025-11-17', 'Snack', 'pack', '200 g', 2, 1, 50),
-('Crackers integrales', 'Galletas integrales crujientes', 'Forneria', 2000.00, '2025-11-17', 'Snack', 'pack', '250 g', 2, 2, 45),
-
-('Barrita de cereal', 'Barrita energética', 'Forneria', 1600.00, '2025-11-18', 'Snack', 'pack', '5 unidades', 2, 1, 60),
-('Grissini', 'Grissini italianos', 'Forneria', 1800.00, '2025-11-18', 'Snack', 'pack', '200 g', 2, 2, 30),
-('Pan de hamburguesa', 'Pan para hamburguesa', 'Forneria', 2200.00, '2025-11-18', 'Panaderia', 'pack', '4 unidades', 1, 1, 24);
+-- Empanadas y productos salados (41-50)
+('Empanada de carne', 'Empanada rellena de carne molida', 'Forneria', 1500.00, '2025-12-05', '2025-12-02', 'Panaderia', 40, 12, 90, 'unidad', '1 unidad', NOW(), NOW(), 1, 4, 40, 'activo'),
+('Empanada de pollo', 'Empanada rellena de pollo', 'Forneria', 1400.00, '2025-12-05', '2025-12-02', 'Panaderia', 38, 12, 85, 'unidad', '1 unidad', NOW(), NOW(), 1, 4, 38, 'activo'),
+('Empanada de jamón y queso', 'Empanada de jamón con queso', 'Forneria', 1300.00, '2025-12-05', '2025-12-02', 'Panaderia', 42, 12, 95, 'unidad', '1 unidad', NOW(), NOW(), 1, 5, 42, 'activo'),
+('Empanada de champiñones', 'Empanada vegetariana de champiñones', 'Forneria', 1400.00, '2025-12-05', '2025-12-02', 'Panaderia', 35, 10, 80, 'unidad', '1 unidad', NOW(), NOW(), 1, 4, 35, 'activo'),
+('Empanada de atún', 'Empanada rellena de atún', 'Forneria', 1450.00, '2025-12-06', '2025-12-02', 'Panaderia', 34, 10, 75, 'unidad', '1 unidad', NOW(), NOW(), 1, 5, 34, 'activo'),
+('Empanada de pino', 'Empanada chilena tradicional', 'Forneria', 1600.00, '2025-12-06', '2025-12-02', 'Panaderia', 36, 10, 80, 'unidad', '1 unidad', NOW(), NOW(), 1, 5, 36, 'activo'),
+('Quiche de queso', 'Quiche lorraine de queso', 'Forneria', 2200.00, '2025-12-07', '2025-12-02', 'Panaderia', 24, 8, 55, 'porción', '1 porción', NOW(), NOW(), 1, 8, 24, 'activo'),
+('Pizza individual margarita', 'Pizza margarita personal', 'Forneria', 2500.00, '2025-12-08', '2025-12-02', 'Panaderia', 30, 10, 70, 'unidad', '1 unidad', NOW(), NOW(), 1, 10, 30, 'activo'),
+('Focaccia con tomate', 'Focaccia con tomate cherry', 'Forneria', 2400.00, '2025-12-09', '2025-12-02', 'Panaderia', 22, 8, 55, 'unidad', '350 g', NOW(), NOW(), 1, 9, 22, 'activo'),
+('Calzone de jamón', 'Calzone relleno de jamón y queso', 'Forneria', 2800.00, '2025-12-09', '2025-12-02', 'Panaderia', 24, 8, 55, 'unidad', '1 unidad', NOW(), NOW(), 1, 10, 24, 'activo');

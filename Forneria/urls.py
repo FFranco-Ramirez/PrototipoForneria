@@ -21,7 +21,7 @@ from django.urls import path
 from ventas.views import (
     # Vistas de autenticación y navegación
     home, login_view, register_view, dashboard_view, logout_view,
-    proximamente_view,
+    proximamente_view, recuperar_contrasena_view,
     
     # Vistas de productos e inventario
     agregar_producto_view, inventario_view, editar_producto_view, 
@@ -49,6 +49,9 @@ from ventas.views import (
     
     # Vistas de Acciones Masivas (NUEVO)
     crear_alertas_masivo, mover_merma_masivo, eliminar_masivo,
+    
+    # Vistas de Métricas del Dashboard (NUEVO)
+    ventas_del_dia_api, stock_bajo_api, alertas_pendientes_api, top_producto_api,
 )
 
 # Vistas de APIs para el dashboard
@@ -84,6 +87,7 @@ urlpatterns = [
     path('login/', login_view, name='login'),
     path('registro/', register_view, name='registro'),
     path('logout/', logout_view, name='logout'),
+    path('recuperar-contrasena/', recuperar_contrasena_view, name='recuperar_contrasena'),
     
     # Dashboard principal (requiere autenticación)
     path('dashboard/', dashboard_view, name='dashboard'),
@@ -129,6 +133,12 @@ urlpatterns = [
     # ============================================================
     # APIs PARA EL DASHBOARD
     # ============================================================
+    # APIs de métricas principales
+    path('api/ventas-del-dia/', ventas_del_dia_api, name='api_ventas_del_dia'),
+    path('api/stock-bajo/', stock_bajo_api, name='api_stock_bajo'),
+    path('api/alertas-pendientes/', alertas_pendientes_api, name='api_alertas_pendientes'),
+    path('api/top-producto/', top_producto_api, name='api_top_producto'),
+    
     # APIs de productos próximos a vencer
     path('api/proximos-vencimientos/', productos_por_vencer_api, name='api_proximos_vencimientos'),
     path('api/proximos-vencimientos-14/', productos_por_vencer_14_dias_api, name='api_proximos_vencimientos_14'),

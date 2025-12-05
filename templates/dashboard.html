@@ -163,6 +163,11 @@ document.addEventListener('DOMContentLoaded', function(){
   document.addEventListener('keydown', function(e){ if (e.key === 'Escape') hide(); });
 });
 </script>
+
+<!-- Script para cargar métricas del dashboard -->
+<script src="{% static 'js/dashboard_metrics.js' %}"></script>
+
+<!-- Script para expiraciones -->
 <script src="{% static 'js/expiraciones.js' %}"></script>
 
 <!-- D3.js (necesario para los gráficos) -->

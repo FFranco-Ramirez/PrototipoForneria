@@ -56,25 +56,34 @@ def merma_list_view(request):
     ).exclude(estado_merma='activo')
     
     # ============================================================
-    # PASO 2: Aplicar filtro por tipo de merma
+    # PASO 2: Mostrar todos los productos en merma (sin filtro)
     # ============================================================
-    # Obtener el parámetro 'tipo' de la URL (ej: ?tipo=vencido)
-    tipo_merma = request.GET.get('tipo', '')
-    
-    # Si se seleccionó un tipo específico, filtrar
-    if tipo_merma:
-        productos_merma = productos_merma.filter(estado_merma=tipo_merma)
+    # Ya no filtramos por tipo, mostramos todo por defecto
     
     # ============================================================
-    # PASO 3: Preparar el contexto para el template
+    # PASO 3: Calcular estadísticas de merma
+    # ============================================================
+    # Calcular pérdida total y total de unidades
+    perdida_total = 0
+    total_unidades = 0
+    
+    for producto in productos_merma:
+        # Calcular pérdida por producto (cantidad × precio)
+        perdida_producto = producto.cantidad * producto.precio
+        perdida_total += perdida_producto
+        total_unidades += producto.cantidad
+    
+    # ============================================================
+    # PASO 4: Preparar el contexto para el template
     # ============================================================
     context = {
         'productos': productos_merma,    # Lista de productos en merma
-        'tipo_merma': tipo_merma,        # Tipo seleccionado (para mantener el filtro)
+        'perdida_total': perdida_total,  # Pérdida económica total
+        'total_unidades': total_unidades, # Total de unidades en merma
     }
     
     # ============================================================
-    # PASO 4: Renderizar el template
+    # PASO 5: Renderizar el template
     # ============================================================
     return render(request, 'merma_list.html', context)
 

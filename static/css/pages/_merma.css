@@ -45,28 +45,65 @@
     line-height: 1;             /* Sin espacio entre líneas */
 }
 
-/* --- Filtros de Merma --- */
-/* Barra de filtros para tipo de merma */
-.merma-filtros {
-    background-color: #ffffff;  /* Fondo blanco */
-    padding: 20px;              /* Espacio interior */
-    border-radius: 8px;         /* Esquinas redondeadas */
-    margin-bottom: 20px;        /* Espacio inferior */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Sombra sutil */
+/* --- Contenedor de Búsqueda --- */
+.merma-search-container {
+    background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 25px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-/* --- Botones de Filtro --- */
-.merma-filtros .btn-group .btn {
-    border-color: #ffd700;      /* Borde dorado */
-    color: #1a1a1a;             /* Texto negro */
-    transition: all 0.3s ease;  /* Transición suave */
+/* --- Barra de Búsqueda --- */
+.merma-search-box {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background-color: #ffffff;
+    border-radius: 50px;
+    padding: 5px 20px;
+    box-shadow: 0 2px 8px rgba(255, 215, 0, 0.2);
+    transition: all 0.3s ease;
 }
 
-/* --- Botón de Filtro Activo --- */
-.merma-filtros .btn-group .btn.active {
-    background-color: #ffd700;  /* Fondo dorado */
-    color: #1a1a1a;             /* Texto negro */
-    font-weight: 600;           /* Texto semi-negrita */
+.merma-search-box:focus-within {
+    box-shadow: 0 4px 16px rgba(255, 215, 0, 0.4);
+    transform: translateY(-2px);
+}
+
+.merma-search-box i.bi-search {
+    color: #ffd700;
+    font-size: 20px;
+    margin-right: 12px;
+}
+
+.merma-search-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    padding: 12px 0;
+    font-size: 16px;
+    color: #1a1a1a;
+    background: transparent;
+}
+
+.merma-search-input::placeholder {
+    color: #999;
+}
+
+.merma-clear-btn {
+    background: none;
+    border: none;
+    color: #999;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 0;
+    margin-left: 10px;
+    transition: color 0.2s ease;
+}
+
+.merma-clear-btn:hover {
+    color: #dc3545;
 }
 
 /* --- Tabla de Productos en Merma --- */
@@ -78,19 +115,88 @@
 }
 
 /* --- Encabezado de la Tabla de Merma --- */
-.merma-tabla thead {
-    background-color: #1a1a1a;  /* Fondo negro */
-    color: #ffd700;             /* Texto dorado */
-}
 
 /* --- Celdas del Encabezado --- */
 .merma-tabla thead th {
     padding: 15px;              /* Espacio interior */
     font-weight: 600;           /* Texto semi-negrita */
     text-transform: uppercase;  /* Texto en mayúsculas */
-    font-size: 14px;            /* Tamaño de fuente */
-    letter-spacing: 0.5px;      /* Espaciado entre letras */
+    font-size: 12px;            /* Tamaño de fuente */
+    letter-spacing: 1px;        /* Espaciado entre letras */
     border: none;               /* Sin bordes */
+    position: relative;         /* Para posicionar iconos */
+}
+
+/* --- Contenedor del Header --- */
+.header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+/* --- Headers Ordenables --- */
+.sortable-header {
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.2s ease;
+    background-color: #1a1a1a;  /* Fondo negro por defecto */
+}
+
+.sortable-header:hover {
+    background-color: rgba(255, 215, 0, 0.25) !important;
+}
+
+.sortable-header:active {
+    transform: scale(0.98);
+    background-color: rgba(255, 215, 0, 0.35) !important;
+}
+
+/* Asegurar que el hover funcione en todos los navegadores */
+.merma-tabla thead .sortable-header:hover {
+    background-color: rgba(255, 215, 0, 0.25) !important;
+}
+
+.merma-tabla thead th.sortable-header:hover {
+    background-color: rgba(255, 215, 0, 0.25) !important;
+}
+
+/* --- Iconos de Ordenamiento --- */
+.sort-icons {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    opacity: 0.3;
+    transition: opacity 0.2s ease;
+}
+
+.sortable-header:hover .sort-icons {
+    opacity: 0.6;
+}
+
+.sort-icon {
+    font-size: 10px;
+    line-height: 1;
+    color: #ffd700;
+}
+
+/* --- Estados de Ordenamiento --- */
+.sortable-header.sort-asc .sort-icons .bi-caret-up-fill {
+    opacity: 1;
+    color: #ffd700;
+}
+
+.sortable-header.sort-asc .sort-icons .bi-caret-down-fill {
+    opacity: 0.2;
+}
+
+.sortable-header.sort-desc .sort-icons .bi-caret-down-fill {
+    opacity: 1;
+    color: #ffd700;
+}
+
+.sortable-header.sort-desc .sort-icons .bi-caret-up-fill {
+    opacity: 0.2;
 }
 
 /* --- Filas de la Tabla --- */
@@ -101,7 +207,12 @@
 
 /* --- Efecto Hover en Filas --- */
 .merma-tabla tbody tr:hover {
-    background-color: #fff3cd;  /* Fondo amarillo claro (alerta) */
+    background-color: rgba(255, 215, 0, 0.2) !important;  /* Fondo dorado claro */
+}
+
+/* Asegurar que el hover funcione en todas las celdas */
+.merma-tabla tbody tr:hover td {
+    background-color: transparent !important;
 }
 
 /* --- Celdas del Cuerpo --- */
