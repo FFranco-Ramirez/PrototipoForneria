@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% load static %}
+{% block contenido %}
+<!-- Contenedor principal de recuperar contraseña -->
+<div class="login-page-wrapper">
+    <div class="form-container-with-video">
+        <!-- Video de fondo detrás del formulario -->
+        <div class="form-video-background">
+            <video class="form-background-video" autoplay muted loop playsinline>
+                <source src="{% static 'gif/Forneria.mp4' %}" type="video/mp4">
+                Tu navegador no soporta videos HTML5.
+            </video>
+            <!-- Overlay oscuro sobre el video -->
+            <div class="form-video-overlay"></div>
+        </div>
+        
+        <!-- Formulario de recuperar contraseña (delante del video) -->
+        <div class="form-container">
+            <h2>Recuperar Contraseña</h2>
+            
+            <div style="text-align: center; padding: 40px 20px;">
+                <p style="color: var(--muted); font-size: 1.1rem; margin-bottom: 30px;">
+                    Esta funcionalidad estará disponible próximamente.
+                </p>
+                <p style="color: var(--text); margin-bottom: 20px;">
+                    Por favor, contacta al administrador del sistema para restablecer tu contraseña.
+                </p>
+            </div>
+
+            <div class="form-link">
+                <p>¿Ya recordaste tu contraseña? <a href="{% url 'login' %}">Inicia sesión aquí</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

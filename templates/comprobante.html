@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block body_class %}dark-gold-theme{% endblock %}
+
+{% block contenido %}
+<!-- ================================================================ -->
+<!-- =                                                              = -->
+<!-- =              COMPROBANTE DE VENTA (HTML)                    = -->
+<!-- =                                                              = -->
+<!-- ================================================================ -->
+<!--
+    Este template muestra el comprobante de venta según RF-V3 del Jira.
+    Es un fallback cuando no está disponible reportlab para generar PDF.
+    
+    FUNCIONALIDADES:
+    - Mostrar datos de la venta
+    - Detalle de productos
+    - Totales y pagos
+    - Opción de imprimir
+-->
+
+<div class="dashboard-main-container">
+    <!-- Sidebar de navegación -->
+    {% include 'includes/sidebar.html' with active_page='pos' %}
+
+    <div class="dashboard-content-wrapper">
+        <!-- Header -->
+        <header class="dashboard-header">
+            <h1 class="dashboard-main-title">
+                <i class="bi bi-receipt"></i> Comprobante de Venta
+            </h1>
+        </header>
+
+        <!-- Contenido principal -->
+        <main class="dashboard-content">
+            
+            <!-- Comprobante -->
+            <div class="card mx-auto" style="max-width: 800px; background: rgba(26, 26, 26, 0.8); border: 2px solid #ffd700;">
+                <div class="card-body p-4">
+                    
+                    <!-- Encabezado -->
+                    <div class="text-center mb-4">
+                        <h2 class="text-warning mb-1">LA FORNERÍA</h2>
+                        <h5 class="text-muted">COMPROBANTE DE VENTA</h5>
+                        <hr style="border-color: #ffd700;">
+                    </div>
+
+                    <!-- Información de la venta -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <p class="mb-1"><strong>Folio:</strong> {{ venta.folio|default:"N/A" }}</p>
+                            <p class="mb-1"><strong>Fecha:</strong> {{ venta.fecha|date:"d/m/Y H:i" }}</p>
+                            <p class="mb-1"><strong>Canal:</strong> {{ venta.canal_venta|capfirst }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mb-1"><strong>Cliente:</strong> {{ venta.clientes.nombre|default:"Cliente Genérico" }}</p>
+                        </div>
+                    </div>
+
+                    <hr style="border-color: #ffd700;">
+
+                    <!-- Detalle de productos -->
+                    <div class="mb-4">
+                        <h6 class="text-warning mb-3">PRODUCTOS:</h6>
+                        <div class="table-responsive">
+                            <table class="table table-dark table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Producto</th>
+                                        <th class="text-center">Cant.</th>
+                                        <th class="text-end">P. Unit.</th>
+                                        <th class="text-end">Desct.</th>
+                                        <th class="text-end">Subtotal</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for detalle in detalles %}
+                                        <tr>
+                                            <td>{{ detalle.productos.nombre }}</td>
+                                            <td class="text-center">{{ detalle.cantidad }}</td>
+                                            <td class="text-end">${{ detalle.precio_unitario|floatformat:0 }}</td>
+                                            <td class="text-end">
+                                                {% if detalle.descuento_pct %}
+                                                    {{ detalle.descuento_pct }}%
+                                                {% else %}
+                                                    -
+                                                {% endif %}
+                                            </td>
+                                            <td class="text-end">${{ detalle.calcular_subtotal|floatformat:0 }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <hr style="border-color: #ffd700;">
+
+                    <!-- Totales -->
+                    <div class="row">
+                        <div class="col-md-6 offset-md-6">
+                            <table class="table table-dark table-sm">
+                                <tr>
+                                    <td><strong>Subtotal Neto:</strong></td>
+                                    <td class="text-end">${{ venta.total_sin_iva|floatformat:0 }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>IVA (19%):</strong></td>
+                                    <td class="text-end">${{ venta.total_iva|floatformat:0 }}</td>
+                                </tr>
+                                {% if venta.descuento %}
+                                    <tr>
+                                        <td><strong>Descuento:</strong></td>
+                                        <td class="text-end">-${{ venta.descuento|floatformat:0 }}</td>
+                                    </tr>
+                                {% endif %}
+                                <tr class="table-warning">
+                                    <td><strong>TOTAL:</strong></td>
+                                    <td class="text-end"><strong>${{ venta.total_con_iva|floatformat:0 }}</strong></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Información de pago -->
+                    {% if venta.monto_pagado %}
+                        <hr style="border-color: #ffd700;">
+                        <div class="row">
+                            <div class="col-md-6 offset-md-6">
+                                <table class="table table-dark table-sm">
+                                    <tr>
+                                        <td><strong>Monto Pagado:</strong></td>
+                                        <td class="text-end">${{ venta.monto_pagado|floatformat:0 }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Vuelto:</strong></td>
+                                        <td class="text-end">${{ venta.vuelto|floatformat:0 }}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    <!-- Pie de página -->
+                    <hr style="border-color: #ffd700;">
+                    <div class="text-center mt-4">
+                        <p class="text-muted mb-1">Gracias por su compra</p>
+                        <p class="text-muted small">RUT: 76.123.456-7 | Dirección: Av. Principal 123, Santiago</p>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Botones de acción -->
+            <div class="text-center mt-4">
+                <a href="{% url 'comprobante_pdf' venta.id %}" class="btn btn-primary">
+                    <i class="bi bi-file-pdf"></i> Descargar PDF
+                </a>
+                <button onclick="window.print()" class="btn btn-success">
+                    <i class="bi bi-printer"></i> Imprimir
+                </button>
+                <a href="{% url 'pos' %}" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Volver al POS
+                </a>
+            </div>
+
+        </main>
+    </div>
+</div>
+
+<!-- Estilos para impresión -->
+<style>
+    @media print {
+        .dashboard-main-container {
+            background: white !important;
+        }
+        .dashboard-header,
+        .btn,
+        .sidebar {
+            display: none !important;
+        }
+        .card {
+            border: none !important;
+            box-shadow: none !important;
+        }
+    }
+</style>
+{% endblock %}
+

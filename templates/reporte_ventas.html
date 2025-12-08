@@ -1,0 +1,255 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block body_class %}dark-gold-theme{% endblock %}
+
+{% block contenido %}
+<!-- ================================================================ -->
+<!-- =                                                              = -->
+<!-- =              REPORTE DE VENTAS CON FILTROS AVANZADOS        = -->
+<!-- =                                                              = -->
+<!-- ================================================================ -->
+<!--
+    Este template muestra el reporte de ventas según RF-V4 del Jira.
+    
+    FUNCIONALIDADES:
+    - Filtro por rango de fechas
+    - Filtro por cliente
+    - Filtro por canal (presencial/delivery)
+    - Cálculo de totales agregados
+    - Exportación a CSV
+-->
+
+<div class="dashboard-main-container">
+    <!-- Sidebar de navegación -->
+    {% include 'includes/sidebar.html' with active_page='reportes' %}
+
+    <div class="dashboard-content-wrapper">
+        <!-- Header -->
+        <header class="dashboard-header">
+            <h1 class="dashboard-main-title">
+                <i class="bi bi-receipt-cutoff"></i> Reporte de Ventas
+            </h1>
+        </header>
+
+        <!-- Contenido principal -->
+        <main class="dashboard-content">
+            
+            <!-- ============================================ -->
+            <!-- SECCIÓN DE FILTROS                          -->
+            <!-- ============================================ -->
+            <div class="card mb-4" style="background: rgba(26, 26, 26, 0.8); border: 1px solid #ffd700;">
+                <div class="card-header" style="background: rgba(255, 215, 0, 0.1); border-bottom: 1px solid #ffd700;">
+                    <h5 class="mb-0">
+                        <i class="bi bi-funnel"></i> Filtros de Búsqueda
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="get" action="{% url 'reporte_ventas' %}">
+                        <input type="hidden" name="generar" value="1">
+                        
+                        <div class="row">
+                            <!-- Fecha Desde -->
+                            <div class="col-md-3 mb-3">
+                                <label for="fecha_desde" class="form-label" style="color: #ffffff;">
+                                    <i class="bi bi-calendar-event"></i> Fecha Desde
+                                </label>
+                                <input 
+                                    type="date" 
+                                    id="fecha_desde" 
+                                    name="fecha_desde" 
+                                    class="form-control"
+                                    value="{{ fecha_desde|date:'Y-m-d' }}"
+                                >
+                            </div>
+                            
+                            <!-- Fecha Hasta -->
+                            <div class="col-md-3 mb-3">
+                                <label for="fecha_hasta" class="form-label" style="color: #ffffff;">
+                                    <i class="bi bi-calendar-event-fill"></i> Fecha Hasta
+                                </label>
+                                <input 
+                                    type="date" 
+                                    id="fecha_hasta" 
+                                    name="fecha_hasta" 
+                                    class="form-control"
+                                    value="{{ fecha_hasta|date:'Y-m-d' }}"
+                                >
+                            </div>
+                            
+                            <!-- Cliente -->
+                            <div class="col-md-3 mb-3">
+                                <label for="cliente_id" class="form-label" style="color: #ffffff;">
+                                    <i class="bi bi-person"></i> Cliente
+                                </label>
+                                <select 
+                                    id="cliente_id" 
+                                    name="cliente_id" 
+                                    class="form-select"
+                                >
+                                    <option value="">Todos los clientes</option>
+                                    {% for cliente in clientes %}
+                                        <option value="{{ cliente.id }}" 
+                                                {% if cliente_seleccionado == cliente.id|stringformat:"s" %}selected{% endif %}>
+                                            {{ cliente.nombre }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            
+                            <!-- Canal -->
+                            <div class="col-md-3 mb-3">
+                                <label for="canal_venta" class="form-label" style="color: #ffffff;">
+                                    <i class="bi bi-shop"></i> Canal
+                                </label>
+                                <select 
+                                    id="canal_venta" 
+                                    name="canal_venta" 
+                                    class="form-select"
+                                >
+                                    <option value="">Todos los canales</option>
+                                    {% for codigo, nombre in canales %}
+                                        <option value="{{ codigo }}" 
+                                                {% if canal_seleccionado == codigo %}selected{% endif %}>
+                                            {{ nombre }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <!-- Botones -->
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-search"></i> Generar Reporte
+                            </button>
+                            {% if reporte_generado %}
+                                <a href="{% url 'exportar_ventas_csv' %}?{{ request.GET.urlencode }}" 
+                                   class="btn btn-success">
+                                    <i class="bi bi-file-earmark-excel"></i> Exportar CSV
+                                </a>
+                            {% endif %}
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- ============================================ -->
+            <!-- RESULTADOS DEL REPORTE                      -->
+            <!-- ============================================ -->
+            {% if reporte_generado %}
+                <!-- Totales -->
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <div class="card text-center" style="background: rgba(26, 26, 26, 0.8); border: 1px solid #ffd700;">
+                            <div class="card-body">
+                                <h6 class="text-muted">Total Neto</h6>
+                                <h4 class="text-warning">${{ totales.total_neto|floatformat:0 }}</h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-center" style="background: rgba(26, 26, 26, 0.8); border: 1px solid #ffd700;">
+                            <div class="card-body">
+                                <h6 class="text-muted">Total IVA</h6>
+                                <h4 class="text-info">${{ totales.total_iva|floatformat:0 }}</h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-center" style="background: rgba(26, 26, 26, 0.8); border: 1px solid #ffd700;">
+                            <div class="card-body">
+                                <h6 class="text-muted">Total con IVA</h6>
+                                <h4 class="text-success">${{ totales.total_con_iva|floatformat:0 }}</h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-center" style="background: rgba(26, 26, 26, 0.8); border: 1px solid #ffd700;">
+                            <div class="card-body">
+                                <h6 class="text-muted">Cantidad Ventas</h6>
+                                <h4 class="text-primary">{{ totales.cantidad_ventas }}</h4>
+                                <small class="text-muted">Promedio: ${{ totales.promedio_venta|floatformat:0 }}</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tabla de ventas -->
+                <div class="card" style="background: rgba(26, 26, 26, 0.8); border: 1px solid #ffd700;">
+                    <div class="card-header" style="background: rgba(255, 215, 0, 0.1); border-bottom: 1px solid #ffd700;">
+                        <h5 class="mb-0">
+                            <i class="bi bi-list-ul"></i> Detalle de Ventas ({{ ventas|length }} registros)
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        {% if ventas %}
+                            <div class="table-responsive">
+                                <table class="table table-dark table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Folio</th>
+                                            <th>Fecha</th>
+                                            <th>Cliente</th>
+                                            <th>Canal</th>
+                                            <th class="text-end">Neto</th>
+                                            <th class="text-end">IVA</th>
+                                            <th class="text-end">Total</th>
+                                            <th class="text-center">Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for venta in ventas %}
+                                            <tr>
+                                                <td>{{ venta.folio|default:"N/A" }}</td>
+                                                <td>{{ venta.fecha|date:"d/m/Y H:i" }}</td>
+                                                <td>{{ venta.clientes.nombre|default:"Cliente Genérico" }}</td>
+                                                <td>
+                                                    <span class="badge {% if venta.canal_venta == 'presencial' %}bg-primary{% else %}bg-info{% endif %}">
+                                                        {{ venta.canal_venta|capfirst }}
+                                                    </span>
+                                                </td>
+                                                <td class="text-end">${{ venta.total_sin_iva|floatformat:0 }}</td>
+                                                <td class="text-end">${{ venta.total_iva|floatformat:0 }}</td>
+                                                <td class="text-end">
+                                                    <strong>${{ venta.total_con_iva|floatformat:0 }}</strong>
+                                                </td>
+                                                <td class="text-center">
+                                                    <div class="btn-group btn-group-sm" role="group">
+                                                        <a href="{% url 'comprobante_html' venta.id %}" 
+                                                           class="btn btn-outline-warning" 
+                                                           title="Ver Comprobante"
+                                                           target="_blank">
+                                                            <i class="bi bi-receipt"></i>
+                                                        </a>
+                                                        <a href="{% url 'comprobante_pdf' venta.id %}" 
+                                                           class="btn btn-outline-danger" 
+                                                           title="Descargar PDF"
+                                                           target="_blank">
+                                                            <i class="bi bi-file-pdf"></i>
+                                                        </a>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <div class="alert alert-info">
+                                <i class="bi bi-info-circle"></i> No se encontraron ventas con los filtros seleccionados.
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% else %}
+                <div class="alert alert-warning">
+                    <i class="bi bi-exclamation-triangle"></i> Selecciona los filtros y haz clic en "Generar Reporte" para ver los resultados.
+                </div>
+            {% endif %}
+
+        </main>
+    </div>
+</div>
+{% endblock %}
+

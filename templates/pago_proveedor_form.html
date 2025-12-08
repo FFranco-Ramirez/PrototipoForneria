@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block contenido %}
+<div class="dashboard-main-container">
+    {% include 'includes/sidebar.html' with active_page='facturas_proveedores' %}
+    
+    <div class="dashboard-content-wrapper">
+        <div class="card">
+            <div class="card-header">
+                <h2>Registrar Pago a Proveedor</h2>
+                <a href="{% if factura_seleccionada %}{% url 'factura_proveedor_detalle' factura_seleccionada.id %}{% else %}{% url 'facturas_proveedores_list' %}{% endif %}" class="btn btn-secondary">Volver</a>
+            </div>
+            <div class="card-body">
+                {% if messages %}
+                <div class="alert alert-info">
+                    {% for message in messages %}
+                    <div>{{ message }}</div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                
+                {% if factura_seleccionada %}
+                <div class="alert alert-info mb-4">
+                    <h5>Factura Seleccionada:</h5>
+                    <p><strong>Número:</strong> {{ factura_seleccionada.numero_factura }}</p>
+                    <p><strong>Proveedor:</strong> {{ factura_seleccionada.proveedor.nombre }}</p>
+                    <p><strong>Total:</strong> ${{ factura_seleccionada.total_con_iva|floatformat:0 }}</p>
+                    <p><strong>Saldo Pendiente:</strong> ${{ saldo_pendiente|floatformat:0 }}</p>
+                </div>
+                {% endif %}
+                
+                <form method="post" id="formPago">
+                    {% csrf_token %}
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Factura *</label>
+                            <select name="factura_proveedor_id" id="factura_id" class="form-select" required onchange="actualizarSaldo()">
+                                <option value="">Seleccione una factura</option>
+                                {% for item in facturas_con_saldo %}
+                                <option value="{{ item.factura.id }}" 
+                                        {% if factura_seleccionada and item.factura.id == factura_seleccionada.id %}selected{% endif %}
+                                        data-total="{{ item.factura.total_con_iva }}"
+                                        data-saldo="{{ item.saldo_pendiente }}">
+                                    {{ item.factura.numero_factura }} - {{ item.factura.proveedor.nombre }} - ${{ item.factura.total_con_iva|floatformat:0 }} (Saldo: ${{ item.saldo_pendiente|floatformat:0 }})
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Fecha de Pago *</label>
+                            <input type="date" name="fecha_pago" class="form-control" value="{{ 'now'|date:'Y-m-d' }}" required>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label class="form-label">Monto *</label>
+                            <input type="number" name="monto" id="monto" class="form-control" step="0.01" min="0.01" required onchange="validarMonto()">
+                            <small class="text-muted" id="saldoInfo"></small>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Método de Pago</label>
+                            <select name="metodo_pago" class="form-select">
+                                <option value="efectivo">Efectivo</option>
+                                <option value="transferencia">Transferencia</option>
+                                <option value="cheque">Cheque</option>
+                                <option value="tarjeta">Tarjeta</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Número de Comprobante</label>
+                            <input type="text" name="numero_comprobante" class="form-control" placeholder="Opcional">
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <label class="form-label">Observaciones</label>
+                            <textarea name="observaciones" class="form-control" rows="3"></textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-end">
+                        <a href="{% if factura_seleccionada %}{% url 'factura_proveedor_detalle' factura_seleccionada.id %}{% else %}{% url 'facturas_proveedores_list' %}{% endif %}" class="btn btn-secondary me-2">Cancelar</a>
+                        <button type="submit" class="btn btn-primary">Registrar Pago</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function actualizarSaldo() {
+    const select = document.getElementById('factura_id');
+    const option = select.options[select.selectedIndex];
+    const saldo = parseFloat(option.getAttribute('data-saldo')) || 0;
+    const total = parseFloat(option.getAttribute('data-total')) || 0;
+    
+    const saldoInfo = document.getElementById('saldoInfo');
+    if (saldo > 0) {
+        saldoInfo.textContent = `Saldo pendiente: $${saldo.toLocaleString('es-CL')}`;
+        saldoInfo.className = 'text-muted';
+    } else {
+        saldoInfo.textContent = 'Factura completamente pagada';
+        saldoInfo.className = 'text-warning';
+    }
+    
+    // Establecer monto máximo
+    const montoInput = document.getElementById('monto');
+    montoInput.setAttribute('max', saldo);
+}
+
+function validarMonto() {
+    const select = document.getElementById('factura_id');
+    const option = select.options[select.selectedIndex];
+    const saldo = parseFloat(option.getAttribute('data-saldo')) || 0;
+    const monto = parseFloat(document.getElementById('monto').value) || 0;
+    
+    if (monto > saldo) {
+        alert(`El monto excede el saldo pendiente ($${saldo.toLocaleString('es-CL')})`);
+        document.getElementById('monto').value = saldo;
+    }
+}
+
+// Inicializar al cargar
+document.addEventListener('DOMContentLoaded', function() {
+    actualizarSaldo();
+});
+</script>
+{% endblock %}
+

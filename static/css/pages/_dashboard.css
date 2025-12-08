@@ -1,0 +1,322 @@
+/* static/css/pages/_dashboard.css */
+/*
+    El estilo del dashboard post cuando se inicia sesion
+*/
+/*
+================================================================
+=                                                              =
+=        ESTILOS DE LA BARRA DE NAVEGACIÓN LATERAL (SIDEBAR)   =
+=                                                              =
+================================================================
+*/
+
+/* --- Contenedor Principal del Dashboard (Define el espacio para la Sidebar) --- */
+/* Este es el layout principal que divide la pantalla en dos: la barra lateral y el contenido. */
+.dashboard-main-container {
+    display: grid;
+    grid-template-columns: 240px 1fr; /* La primera columna (sidebar) tiene un ancho fijo de 240px. */
+    height: 100vh;                    /* Ocupa toda la altura de la ventana. */
+    background-color: #f8f9fa;        /* Un color de fondo gris claro para el área de contenido. */
+}
+
+/* --- Estilo del Contenedor de la Sidebar --- */
+/* La "caja" principal de la barra lateral. */
+.dashboard-sidebar {
+    background-color: #1a1a1a; /* Fondo negro oscuro para un alto contraste. */
+    color: #ffffff;            /* Texto blanco por defecto para todos los elementos internos. */
+    padding: 20px;             /* Espacio interior para que el contenido no esté pegado a los bordes. */
+    display: flex;             /* Usa Flexbox para organizar el contenido interno. */
+    flex-direction: column;    /* Apila los elementos (header, menu, footer) verticalmente. */
+}
+
+/* --- Cabecera de la Sidebar (donde va el título "Fornería") --- */
+.sidebar-header {
+    margin-bottom: 30px;       /* Espacio generoso para separar el logo del menú. */
+}
+
+/* --- Título Principal en la Sidebar --- */
+.sidebar-header .sidebar-title {
+    font-size: 24px;           /* Tamaño de fuente grande para el título. */
+    font-weight: bold;         /* Texto en negrita. */
+    color: #ffd700;            /* Color dorado para el título, creando un look premium. */
+    text-align: center;        /* Centra el título dentro de la sidebar. */
+}
+
+/* --- Menú de Navegación (la lista de enlaces) --- */
+/* El contenedor <ul> que agrupa todos los enlaces de navegación. */
+.sidebar-menu {
+    list-style: none;          /* Quita los puntos de la lista. */
+    padding: 0;                /* Quita el espaciado interior por defecto. */
+    margin: 0;                 /* Quita los márgenes por defecto. */
+    flex-grow: 1;              /* Permite que el menú ocupe todo el espacio vertical disponible entre el header y el footer. */
+}
+
+/* --- Enlaces Individuales de Navegación --- */
+/* Estilo para cada uno de los enlaces <a> del menú. */
+.sidebar-link {
+    display: flex;             /* Usa Flexbox para alinear el ícono y el texto. */
+    align-items: center;       /* Centra verticalmente el ícono y el texto. */
+    padding: 12px 15px;        /* Espacio interior para hacer el enlace más fácil de clickear. */
+    color: #ffffff;            /* Color de texto blanco. */
+    text-decoration: none;     /* Quita el subrayado de los enlaces. */
+    border-radius: 8px;        /* Esquinas redondeadas para un look moderno. */
+    margin-bottom: 8px;        /* Espacio entre cada enlace. */
+    transition: background-color 0.3s, color 0.3s; /* Transición suave para los efectos hover. */
+}
+
+/* --- Efecto al pasar el ratón sobre un enlace --- */
+.sidebar-link:hover {
+    background-color: #333333; /* Cambia el fondo a un gris oscuro para dar feedback al usuario. */
+}
+
+/* --- Estilo para el enlace de la página activa --- */
+/* Se aplica al enlace de la página que se está viendo actualmente. */
+.sidebar-link.active {
+    background-color: #ffd700; /* Fondo dorado para destacar el enlace activo. */
+    color: #1a1a1a;            /* Texto oscuro para que sea legible sobre el fondo dorado. */
+    font-weight: bold;         /* Texto en negrita para mayor énfasis. */
+}
+
+/* --- Iconos (emojis) dentro de los enlaces --- */
+.sidebar-link span {
+    margin-right: 10px;        /* Espacio entre el ícono y el texto del enlace. */
+}
+
+/* --- Pie de la Sidebar (donde va "Configuración") --- */
+/* El contenedor del pie de la barra lateral. */
+.sidebar-footer {
+    margin-top: auto;          /* Empuja el pie hacia la parte inferior de la sidebar. */
+}
+
+/*
+================================================================
+=                                                              =
+=           ESTILOS DEL CONTENIDO PRINCIPAL DEL DASHBOARD      =
+=                                                              =
+================================================================
+*/
+
+/* --- Contenedor del Contenido Principal --- */
+/* La "caja" que envuelve toda la parte derecha del dashboard (header + contenido). */
+.dashboard-content-wrapper {
+    display: flex;             /* Usa Flexbox para organizar el header y el main content. */
+    flex-direction: column;    /* Apila el header y el contenido principal verticalmente. */
+    overflow-y: auto;          /* Añade una barra de scroll si el contenido es más alto que la pantalla. */
+}
+
+/* --- Cabecera del Contenido (Header) --- */
+/* La barra superior que contiene el título y la información del usuario. */
+.dashboard-header {
+    display: flex;             /* Usa Flexbox para alinear los elementos. */
+    justify-content: space-between; /* Coloca el título a la izquierda y la info de usuario a la derecha. */
+    align-items: center;       /* Centra verticalmente los elementos en la cabecera. */
+    padding: 20px 30px;        /* Espacio interior generoso. */
+    background-color: #ffffff; /* Fondo blanco. */
+    border-bottom: 1px solid #e9ecef; /* Una línea sutil para separar la cabecera del contenido. */
+}
+
+/* --- Título Principal del Dashboard ("Resumen del Día") --- */
+.dashboard-main-title {
+    font-size: 28px;           /* Tamaño de fuente grande. */
+    font-weight: bold;         /* Texto en negrita. */
+    color: #343a40;            /* Color de texto oscuro. */
+}
+
+/* --- Contenedor de la Información del Usuario (a la derecha) --- */
+.header-user-info {
+    position: relative;        /* Necesario para posicionar el menú desplegable correctamente. */
+    display: flex;             /* Usa Flexbox para alinear el nombre y el avatar. */
+    align-items: center;       /* Centra verticalmente el nombre y el avatar. */
+    gap: 10px;                 /* Espacio entre el nombre y el avatar. */
+}
+
+/* --- Nombre del Usuario --- */
+.user-name {
+    font-weight: 600;          /* Texto semi-negrita. */
+}
+
+/* --- Avatar del Usuario (el círculo con la inicial) --- */
+.user-avatar {
+    width: 32px;               /* Ancho del círculo. */
+    height: 32px;              /* Alto del círculo. */
+    border-radius: 50%;        /* Lo convierte en un círculo perfecto. */
+    background: #222;          /* Fondo oscuro. */
+    color: #fff;               /* Letra blanca. */
+    border: 1px solid #ccc;    /* Borde gris claro. */
+    display: inline-flex;      /* Permite centrar la letra dentro del círculo. */
+    align-items: center;       /* Centra la letra verticalmente. */
+    justify-content: center;   /* Centra la letra horizontalmente. */
+    cursor: pointer;           /* Muestra una mano al pasar el ratón, indicando que es clickeable. */
+    font-weight: 700;          /* Letra en negrita. */
+}
+
+/* --- Menú Desplegable del Usuario --- */
+/* La "caja" que aparece al hacer clic en el avatar. */
+.user-menu {
+    position: absolute;        /* Se posiciona relativo al contenedor .header-user-info. */
+    right: 0;                  /* Alineado a la derecha. */
+    top: calc(100% + 8px);     /* Se ubica justo debajo del avatar, con 8px de separación. */
+    background: #fff;          /* Fondo blanco. */
+    border: 1px solid #ddd;    /* Borde gris claro. */
+    border-radius: 8px;        /* Esquinas redondeadas. */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, .1); /* Sombra suave para darle profundidad. */
+    padding: 6px;              /* Pequeño espacio interior. */
+    display: none;             /* Oculto por defecto. */
+    min-width: 160px;          /* Ancho mínimo para que no se vea apretado. */
+    z-index: 1000;             /* Se asegura de que aparezca por encima de otros elementos. */
+    opacity: 0;                /* Totalmente transparente por defecto (para la animación). */
+    transform: translateY(8px); /* Ligeramente desplazado hacia abajo (para la animación). */
+    transition: opacity .15s ease, transform .15s ease; /* Animación suave de aparición. */
+    pointer-events: none;      /* No se puede interactuar con él cuando está oculto. */
+}
+
+/* --- Forzar Ocultamiento --- */
+/* Regla de seguridad para asegurar que el menú esté oculto si tiene el atributo 'hidden'. */
+.header-user-info .user-menu[hidden] {
+    display: none !important;  /* Usa !important para garantizar que siempre se oculte. */
+}
+
+/* --- Estado Abierto del Menú --- */
+/* Estilos que se aplican cuando el menú es visible. */
+.user-menu.open {
+    display: block;            /* Lo hace visible. */
+    opacity: 1;                /* Lo hace totalmente opaco. */
+    transform: translateY(0);  /* Lo devuelve a su posición original. */
+    pointer-events: auto;      /* Permite la interacción del usuario. */
+}
+
+/* --- Flecha del Menú Desplegable --- */
+/* El pequeño triángulo que apunta hacia el avatar. */
+.user-menu::before {
+    content: '';               /* Necesario para que el pseudo-elemento se muestre. */
+    position: absolute;        /* Se posiciona relativo al menú. */
+    right: 12px;               /* Alineado a la derecha. */
+    top: -6px;                 /* Se posiciona justo encima del borde superior del menú. */
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;   /* Crea el triángulo usando bordes. */
+    border-right: 6px solid transparent;
+    border-bottom: 6px solid #fff;
+    filter: drop-shadow(0 -1px 1px rgba(0,0,0,.08)); /* Sombra sutil para la flecha. */
+}
+
+/* --- Elementos Individuales del Menú ("Ver perfil", "Cerrar sesión") --- */
+.user-menu-item {
+    display: block;            /* Ocupa todo el ancho disponible. */
+    padding: 8px 10px;         /* Espacio interior para que sea fácil de clickear. */
+    color: #333;               /* Color de texto oscuro. */
+    text-decoration: none;     /* Quita el subrayado. */
+}
+
+/* --- Efecto Hover en los Elementos del Menú --- */
+.user-menu-item:hover {
+    background: #f5f5f5;      /* Fondo gris claro al pasar el ratón. */
+}
+
+/*
+================================================================
+=                                                              =
+=              ESTILOS DE LAS TARJETAS DE MÉTRICAS             =
+=                                                              =
+================================================================
+*/
+
+/* --- Contenedor Principal del Contenido (donde van las tarjetas) --- */
+.dashboard-content {
+    padding: 30px;             /* Espacio interior para separar el contenido de los bordes. */
+}
+
+/* --- Fila de Contenido (Row) --- */
+.dashboard-row {
+    display: flex;
+    gap: 20px;                 /* Espacio entre columnas */
+    margin-bottom: 20px;       /* Espacio entre filas */
+}
+
+/* --- Columna Individual (Column) --- */
+.dashboard-col {
+    flex: 1;                   /* Cada columna ocupa el mismo espacio */
+    display: flex;
+    flex-direction: column;
+    gap: 20px;                 /* Espacio entre cards dentro de la columna */
+}
+
+/* --- Estilo Base de las Tarjetas de Métricas --- */
+/* El diseño para las tarjetas como "Ventas del Día", "Stock Bajo", etc. */
+.dashboard-metric-card {
+    background-color: #ffffff; /* Fondo blanco. */
+    padding: 20px;             /* Espacio interior. */
+    border-radius: 8px;        /* Esquinas redondeadas. */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Sombra muy sutil para dar profundidad. */
+    display: flex;             /* Usa Flexbox para el contenido interno. */
+    flex-direction: column;    /* Apila los elementos verticalmente. */
+    justify-content: flex-start; /* Alinea el contenido en la parte superior. */
+    align-items: center;       /* Centra el contenido horizontalmente. */
+    min-height: 250px;         /* Altura mínima para que todas las tarjetas tengan un tamaño consistente. */
+}
+
+/* --- Título de la Tarjeta de Métrica ("Ventas del Día") --- */
+.dashboard-metric-card .metric-card-title {
+    font-size: 16px;           /* Tamaño de fuente. */
+    color: #6c757d;            /* Color de texto gris. */
+    margin-bottom: 3px;        /* Pequeño espacio inferior. */
+}
+
+/* --- Valor Principal de la Tarjeta (el número grande) --- */
+.dashboard-metric-card .metric-card-value {
+    font-size: 28px;           /* Tamaño de fuente grande para destacar el valor. */
+    font-weight: bold;         /* Texto en negrita. */
+    color: #343a40;            /* Color de texto oscuro. */
+}
+
+/* --- Subtítulo de la Tarjeta ("transacciones", "Productos") --- */
+.dashboard-metric-card .metric-card-subtitle {
+    font-size: 14px;           /* Tamaño de fuente pequeño. */
+    color: #adb5bd;            /* Color de texto gris claro. */
+    margin-top: 5px;           /* Espacio superior para separarlo del valor. */
+}
+
+/* --- Layout de Dos Columnas para Tarjetas --- */
+/* Un contenedor especial para poner dos tarjetas una al lado de la otra. */
+.dashboard-two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Divide el espacio en dos columnas iguales. */
+    gap: 16px;                 /* Espacio entre las dos tarjetas. */
+    align-items: start;        /* Alinea las tarjetas en la parte superior de su celda. */
+}
+
+/*
+================================================================
+=                                                              =
+=         ESTILOS PARA LA SECCIÓN DE VENCIMIENTOS              =
+=                                                              =
+================================================================
+*/
+
+/* --- Columnas Vacías (Columnas 3 y 4) --- */
+.empty-column {
+    /* Espacio reservado para futuras funcionalidades */
+    min-height: 200px;
+    background-color: transparent;
+}
+
+/* --- Responsive: En pantallas pequeñas --- */
+@media (max-width: 1200px) {
+    .dashboard-row {
+        flex-wrap: wrap;       /* Permite que las columnas se envuelvan */
+    }
+    
+    .dashboard-col {
+        flex: 1 1 45%;         /* 2 columnas en tablets */
+    }
+    
+    .empty-column {
+        display: none;         /* Ocultar columnas vacías en tablets */
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboard-col {
+        flex: 1 1 100%;        /* 1 columna en móviles */
+    }
+}

@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block body_class %}dark-gold-theme{% endblock %}
+
+{% block contenido %}
+<div class="dashboard-main-container">
+    <nav class="dashboard-sidebar">
+        <div class="sidebar-header">
+            <h2 class="sidebar-title">Fornería</h2>
+        </div>
+        <ul class="sidebar-menu">
+            <li class="sidebar-item">
+                <a href="{% url 'dashboard' %}" class="sidebar-link">
+                    <span>📊</span> Dashboard
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="{% url 'pos' %}" class="sidebar-link">
+                    <span>🛒</span> Ventas (POS)
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="{% url 'inventario' %}" class="sidebar-link">
+                    <span>📦</span> Inventario
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="{% url 'agregar_producto' %}" class="sidebar-link">
+                    <span>➕</span> Agregar Producto
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="{% url 'alertas_list' %}" class="sidebar-link">
+                    <span>🔔</span> Alertas
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="{% url 'proximamente_feature' 'reportes' %}" class="sidebar-link">
+                    <span>📈</span> Reportes
+                </a>
+            </li>
+            {% if request.user.is_authenticated and request.user.is_superuser %}
+            <li class="sidebar-item">
+                <a href="{% url 'usuarios_list' %}" class="sidebar-link">
+                    <span>👥</span> Usuarios
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+        <div class="sidebar-footer">
+            <a href="{% url 'proximamente_feature' 'configuracion' %}" class="sidebar-link">
+                <span>⚙️</span> Configuración
+            </a>
+        </div>
+    </nav>
+
+    <div class="dashboard-content-wrapper">
+        <div class="coming-soon">
+          <h2 class="coming-soon-title">Construyendo</h2>
+
+  <div id="lottie-container" aria-label="Animación de construcción"></div>
+
+  <div class="coming-soon-actions">
+    <button type="button" class="btn-primary" onclick="volver()">Volver</button>
+  </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
+<script>
+  // Inicializa la animación Lottie con tu JSON en static/gif/
+  const container = document.getElementById('lottie-container');
+  lottie.loadAnimation({
+    container: container,
+    renderer: 'svg',
+    loop: true,
+    autoplay: true,
+    path: "{% static 'gif/Architecture and Construction Animation.json' %}",
+  });
+
+  // Botón "Volver": regresa a la página anterior
+  function volver() {
+    // Si hay historial, navega hacia atrás
+    if (window.history.length > 1) {
+      window.history.back();
+      return;
+    }
+    // Fallback: si no hay historial (p.ej., se abrió en nueva pestaña)
+    window.location.href = document.referrer || "/";
+  }
+</script>
+{% endblock %}

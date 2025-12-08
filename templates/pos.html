@@ -1,0 +1,413 @@
+<!-- 
+================================================================
+=                                                              =
+=          TEMPLATE: PUNTO DE VENTA (POS) - LA FORNERIA       =
+=                                                              =
+================================================================
+
+Este template muestra la interfaz del Punto de Venta (POS).
+
+ESTRUCTURA:
+1. Sidebar: Menú de navegación lateral (igual que el dashboard)
+2. Main: Lista de productos disponibles con búsqueda
+3. Carrito: Lateral derecho con items, totales y opciones de pago
+
+FUNCIONALIDAD:
+- Buscar productos por nombre
+- Agregar productos al carrito (con validación de stock)
+- Modificar cantidades en el carrito
+- Aplicar descuentos individuales por producto
+- Seleccionar/agregar cliente
+- Procesar venta completa con modal de confirmación
+- Generar comprobante de venta
+- Cancelar venta
+-->
+
+{% extends "base.html" %}
+{% load static %}
+
+{% block body_class %}dark-gold-theme{% endblock %}
+
+<!-- ==================== CONTENIDO PRINCIPAL ==================== -->
+{% block contenido %}
+<div class="dashboard-main-container">
+
+    <!-- ==================== SIDEBAR DE NAVEGACIÓN ==================== -->
+    {% include 'includes/sidebar.html' with active_page='pos' %}
+
+    <!-- ==================== CONTENIDO PRINCIPAL DEL POS ==================== -->
+    <div class="dashboard-content-wrapper">
+
+        <!-- Header del POS -->
+        <div class="bg-dark-custom-light text-white p-3 shadow-sm">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2 class="mb-0">
+                    <i class="bi bi-shop text-gold"></i> Punto de Venta
+                </h2>
+                <div class="d-flex align-items-center gap-3">
+                    <span class="text-light">
+                        <i class="bi bi-clock text-gold"></i>
+                        <span id="hora-actual"></span>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Container principal -->
+        <div class="container-fluid p-4">
+            <div class="row g-4">
+
+                <!-- ==================== COLUMNA IZQUIERDA: PRODUCTOS ==================== -->
+                <div class="col-lg-8">
+
+                    <!-- Barra de búsqueda -->
+                    <div class="pos-search-bar mb-4">
+                        <div class="input-group">
+                            <span class="input-group-text bg-dark-custom text-gold border-gold">
+                                <i class="bi bi-search"></i>
+                            </span>
+                            <input type="text" id="input-buscar-producto" class="form-control"
+                                placeholder="Buscar productos por nombre...">
+                        </div>
+                    </div>
+
+                    <!-- Grid de productos -->
+                    <div id="productos-grid" class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-2">
+                        {% if productos %}
+                            {% for producto in productos %}
+                            <div class="col">
+                                <!-- Tarjeta de producto -->
+                                <div class="producto-card" data-producto-id="{{ producto.id }}"
+                                    data-producto-nombre="{{ producto.nombre }}"
+                                    data-producto-precio="{{ producto.precio|floatformat:0 }}"
+                                    data-producto-stock="{{ producto.cantidad }}">
+
+                                    <!-- Nombre del producto -->
+                                    <div class="producto-nombre text-truncate" title="{{ producto.nombre }}">
+                                        {{ producto.nombre }}
+                                    </div>
+
+                                    <!-- Marca y tipo (si existen) -->
+                                    {% if producto.marca or producto.tipo %}
+                                    <div class="text-muted small mb-2">
+                                        {% if producto.marca and producto.tipo %}
+                                        {{ producto.marca }} &bull; {{ producto.tipo }}
+                                        {% elif producto.marca %}
+                                        {{ producto.marca }}
+                                        {% else %}
+                                        {{ producto.tipo }}
+                                        {% endif %}
+                                    </div>
+                                    {% endif %}
+
+                                    <!-- Precio -->
+                                    <div class="producto-precio">
+                                        ${{ producto.precio|floatformat:0 }}
+                                    </div>
+
+                                    <!-- Stock disponible -->
+                                    <div class="producto-stock">
+                                        <small class="text-muted">
+                                            <i class="bi bi-box-seam"></i> Stock: {{ producto.cantidad }}
+                                        </small>
+                                    </div>
+
+                                    <!-- Botón agregar al carrito -->
+                                    <button type="button" class="btn-agregar-producto" 
+                                            onclick="agregarAlCarrito({{ producto.id }})">
+                                        <i class="bi bi-cart-plus"></i> Agregar
+                                    </button>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="col-12">
+                                <div class="alert alert-info text-center">
+                                    <i class="bi bi-exclamation-circle"></i>
+                                    No hay productos disponibles en este momento.
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                </div>
+
+                <!-- ==================== COLUMNA DERECHA: CARRITO ==================== -->
+                <div class="col-lg-4">
+                    <div class="pos-sidebar">
+
+                        <!-- Header del carrito -->
+                        <div class="carrito-header">
+                            <i class="bi bi-cart3"></i> Carrito
+                            <span id="items-count" class="badge bg-dark ms-2">0</span>
+                        </div>
+
+                        <!-- ========== SECCIÓN: CLIENTE Y TIPO DE VENTA ========== -->
+                        <div class="cliente-section">
+                                <!-- Selector de cliente -->
+                                <div class="mb-3">
+                                    <label class="form-label">Cliente:</label>
+                                    <select id="select-cliente" class="form-select form-select-sm">
+                                        <option value="">-- Seleccionar cliente --</option>
+                                        {% for cliente in clientes %}
+                                        <option value="{{ cliente.id }}">
+                                            {{ cliente.nombre }}
+                                            {% if cliente.rut %} - {{ cliente.rut }}{% endif %}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                    <button type="button" id="btn-agregar-cliente-rapido"
+                                        class="btn btn-sm btn-outline-warning w-100 mt-2" data-bs-toggle="modal"
+                                        data-bs-target="#modal-cliente-rapido">
+                                        <i class="bi bi-person-plus"></i> Nuevo Cliente
+                                    </button>
+                                </div>
+
+                                <!-- Tipo de venta: Presencial / Delivery -->
+                                <div class="tipo-venta-btns">
+                                    <label class="form-label d-block mb-2">Tipo de Venta:</label>
+                                    <div class="btn-group w-100" role="group">
+                                        <button type="button" id="btn-presencial" class="btn btn-sm active">
+                                            <i class="bi bi-shop"></i> Presencial
+                                        </button>
+                                        <button type="button" id="btn-delivery" class="btn btn-sm">
+                                            <i class="bi bi-truck"></i> Delivery
+                                        </button>
+                                    </div>
+                                </div>
+                        </div>
+
+                        <!-- ========== ITEMS DEL CARRITO ========== -->
+                        <div class="carrito-items" id="carrito-items">
+                            <!-- Los items se agregan dinámicamente con JavaScript -->
+                        </div>
+
+                        <!-- Mensaje de carrito vacío -->
+                        <div id="carrito-vacio" class="carrito-vacio">
+                            <i class="bi bi-cart-x"></i>
+                            <p class="mt-2">El carrito está vacío</p>
+                        </div>
+
+                        <!-- ========== TOTALES ========== -->
+                        <div class="totales-section">
+                                <div class="row mb-2">
+                                    <div class="col-6"><strong>Subtotal:</strong></div>
+                                    <div class="col-6 text-end">$<span id="subtotal">0</span></div>
+                                </div>
+                                
+                                <!-- Toggle para incluir/excluir IVA -->
+                                <div class="row mb-2 align-items-center">
+                                    <div class="col-6">
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id="toggle-iva" checked>
+                                            <label class="form-check-label" for="toggle-iva">
+                                                <strong>IVA (19%)</strong>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-6 text-end">$<span id="iva">0</span></div>
+                                </div>
+                                
+                                <div class="row border-top pt-2">
+                                    <div class="col-6"><strong class="fs-5">TOTAL:</strong></div>
+                                    <div class="col-6 text-end">
+                                        <span class="fs-4 text-gold-light">$<span id="total">0</span></span>
+                                    </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    
+                    <!-- ========== BOTONES DE ACCIÓN (FIJOS AL FINAL) ========== -->
+                    <div class="carrito-botones-fijos">
+                        <!-- Botón para procesar venta -->
+                        <button type="button" id="btn-procesar-venta" class="btn btn-procesar-venta w-100 mb-2"
+                            disabled>
+                            <i class="bi bi-check-circle"></i> Procesar Venta
+                        </button>
+
+                        <!-- Botón para cancelar venta -->
+                        <button type="button" id="btn-cancelar-venta" class="btn btn-cancelar-venta w-100">
+                            <i class="bi bi-x-circle"></i> Cancelar Venta
+                        </button>
+                    </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- ==================== MODAL: NUEVO CLIENTE ==================== -->
+    <div class="modal fade" id="modal-cliente-rapido" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="bi bi-person-plus"></i> Agregar Cliente Rápido
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="form-cliente-rapido">
+                        {% csrf_token %}
+
+                        <div class="mb-3">
+                            <label for="cliente-nombre" class="form-label">Nombre *</label>
+                            <input type="text" class="form-control" id="cliente-nombre" name="nombre" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="cliente-rut" class="form-label">RUT</label>
+                            <input type="text" class="form-control" id="cliente-rut" name="rut"
+                                placeholder="12345678-9">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="cliente-telefono" class="form-label">Teléfono</label>
+                            <input type="text" class="form-control" id="cliente-telefono" name="telefono"
+                                placeholder="+56912345678">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="cliente-email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="cliente-email" name="email">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="cliente-direccion" class="form-label">Dirección</label>
+                            <textarea class="form-control" id="cliente-direccion" name="direccion" rows="2"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        Cancelar
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="agregarClienteRapido()">
+                        <i class="bi bi-save"></i> Guardar Cliente
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ==================== MODAL: DESCUENTO INDIVIDUAL ==================== -->
+    <div class="modal fade" id="modal-descuento-item" tabindex="-1">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="bi bi-percent"></i> Aplicar Descuento
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="mb-3">
+                        <strong>Producto:</strong><br>
+                        <span id="nombre-producto-descuento" class="text-gold"></span>
+                    </p>
+
+                    <div class="mb-3">
+                        <label for="input-descuento-individual" class="form-label">
+                            Descuento (%)
+                        </label>
+                        <input type="number" class="form-control" id="input-descuento-individual" min="0" max="100"
+                            step="1" value="0" placeholder="0">
+                        <small class="form-text text-muted">
+                            Ingrese un valor entre 0 y 100
+                        </small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        Cancelar
+                    </button>
+                    <button type="button" id="btn-aplicar-descuento" class="btn btn-warning">
+                        <i class="bi bi-check"></i> Aplicar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ==================== MODAL: CONFIRMACIÓN DE VENTA ==================== -->
+    <div class="modal fade" id="modal-confirmar-venta" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="bi bi-check-circle"></i> Confirmar Venta
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info mb-3">
+                        <i class="bi bi-info-circle"></i>
+                        Por favor, ingrese el monto pagado por el cliente para calcular el vuelto.
+                    </div>
+
+                    <!-- Resumen de totales -->
+                    <div class="totales-section mb-3">
+                        <div class="row mb-2">
+                            <div class="col-6"><strong>Subtotal:</strong></div>
+                            <div class="col-6 text-end">$<span id="modal-subtotal">0</span></div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-6"><strong>IVA (19%):</strong></div>
+                            <div class="col-6 text-end">$<span id="modal-iva">0</span></div>
+                        </div>
+                        <div class="row border-top pt-2 mb-3">
+                            <div class="col-6"><strong class="fs-5">TOTAL A PAGAR:</strong></div>
+                            <div class="col-6 text-end">
+                                <span class="fs-4 text-gold-light">$<span id="modal-total">0</span></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Input de monto pagado -->
+                    <div class="mb-3">
+                        <label for="monto-pagado-input" class="form-label">
+                            <strong>Monto Pagado por el Cliente:</strong>
+                        </label>
+                        <input type="number" class="form-control form-control-lg" id="monto-pagado-input" min="0"
+                            step="1" placeholder="Ingrese el monto" required>
+                    </div>
+
+                    <!-- Vuelto calculado -->
+                    <div class="alert alert-success">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <strong>VUELTO:</strong>
+                            <span class="fs-4">$<span id="modal-vuelto">0</span></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x"></i> Cancelar
+                    </button>
+                    <button type="button" id="btn-confirmar-venta-final" class="btn btn-success btn-lg">
+                        <i class="bi bi-check-circle"></i> Confirmar Venta
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Token CSRF para peticiones AJAX -->
+    {% csrf_token %}
+
+    {% endblock %}
+
+
+    <!-- ==================== SCRIPTS PERSONALIZADOS ==================== -->
+    {% block extra_js %}
+    <script src="{% static 'js/pos.js' %}"></script>
+    {% endblock %}

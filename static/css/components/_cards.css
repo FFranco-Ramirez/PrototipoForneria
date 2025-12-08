@@ -1,0 +1,74 @@
+/*
+================================================================
+=                                                              =
+=                   ESTILOS DE TARJETAS                        =
+=                                                              =
+================================================================
+*/
+
+/*
+----------------------------------------------------------------
+-        Tarjeta para la Edición de Productos (Tema Oscuro)    -
+----------------------------------------------------------------
+*/
+
+/* --- Estilo Base de la Tarjeta de Edición --- */
+/* Esta es la "caja" o contenedor que se usa en la página de editar producto para agrupar secciones. */
+.edit-card {
+  background: var(--bg-alt); /* Color de fondo, un gris un poco más claro que el fondo principal del tema oscuro. */
+  border: 1px solid var(--border); /* Borde muy sutil, usando un color definido en el tema. */
+  border-radius: 12px;       /* Esquinas bastante redondeadas para un diseño moderno y suave. */
+  padding: 16px;             /* Espacio interior para que el contenido no esté pegado a los bordes. */
+}
+
+/* --- Título dentro de la Tarjeta de Edición --- */
+/* Para los títulos como "Información General" o "Detalles de Stock". */
+.edit-section-title {
+    color: var(--gold);      /* Color de texto dorado, tomado de las variables del tema. */
+    margin-bottom: 8px;      /* Un pequeño espacio debajo del título para separarlo del contenido. */
+}
+
+
+/*
+----------------------------------------------------------------
+-        Tarjeta Específica para "Productos por Vencer"        -
+----------------------------------------------------------------
+*/
+
+/* --- Contenedor de la Tarjeta de Vencimientos --- */
+/* Esta tarjeta es especial, se usa en el dashboard para mostrar productos que están a punto de vencer. */
+#vencimientos-card {
+    max-width: 280px;        /* Ancho máximo fijo para que la tarjeta sea compacta. */
+    display: inline-block;   /* Evita que la tarjeta ocupe todo el ancho de la pantalla, permitiendo que otros elementos se pongan a su lado si hay espacio. */
+    text-align: left;        /* Alinea todo el texto dentro de la tarjeta a la izquierda. */
+    margin-top: 16px;        /* Espacio por encima de la tarjeta para separarla de lo que tenga arriba. */
+}
+
+/* --- Título de la Tarjeta de Vencimientos --- */
+#vencimientos-card .metric-card-title {
+    text-align: left;        /* Asegura que el título esté alineado a la izquierda (aunque el contenedor padre ya lo hace, esto es un refuerzo). */
+    margin-bottom: 8px;      /* Espacio debajo del título. */
+}
+
+/* --- Lista dentro de la Tarjeta de Vencimientos --- */
+/* Para la lista de productos que se muestra dentro de la tarjeta. */
+#vencimientos-card .metric-list {
+    list-style: none;        /* Quita los puntos o viñetas de la lista. */
+    padding-left: 0;         /* Elimina el espacio de sangría que las listas suelen tener a la izquierda. */
+    margin: 0 0 12px 0;      /* Quita los márgenes superior e inferior, pero deja un espacio de 12px abajo antes del botón. */
+}
+
+/* --- Elemento de la Lista (Cada Producto) --- */
+#vencimientos-card .metric-list li {
+    margin: 4px 0;           /* Pequeño espacio vertical entre cada producto de la lista. */
+    color: #343a40;          /* Color de texto oscuro para los nombres de los productos. */
+}
+
+/* --- Ajuste para Pantallas Pequeñas (Móviles) --- */
+/* Esta regla se aplica solo cuando el ancho de la pantalla es de 600 píxeles o menos. */
+@media (max-width: 600px) {
+  #vencimientos-card {
+      max-width: none; /* Elimina el ancho máximo fijo. */
+      width: 100%;     /* Hace que la tarjeta ocupe todo el ancho disponible en pantallas pequeñas. */
+  }
+}

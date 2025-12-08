@@ -1,0 +1,510 @@
+# ================================================================
+# =                                                              =
+# =           VISTAS PARA EL SISTEMA POS (PUNTO DE VENTA)       =
+# =                                                              =
+# ================================================================
+# 
+# Este archivo contiene todas las funciones (vistas) que controlan
+# el sistema de Punto de Venta (POS) de la Forneria.
+# 
+# ¿Qué es una VISTA en Django?
+# Una vista es una función Python que:
+# 1. Recibe una petición HTTP del navegador (request)
+# 2. Procesa la información (busca datos, valida, calcula, etc.)
+# 3. Retorna una respuesta HTTP (página HTML o datos JSON)
+# 
+# En este archivo manejaremos:
+# - Mostrar la interfaz del POS
+# - Agregar productos al carrito
+# - Quitar productos del carrito
+# - Calcular totales
+# - Finalizar la venta
+
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from django.http import JsonResponse
+from django.views.decorators.http import require_http_methods
+from django.db import transaction
+from django.utils import timezone
+from django.conf import settings
+from decimal import Decimal
+import json
+import logging
+
+# Importamos los modelos que necesitamos
+from ventas.models import Productos, Clientes, Ventas, DetalleVenta
+from ventas.funciones.formularios_ventas import ClienteRapidoForm, FinalizarVentaForm
+
+
+# ================================================================
+# =                VISTA: MOSTRAR EL POS                         =
+# ================================================================
+# 
+# Esta vista muestra la página principal del Punto de Venta (POS)
+# donde el usuario puede buscar productos, agregarlos al carrito
+# y procesar ventas.
+
+@login_required  # Solo usuarios autenticados pueden acceder
+def pos_view(request):
+    """
+    Vista principal del Punto de Venta (POS).
+    
+    Muestra:
+    - Lista de productos disponibles
+    - Formulario para agregar cliente
+    - Carrito de compras (manejado con JavaScript en el navegador)
+    
+    Args:
+        request: Objeto con la información de la petición HTTP
+        
+    Returns:
+        Una página HTML con la interfaz del POS
+    """
+    
+    # --- Paso 1: Obtener todos los productos activos (no eliminados) ---
+    # Filtramos solo los productos que:
+    # - No han sido eliminados (eliminado__isnull=True)
+    # - Tienen stock disponible (cantidad > 0)
+    # - Están ordenados alfabéticamente por nombre
+    productos_disponibles = Productos.objects.filter(
+        eliminado__isnull=True,    # Solo productos activos
+        cantidad__gt=0             # Solo con stock disponible
+    ).select_related('categorias').order_by('nombre')
+    
+    # --- Paso 2: Obtener todos los clientes para el selector ---
+    # Los ordenamos alfabéticamente por nombre
+    clientes = Clientes.objects.all().order_by('nombre')
+    
+    # --- Paso 3: Crear el formulario para agregar nuevos clientes ---
+    form_cliente = ClienteRapidoForm()
+    
+    # --- Paso 4: Preparar el contexto (datos que enviamos al template) ---
+    # El "contexto" es un diccionario con todas las variables que
+    # el template HTML necesita para mostrar la información
+    contexto = {
+        'productos': productos_disponibles,  # Lista de productos
+        'clientes': clientes,                # Lista de clientes
+        'form_cliente': form_cliente,        # Formulario de cliente
+        'IVA_RATE': 0.19,                   # Tasa de IVA en Chile (19%)
+    }
+    
+    # --- Paso 5: Renderizar (generar) la página HTML ---
+    # Django toma el template 'pos.html' y lo llena con los datos del contexto
+    return render(request, 'pos.html', contexto)
+
+
+# ================================================================
+# =        VISTA API: AGREGAR CLIENTE RÁPIDO (JSON)              =
+# ================================================================
+# 
+# Esta vista se llama desde JavaScript (AJAX) para agregar un
+# nuevo cliente sin recargar la página.
+
+@login_required
+@require_http_methods(["POST"])  # Solo acepta peticiones POST
+def agregar_cliente_ajax(request):
+    """
+    API para agregar un cliente nuevo desde el POS usando AJAX.
+    
+    Recibe datos JSON del cliente y los guarda en la base de datos.
+    Retorna el ID del cliente creado para poder seleccionarlo automáticamente.
+    
+    Args:
+        request: Petición HTTP con los datos del cliente en formato JSON
+        
+    Returns:
+        JsonResponse con el resultado (éxito o error)
+    """
+    
+    try:
+        # --- Paso 1: Obtener los datos enviados desde JavaScript ---
+        # JavaScript nos envía los datos en formato JSON
+        datos = json.loads(request.body)  # Convertimos JSON a diccionario Python
+        
+        # --- Paso 2: Crear el formulario con los datos recibidos ---
+        form = ClienteRapidoForm(datos)
+        
+        # --- Paso 3: Validar el formulario ---
+        if form.is_valid():
+            # Si el formulario es válido, guardamos el cliente en la BD
+            cliente = form.save()  # Django automáticamente crea el registro
+            
+            # --- Paso 4: Retornar respuesta exitosa ---
+            return JsonResponse({
+                'success': True,                    # Indica que todo salió bien
+                'mensaje': 'Cliente agregado correctamente',
+                'cliente': {
+                    'id': cliente.id,               # ID del cliente creado
+                    'nombre': cliente.nombre,       # Nombre del cliente
+                    'rut': cliente.rut or '',       # RUT (o vacío si no tiene)
+                }
+            })
+        else:
+            # Si el formulario tiene errores, los retornamos
+            # form.errors es un diccionario con los errores de cada campo
+            return JsonResponse({
+                'success': False,
+                'mensaje': 'Datos inválidos',
+                'errores': form.errors  # Diccionario con los errores
+            }, status=400)  # Código HTTP 400 = Bad Request
+            
+    except json.JSONDecodeError:
+        # Si el JSON enviado está mal formado
+        return JsonResponse({
+            'success': False,
+            'mensaje': 'Error al procesar los datos JSON'
+        }, status=400)
+        
+    except Exception as e:
+        # Cualquier otro error inesperado
+        return JsonResponse({
+            'success': False,
+            'mensaje': f'Error del servidor: {str(e)}'
+        }, status=500)  # Código HTTP 500 = Internal Server Error
+
+
+# ================================================================
+# =        VISTA API: VALIDAR DISPONIBILIDAD DE PRODUCTO         =
+# ================================================================
+# 
+# Esta vista verifica si un producto tiene stock suficiente
+# antes de agregarlo al carrito.
+
+@login_required
+@require_http_methods(["GET"])  # Solo acepta peticiones GET
+def validar_producto_ajax(request, producto_id):
+    """
+    API para validar si un producto está disponible y tiene stock.
+    
+    Verifica:
+    - Que el producto exista
+    - Que no esté eliminado
+    - Que tenga stock disponible
+    - Que no esté vencido
+    
+    Args:
+        request: Petición HTTP
+        producto_id: ID del producto a validar
+        
+    Returns:
+        JsonResponse con la información del producto y su disponibilidad
+    """
+    
+    try:
+        # --- Paso 1: Buscar el producto ---
+        # get_object_or_404 busca el producto, si no existe retorna error 404
+        producto = get_object_or_404(Productos, pk=producto_id)
+        
+        # --- Paso 2: Verificar que el producto no esté eliminado ---
+        if producto.eliminado is not None:
+            return JsonResponse({
+                'disponible': False,
+                'mensaje': 'Este producto ya no está disponible'
+            })
+        
+        # --- Paso 3: Verificar que tenga stock ---
+        if producto.cantidad <= 0:
+            return JsonResponse({
+                'disponible': False,
+                'mensaje': 'Producto sin stock'
+            })
+        
+        # --- Paso 4: Verificar fecha de caducidad ---
+        # Comparamos la fecha de hoy con la fecha de caducidad del producto
+        hoy = timezone.now().date()
+        if producto.caducidad < hoy:
+            return JsonResponse({
+                'disponible': False,
+                'mensaje': 'Producto vencido'
+            })
+        
+        # --- Paso 5: Todo está bien, retornar información del producto ---
+        return JsonResponse({
+            'disponible': True,
+            'producto': {
+                'id': producto.id,
+                'nombre': producto.nombre,
+                'precio': float(producto.precio),          # Convertimos Decimal a float para JSON
+                'stock_disponible': producto.cantidad,      # Stock actual
+                'caducidad': producto.caducidad.strftime('%Y-%m-%d'),  # Fecha en formato ISO
+                'descripcion': producto.descripcion or '',
+                'marca': producto.marca or '',
+            }
+        })
+        
+    except Productos.DoesNotExist:
+        return JsonResponse({
+            'disponible': False,
+            'mensaje': 'Producto no encontrado'
+        }, status=404)
+        
+    except Exception as e:
+        return JsonResponse({
+            'disponible': False,
+            'mensaje': f'Error: {str(e)}'
+        }, status=500)
+
+
+# ================================================================
+# =           VISTA API: PROCESAR VENTA COMPLETA                 =
+# ================================================================
+# 
+# Esta es la vista más importante: procesa la venta completa.
+# Recibe el carrito, crea los registros en la base de datos
+# y actualiza el stock de los productos.
+
+@login_required
+@require_http_methods(["POST"])
+def procesar_venta_ajax(request):
+    """
+    API para procesar una venta completa.
+    
+    Recibe:
+    - ID del cliente
+    - Canal de venta (presencial/delivery)
+    - Carrito con los productos (array de objetos)
+    - Monto pagado
+    - Descuento (opcional)
+    
+    Realiza:
+    1. Valida que todos los productos tengan stock
+    2. Calcula los totales (subtotal, IVA, total)
+    3. Crea el registro de la Venta
+    4. Crea los registros de DetalleVenta
+    5. Actualiza el stock de cada producto
+    6. Retorna el resultado
+    
+    Args:
+        request: Petición HTTP con los datos de la venta en JSON
+        
+    Returns:
+        JsonResponse con el resultado de la venta (ID, folio, etc.)
+    """
+    
+    try:
+        # --- Paso 1: Obtener los datos enviados desde JavaScript ---
+        datos = json.loads(request.body)
+        
+        # Extraemos cada campo del JSON
+        cliente_id = datos.get('cliente_id')
+        canal_venta = datos.get('canal_venta', 'presencial')
+        carrito = datos.get('carrito', [])  # Array con los productos
+        monto_pagado = Decimal(str(datos.get('monto_pagado', 0)))
+        descuento_global = Decimal(str(datos.get('descuento', 0)))
+        
+        # --- Paso 2: Validaciones básicas ---
+        if not cliente_id:
+            return JsonResponse({
+                'success': False,
+                'mensaje': 'Debe seleccionar un cliente'
+            }, status=400)
+        
+        if not carrito or len(carrito) == 0:
+            return JsonResponse({
+                'success': False,
+                'mensaje': 'El carrito está vacío'
+            }, status=400)
+        
+        # Verificar que el cliente existe
+        try:
+            cliente = Clientes.objects.get(pk=cliente_id)
+        except Clientes.DoesNotExist:
+            return JsonResponse({
+                'success': False,
+                'mensaje': 'Cliente no encontrado'
+            }, status=404)
+        
+        # --- Paso 3: Validar stock de todos los productos ---
+        # Antes de procesar, verificamos que TODOS los productos tengan stock
+        for item in carrito:
+            producto_id = item.get('producto_id')
+            cantidad_solicitada = int(item.get('cantidad', 0))
+            
+            try:
+                producto = Productos.objects.get(pk=producto_id)
+                
+                # Verificar que no esté eliminado
+                if producto.eliminado is not None:
+                    return JsonResponse({
+                        'success': False,
+                        'mensaje': f'El producto "{producto.nombre}" ya no está disponible'
+                    }, status=400)
+                
+                # Verificar stock
+                if producto.cantidad < cantidad_solicitada:
+                    return JsonResponse({
+                        'success': False,
+                        'mensaje': f'Stock insuficiente para "{producto.nombre}". Disponible: {producto.cantidad}'
+                    }, status=400)
+                    
+            except Productos.DoesNotExist:
+                return JsonResponse({
+                    'success': False,
+                    'mensaje': f'Producto con ID {producto_id} no encontrado'
+                }, status=404)
+        
+        # --- Paso 4: Calcular totales ---
+        total_sin_iva = Decimal('0.00')
+        
+        # Sumamos el precio de cada producto del carrito
+        for item in carrito:
+            producto_id = item.get('producto_id')
+            cantidad = int(item.get('cantidad', 0))
+            precio_unitario = Decimal(str(item.get('precio_unitario', 0)))
+            descuento_item = Decimal(str(item.get('descuento', 0)))
+            
+            # Calcular subtotal de este item
+            subtotal_item = cantidad * precio_unitario
+            
+            # Aplicar descuento si existe
+            if descuento_item > 0:
+                subtotal_item = subtotal_item - (subtotal_item * descuento_item / 100)
+            
+            total_sin_iva += subtotal_item
+        
+        # Aplicar descuento global
+        total_sin_iva = total_sin_iva - descuento_global
+        
+        # Calcular IVA (19% en Chile)
+        IVA_RATE = Decimal('0.19')
+        total_iva = total_sin_iva * IVA_RATE
+        
+        # Calcular total con IVA
+        total_con_iva = total_sin_iva + total_iva
+        
+        # Calcular vuelto
+        vuelto = monto_pagado - total_con_iva
+        
+        # Verificar que el monto pagado sea suficiente
+        if vuelto < 0:
+            return JsonResponse({
+                'success': False,
+                'mensaje': f'Monto insuficiente. Total: ${total_con_iva:.2f}, Pagado: ${monto_pagado:.2f}'
+            }, status=400)
+        
+        # --- Paso 4.5: VALIDAR STOCK ANTES DE PROCESAR VENTA ---
+        # Verificar que todos los productos tengan stock suficiente
+        for item in carrito:
+            producto_id = item.get('producto_id')
+            cantidad = int(item.get('cantidad', 0))
+            
+            try:
+                producto = Productos.objects.get(pk=producto_id, eliminado__isnull=True)
+                stock_disponible = producto.cantidad if producto.cantidad else 0
+                
+                if stock_disponible < cantidad:
+                    return JsonResponse({
+                        'success': False,
+                        'mensaje': f'Stock insuficiente para {producto.nombre}. Disponible: {stock_disponible}, Solicitado: {cantidad}'
+                    }, status=400)
+            except Productos.DoesNotExist:
+                return JsonResponse({
+                    'success': False,
+                    'mensaje': f'Producto con ID {producto_id} no encontrado'
+                }, status=404)
+        
+        # --- Paso 5: Crear la venta en la base de datos ---
+        # Usamos una TRANSACCIÓN para asegurar que todo se guarde correctamente
+        # o NADA se guarde si hay un error (atomicidad)
+        with transaction.atomic():
+            
+            # Generar folio único (puedes mejorarlo con un sistema más robusto)
+            folio = f"BOL-{timezone.now().strftime('%Y%m%d%H%M%S')}"
+            
+            # Crear el registro de Venta
+            venta = Ventas.objects.create(
+                clientes=cliente,
+                canal_venta=canal_venta,
+                total_sin_iva=total_sin_iva,
+                total_iva=total_iva,
+                descuento=descuento_global,
+                total_con_iva=total_con_iva,
+                folio=folio,
+                monto_pagado=monto_pagado,
+                vuelto=vuelto,
+            )
+            
+            # --- Paso 6: Crear los detalles de venta y actualizar stock ---
+            for item in carrito:
+                producto_id = item.get('producto_id')
+                cantidad = int(item.get('cantidad', 0))
+                precio_unitario = Decimal(str(item.get('precio_unitario', 0)))
+                descuento_pct = Decimal(str(item.get('descuento', 0)))
+                
+                # Obtener el producto
+                producto = Productos.objects.get(pk=producto_id)
+                
+                # Crear el detalle de venta
+                DetalleVenta.objects.create(
+                    ventas=venta,
+                    productos=producto,
+                    cantidad=cantidad,
+                    precio_unitario=precio_unitario,
+                    descuento_pct=descuento_pct,
+                )
+                
+                # Validar stock disponible antes de actualizar
+                if producto.cantidad < cantidad:
+                    raise ValueError(
+                        f'Stock insuficiente para {producto.nombre}. '
+                        f'Disponible: {producto.cantidad}, Solicitado: {cantidad}'
+                )
+                
+                # Actualizar el stock del producto (restar la cantidad vendida)
+                producto.cantidad = producto.cantidad - cantidad
+                producto.save(update_fields=['cantidad'])
+                
+                # Crear movimiento de inventario para trazabilidad
+                try:
+                    from ventas.models import MovimientosInventario
+                    MovimientosInventario.objects.create(
+                        tipo_movimiento='salida',
+                        cantidad=cantidad,
+                        productos=producto,
+                        origen='venta',
+                        referencia_id=venta.id,
+                        tipo_referencia='venta'
+                    )
+                except Exception as e:
+                    # Si falla la creación del movimiento, registrar pero no fallar la venta
+                    import logging
+                    logger = logging.getLogger('ventas')
+                    logger.warning(f'Error al crear movimiento de inventario: {e}')
+        
+        # --- Paso 7: Retornar respuesta exitosa ---
+        return JsonResponse({
+            'success': True,
+            'mensaje': 'Venta procesada correctamente',
+            'venta': {
+                'id': venta.id,
+                'folio': venta.folio,
+                'total': float(total_con_iva),
+                'vuelto': float(vuelto),
+                'fecha': venta.fecha.strftime('%d/%m/%Y %H:%M'),
+            }
+        })
+        
+    except json.JSONDecodeError:
+        return JsonResponse({
+            'success': False,
+            'mensaje': 'Error al procesar los datos JSON'
+        }, status=400)
+        
+    except Exception as e:
+        # Si hay cualquier error, la transacción se revierte automáticamente
+        import logging
+        logger = logging.getLogger('ventas')
+        logger.error(f'Error al procesar venta: {e}', exc_info=True)
+        
+        # En producción, no exponer detalles del error al usuario
+        if settings.DEBUG:
+            mensaje_error = f'Error al procesar la venta: {str(e)}'
+        else:
+            mensaje_error = 'Error al procesar la venta. Contacte al administrador.'
+        
+        return JsonResponse({
+            'success': False,
+            'mensaje': mensaje_error
+        }, status=500)
+

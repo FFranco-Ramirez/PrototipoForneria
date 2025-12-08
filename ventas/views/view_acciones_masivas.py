@@ -1,0 +1,256 @@
+# ================================================================
+# =                                                              =
+# =           VISTAS PARA ACCIONES MASIVAS EN INVENTARIO        =
+# =                                                              =
+# ================================================================
+#
+# Este archivo contiene las vistas que manejan las acciones masivas
+# sobre múltiples productos en el inventario.
+#
+# ACCIONES DISPONIBLES:
+# 1. Crear alertas para múltiples productos
+# 2. Mover múltiples productos a merma
+# 3. Eliminar múltiples productos (borrado lógico)
+#
+# SEGURIDAD:
+# - Todas las vistas requieren autenticación (@login_required)
+# - Solo aceptan peticiones POST
+# - Validan el token CSRF automáticamente
+
+from django.shortcuts import render
+from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
+from django.utils import timezone
+from datetime import date
+import json
+
+# Importar los modelos necesarios
+from ..models import Productos, Alertas
+
+
+# ================================================================
+# =                  ACCIÓN: CREAR ALERTAS                       =
+# ================================================================
+
+@login_required
+@require_POST
+def crear_alertas_masivo(request):
+    """
+    Crea alertas de vencimiento para múltiples productos.
+    
+    Esta función recibe una lista de IDs de productos y genera
+    alertas automáticas según los días hasta su vencimiento:
+    - ROJA: 0-13 días (urgente)
+    - AMARILLA: 14-29 días (precaución)
+    - VERDE: 30+ días (informativo)
+    
+    Args:
+        request: HttpRequest con JSON body conteniendo {'ids': [1, 2, 3, ...]}
+    
+    Returns:
+        JsonResponse con el resultado de la operación
+    """
+    try:
+        # Parsear el JSON del body de la petición
+        data = json.loads(request.body)
+        ids_productos = data.get('ids', [])
+        
+        # Validar que se enviaron IDs
+        if not ids_productos:
+            return JsonResponse({
+                'success': False,
+                'message': 'No se seleccionaron productos'
+            }, status=400)
+        
+        # Obtener los productos seleccionados
+        productos = Productos.objects.filter(
+            id__in=ids_productos,
+            eliminado__isnull=True  # Solo productos no eliminados
+        )
+        
+        # Contador de alertas creadas
+        alertas_creadas = 0
+        hoy = date.today()
+        
+        # Crear una alerta para cada producto
+        for producto in productos:
+            # Calcular días hasta vencer
+            dias_hasta_vencer = (producto.caducidad - hoy).days
+            
+            # Determinar el tipo de alerta según los días
+            if dias_hasta_vencer < 0:
+                # Producto ya vencido
+                tipo = 'roja'
+                mensaje = f"{producto.nombre} YA VENCIÓ hace {abs(dias_hasta_vencer)} días"
+            elif dias_hasta_vencer <= 13:
+                # Alerta ROJA: 0-13 días
+                tipo = 'roja'
+                mensaje = f"{producto.nombre} vence en {dias_hasta_vencer} días - URGENTE"
+            elif dias_hasta_vencer <= 29:
+                # Alerta AMARILLA: 14-29 días
+                tipo = 'amarilla'
+                mensaje = f"{producto.nombre} vence en {dias_hasta_vencer} días - PRECAUCIÓN"
+            else:
+                # Alerta VERDE: 30+ días
+                tipo = 'verde'
+                mensaje = f"{producto.nombre} vence en {dias_hasta_vencer} días - OK"
+            
+            # Verificar si ya existe una alerta activa para este producto
+            alerta_existente = Alertas.objects.filter(
+                productos=producto,
+                estado='activa'
+            ).first()
+            
+            if alerta_existente:
+                # Actualizar la alerta existente
+                alerta_existente.tipo_alerta = tipo
+                alerta_existente.mensaje = mensaje
+                alerta_existente.fecha_generada = timezone.now()
+                alerta_existente.save()
+            else:
+                # Crear nueva alerta
+                Alertas.objects.create(
+                    tipo_alerta=tipo,
+                    mensaje=mensaje,
+                    productos=producto,
+                    estado='activa'
+                )
+            
+            alertas_creadas += 1
+        
+        # Respuesta exitosa
+        return JsonResponse({
+            'success': True,
+            'message': f'Se crearon/actualizaron {alertas_creadas} alerta(s) exitosamente'
+        })
+        
+    except json.JSONDecodeError:
+        return JsonResponse({
+            'success': False,
+            'message': 'Error al procesar los datos enviados'
+        }, status=400)
+    
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'message': f'Error al crear alertas: {str(e)}'
+        }, status=500)
+
+
+# ================================================================
+# =                  ACCIÓN: MOVER A MERMA                       =
+# ================================================================
+
+@login_required
+@require_POST
+def mover_merma_masivo(request):
+    """
+    Mueve múltiples productos al estado de merma.
+    
+    Esta función cambia el estado_merma de los productos seleccionados
+    a 'vencido'. Los productos en merma no aparecen en el inventario
+    normal, sino en la sección de merma.
+    
+    Args:
+        request: HttpRequest con JSON body conteniendo {'ids': [1, 2, 3, ...]}
+    
+    Returns:
+        JsonResponse con el resultado de la operación
+    """
+    try:
+        # Parsear el JSON del body de la petición
+        data = json.loads(request.body)
+        ids_productos = data.get('ids', [])
+        
+        # Validar que se enviaron IDs
+        if not ids_productos:
+            return JsonResponse({
+                'success': False,
+                'message': 'No se seleccionaron productos'
+            }, status=400)
+        
+        # Actualizar el estado de los productos seleccionados
+        productos_actualizados = Productos.objects.filter(
+            id__in=ids_productos,
+            eliminado__isnull=True  # Solo productos no eliminados
+        ).update(
+            estado_merma='vencido'  # Cambiar estado a vencido
+        )
+        
+        # Respuesta exitosa
+        return JsonResponse({
+            'success': True,
+            'message': f'Se movieron {productos_actualizados} producto(s) a merma'
+        })
+        
+    except json.JSONDecodeError:
+        return JsonResponse({
+            'success': False,
+            'message': 'Error al procesar los datos enviados'
+        }, status=400)
+    
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'message': f'Error al mover productos a merma: {str(e)}'
+        }, status=500)
+
+
+# ================================================================
+# =                  ACCIÓN: ELIMINAR PRODUCTOS                  =
+# ================================================================
+
+@login_required
+@require_POST
+def eliminar_masivo(request):
+    """
+    Elimina múltiples productos (borrado lógico).
+    
+    Esta función NO borra físicamente los productos de la base de datos,
+    sino que marca el campo 'eliminado' con la fecha actual. Esto permite
+    mantener un historial y recuperar productos si es necesario.
+    
+    Args:
+        request: HttpRequest con JSON body conteniendo {'ids': [1, 2, 3, ...]}
+    
+    Returns:
+        JsonResponse con el resultado de la operación
+    """
+    try:
+        # Parsear el JSON del body de la petición
+        data = json.loads(request.body)
+        ids_productos = data.get('ids', [])
+        
+        # Validar que se enviaron IDs
+        if not ids_productos:
+            return JsonResponse({
+                'success': False,
+                'message': 'No se seleccionaron productos'
+            }, status=400)
+        
+        # Marcar los productos como eliminados (borrado lógico)
+        productos_eliminados = Productos.objects.filter(
+            id__in=ids_productos,
+            eliminado__isnull=True  # Solo productos no eliminados previamente
+        ).update(
+            eliminado=timezone.now()  # Marcar con fecha de eliminación
+        )
+        
+        # Respuesta exitosa
+        return JsonResponse({
+            'success': True,
+            'message': f'Se eliminaron {productos_eliminados} producto(s) exitosamente'
+        })
+        
+    except json.JSONDecodeError:
+        return JsonResponse({
+            'success': False,
+            'message': 'Error al procesar los datos enviados'
+        }, status=400)
+    
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'message': f'Error al eliminar productos: {str(e)}'
+        }, status=500)

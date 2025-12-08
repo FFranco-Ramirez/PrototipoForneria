@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block body_class %}dark-gold-theme{% endblock %}
+
+{% block contenido %}
+<div class="dashboard-main-container">
+    <!-- Sidebar Reutilizable -->
+    {% include 'includes/sidebar.html' with active_page='agregar_producto' %}
+
+    <div class="dashboard-content-wrapper">
+        <div class="form-container form-producto">
+            <h2>Agregar Nuevo Producto</h2>
+    {% if messages %}
+      <ul class="messages">
+        {% for message in messages %}
+          <li class="{{ message.tags }}">{{ message }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+
+    {% if form.errors %}
+      <div class="error-summary">Por favor corrige los campos marcados.</div>
+    {% endif %}
+
+    <form method="post" novalidate>
+        {% csrf_token %}
+        <div class="form-grid">
+            <div class="form-row">
+              {{ form.nombre.label_tag }} {{ form.nombre }}
+              {% if form.nombre.errors %}<div class="field-error">{{ form.nombre.errors|striptags }}</div>{% endif %}
+            </div>
+
+            <div class="form-row">
+              {{ form.descripcion.label_tag }} {{ form.descripcion }}
+              {% if form.descripcion.errors %}<div class="field-error">{{ form.descripcion.errors|striptags }}</div>{% endif %}
+            </div>
+
+            <div class="form-row">
+              {{ form.marca.label_tag }} {{ form.marca }}
+              {% if form.marca.errors %}<div class="field-error">{{ form.marca.errors|striptags }}</div>{% endif %}
+            </div>
+
+            <div class="form-row">
+              {{ form.tipo.label_tag }} {{ form.tipo }}
+              {% if form.tipo.errors %}<div class="field-error">{{ form.tipo.errors|striptags }}</div>{% endif %}
+            </div>
+
+            <div class="form-row">
+              {{ form.categorias.label_tag }} {{ form.categorias }}
+              {% if form.categorias.errors %}<div class="field-error">{{ form.categorias.errors|striptags }}</div>{% endif %}
+            </div>
+
+            <div class="form-row">
+              {{ form.precio.label_tag }} {{ form.precio }}
+              {% if form.precio.errors %}<div class="field-error">{{ form.precio.errors|striptags }}</div>{% endif %}
+            </div>
+
+            <div class="form-row">
+              {{ form.cantidad.label_tag }} {{ form.cantidad }}
+              {% if form.cantidad.errors %}<div class="field-error">{{ form.cantidad.errors|striptags }}</div>{% endif %}
+            </div>
+
+            <div class="form-row">
+              {{ form.stock_minimo.label_tag }} {{ form.stock_minimo }}
+              {% if form.stock_minimo.errors %}<div class="field-error">{{ form.stock_minimo.errors|striptags }}</div>{% endif %}
+            </div>
+
+            <div class="form-row">
+              {{ form.stock_maximo.label_tag }} {{ form.stock_maximo }}
+              {% if form.stock_maximo.errors %}<div class="field-error">{{ form.stock_maximo.errors|striptags }}</div>{% endif %}
+            </div>
+
+            <div class="form-row">
+              {{ form.presentacion.label_tag }} {{ form.presentacion }}
+              {% if form.presentacion.errors %}<div class="field-error">{{ form.presentacion.errors|striptags }}</div>{% endif %}
+            </div>
+
+            <div class="form-row">
+              {{ form.elaboracion.label_tag }} {{ form.elaboracion }}
+              {% if form.elaboracion.errors %}<div class="field-error">{{ form.elaboracion.errors|striptags }}</div>{% endif %}
+            </div>
+
+            <div class="form-row">
+              {{ form.caducidad.label_tag }} {{ form.caducidad }}
+              {% if form.caducidad.errors %}<div class="field-error">{{ form.caducidad.errors|striptags }}</div>{% endif %}
+            </div>
+
+            <!-- Grupo Formato: “Formato:” + número + select sin etiqueta “Unidad” -->
+            <div class="form-row">
+              <label for="id_formato_cantidad">Formato:</label>
+              {{ form.formato_cantidad }}
+              {{ form.formato_unidad }}
+              {% if form.formato_cantidad.errors %}<div class="field-error">{{ form.formato_cantidad.errors|striptags }}</div>{% endif %}
+              {% if form.formato_unidad.errors %}<div class="field-error">{{ form.formato_unidad.errors|striptags }}</div>{% endif %}
+              {{ form.formato }} <!-- oculto, se completa en save() -->
+            </div>
+        </div>
+
+        <button type="submit" class="submit-button">Guardar Producto</button>
+    </form>
+    <div class="form-link">
+        <a href="{% url 'dashboard' %}">Volver al Dashboard</a>
+    </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

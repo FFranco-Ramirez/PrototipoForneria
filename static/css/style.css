@@ -1,0 +1,77 @@
+/*
+================================================================
+=                                                              =
+=                  ARCHIVO PRINCIPAL DE ESTILOS                =
+=                                                              =
+================================================================
+*/
+
+/*
+  Este es el archivo principal que organiza todos los demás.
+  Actúa como un orquestador, importando los parciales de CSS
+  en el orden correcto.
+
+  1. Estilos de Páginas: Reglas específicas para páginas completas.
+  2. Estilos de Componentes: Piezas reutilizables de la interfaz.
+  3. Estilos Globales: Reglas base para todo el sitio.
+*/
+
+/* --- 1. Importación de Páginas --- */
+@import "pages/_landing.css";  /* NUEVO: Estilos de la Landing Page */
+@import "pages/_dashboard.css";
+@import "pages/_welcome.css";
+@import "pages/_inventory.css";
+@import "pages/_edit_pages.css";
+@import "pages/_pos.css";  /* Estilos del Punto de Venta */
+@import "pages/_alertas.css";  /* Estilos del Sistema de Alertas */
+@import "pages/_movimientos.css";  /* Estilos de Movimientos de Inventario */
+@import "pages/_merma.css";  /* Estilos de Gestión de Merma */
+@import "pages/_reportes.css";  /* NUEVO: Estilos del Sistema de Reportes */
+
+/* --- 2. Importación de Componentes --- */
+@import "components/_buttons.css";
+@import "components/_forms.css";
+@import "components/_cards.css";
+@import "components/_tables.css";
+
+/* --- 3. Estilos Globales y Variables --- */
+
+body, html {
+    height: 100%;
+    margin: 0;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* Tema Oscuro y Dorado (Dark & Gold) */
+/*
+  Este es un tema reutilizable que se puede aplicar a cualquier contenedor
+  para darle una apariencia oscura con detalles dorados. Define un conjunto
+  de variables CSS (--bg, --text, --gold, etc.) que se usan en los
+  componentes y páginas que adoptan este tema.
+*/
+.dark-gold-theme {
+  --bg: #0e0e0e;
+  --bg-alt: #141414;
+  --text: #f2f2f2;
+  --muted: #c8c8c8;
+  --gold: #d4af37;
+  --gold-weak: #caa730;
+  --danger: #dc3545;
+  --border: #222;
+  background: var(--bg);
+  color: var(--text);
+  padding: 24px;
+  border-radius: 12px;
+}
+
+/* Ajuste para el POS - sin padding ni border-radius en el body */
+body.dark-gold-theme {
+  padding: 0;
+  border-radius: 0;
+  margin: 0;
+}
+
+body.dark-gold-theme .container-fluid {
+  padding: 0;
+}
+

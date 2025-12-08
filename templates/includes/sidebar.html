@@ -1,0 +1,74 @@
+<nav class="dashboard-sidebar">
+<div class="sidebar-header">
+<h2 class="sidebar-title">Fornería</h2>
+</div>
+<ul class="sidebar-menu">
+<li class="sidebar-item">
+<a href="{% url 'dashboard' %}" class="sidebar-link{% if active_page == 'dashboard' %} active{% endif %}">
+<span>📊</span> Dashboard
+</a>
+</li>
+<li class="sidebar-item">
+<a href="{% url 'pos' %}" class="sidebar-link{% if active_page == 'pos' %} active{% endif %}">
+<span>🛒</span> Ventas (POS)
+</a>
+</li>
+<li class="sidebar-item">
+<a href="{% url 'inventario' %}" class="sidebar-link{% if active_page == 'inventario' %} active{% endif %}">
+<span>📦</span> Inventario
+</a>
+</li>
+<li class="sidebar-item">
+<a href="{% url 'agregar_producto' %}" class="sidebar-link{% if active_page == 'agregar_producto' %} active{% endif %}">
+<span>➕</span> Agregar Producto
+</a>
+</li>
+<li class="sidebar-item">
+<a href="{% url 'movimientos' %}" class="sidebar-link{% if active_page == 'movimientos' %} active{% endif %}">
+<span>📊</span> Movimientos
+</a>
+</li>
+<li class="sidebar-item">
+<a href="{% url 'merma_list' %}" class="sidebar-link{% if active_page == 'merma' %} active{% endif %}">
+<span>⚠️</span> Merma
+</a>
+</li>
+<li class="sidebar-item">
+<a href="{% url 'alertas_list' %}" class="sidebar-link{% if active_page == 'alertas' %} active{% endif %}">
+<span>🔔</span> Alertas
+</a>
+</li>
+<li class="sidebar-item">
+<a href="{% url 'reportes' %}" class="sidebar-link{% if active_page == 'reportes' %} active{% endif %}">
+<span>📈</span> Reportes
+</a>
+</li>
+<li class="sidebar-item">
+<a href="{% url 'proveedores_list' %}" class="sidebar-link{% if active_page == 'proveedores' %} active{% endif %}">
+<span>🏢</span> Proveedores
+</a>
+</li>
+<li class="sidebar-item">
+<a href="{% url 'facturas_proveedores_list' %}" class="sidebar-link{% if active_page == 'facturas_proveedores' %} active{% endif %}">
+<span>🧾</span> Facturas Proveedores
+</a>
+</li>
+<li class="sidebar-item">
+<a href="{% url 'pagos_proveedores_list' %}" class="sidebar-link{% if active_page == 'pagos_proveedores' %} active{% endif %}">
+<span>💳</span> Pagos Proveedores
+</a>
+</li>
+{% if request.user.is_authenticated and request.user.is_superuser %}
+<li class="sidebar-item">
+<a href="{% url 'usuarios_list' %}" class="sidebar-link{% if active_page == 'usuarios' %} active{% endif %}">
+<span>👥</span> Usuarios
+</a>
+</li>
+{% endif %}
+</ul>
+<div class="sidebar-footer">
+<a href="{% url 'proximamente_feature' 'configuracion' %}" class="sidebar-link">
+<span>⚙️</span> Configuración
+</a>
+</div>
+</nav>

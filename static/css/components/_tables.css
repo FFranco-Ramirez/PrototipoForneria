@@ -1,0 +1,32 @@
+/*
+================================================================
+=                                                              =
+=                    ESTILOS DE TABLAS                         =
+=                                                              =
+================================================================
+*/
+
+/*
+----------------------------------------------------------------
+-      Estilos para Tablas dentro del Tema "Dark & Gold"       -
+-      (Específico para la vista de Inventario y Usuarios)     -
+----------------------------------------------------------------
+*/
+
+/* --- Encabezados de la Tabla (Fila <th>) --- */
+.dark-gold-theme .inventory-table thead th {
+  background: var(--bg-alt);
+  color: var(--gold);
+  border-bottom: 1px solid var(--border);
+}
+
+/* --- Celdas del Cuerpo de la Tabla (Filas <td>) --- */
+/*
+  Se aplica a TODAS las celdas de datos para asegurar que el texto sea oscuro
+  y legible, sobreescribiendo el color de texto claro del tema oscuro.
+  Esto soluciona el conflicto con los fondos claros de .table-striped de Bootstrap.
+*/
+.dark-gold-theme .inventory-table tbody td {
+  color: #212529 !important; /* Forzamos el color de texto oscuro estándar de Bootstrap. */
+  border-top: 1px solid var(--border);
+}

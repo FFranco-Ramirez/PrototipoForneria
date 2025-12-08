@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block body_class %}dark-gold-theme{% endblock %}
+
+{% block contenido %}
+<div class="welcome-container">
+    <h1 class="welcome-title">Bienvenido a Fornería</h1>
+    <p class="welcome-subtitle">Sistema de gestión de confianza</p>
+    <div class="button-container">
+        <a href="{% url 'login' %}" class="login-button">Iniciar sesión</a>
+        <a href="{% url 'registro' %}" class="register-button">Registrarse</a>
+    </div>
+</div>
+{% endblock %}

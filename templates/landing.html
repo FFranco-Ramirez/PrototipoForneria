@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="La Forneria - Panadería artesanal con productos frescos y de calidad">
+    <title>La Forneria - Inicio</title>
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    
+    <!-- Estilos personalizados -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body class="landing-page">
+    
+    <!-- ============================================================ -->
+    <!-- HEADER / NAVBAR                                             -->
+    <!-- ============================================================ -->
+    <header class="landing-header" id="mainHeader">
+        <nav class="landing-nav">
+            <!-- Logo -->
+            <a href="#" class="landing-logo">
+                <img src="{% static 'images/Forneria.png' %}" alt="La Forneria Logo" class="landing-logo-img">
+                <span class="landing-logo-text">La Forneria</span>
+            </a>
+            
+            <!-- Menú de navegación -->
+            <ul class="landing-nav-menu">
+                <li><a href="#inicio" class="landing-nav-link">Inicio</a></li>
+                <li><a href="#sobre-nosotros" class="landing-nav-link">Sobre Nosotros</a></li>
+                <li><a href="#contacto" class="landing-nav-link">Contacto</a></li>
+            </ul>
+            
+            <!-- Botón de acceso al sistema -->
+            <a href="{% url 'login' %}" class="landing-btn-access">
+                <i class="bi bi-box-arrow-in-right"></i> Acceder al Sistema
+            </a>
+        </nav>
+    </header>
+
+    <!-- ============================================================ -->
+    <!-- HERO SECTION (Sección principal)                            -->
+    <!-- ============================================================ -->
+    <section class="landing-hero" id="inicio">
+        <!-- Contenido del hero con video de fondo -->
+        <div class="landing-hero-content">
+            <!-- Video de fondo SOLO detrás del contenido -->
+            <div class="landing-hero-content-video">
+                <video class="landing-content-video" autoplay muted loop playsinline>
+                    <source src="{% static 'gif/Forneria.mp4' %}" type="video/mp4">
+                    Tu navegador no soporta videos HTML5.
+                </video>
+                <!-- Overlay oscuro sobre el video -->
+                <div class="landing-content-video-overlay"></div>
+            </div>
+            
+            <!-- Contenido de texto (delante del video) -->
+            <div class="landing-hero-text">
+                <h1 class="landing-hero-title">Bienvenido a La Forneria Emporio</h1>
+                <p class="landing-hero-subtitle">
+                    Tienda de especialidad gastronómica en La Serena, Chile. 
+                    Productos frescos, saludables y gourmet con tradición italiana.
+                </p>
+                
+                <!-- Botones de llamada a la acción -->
+                <div class="landing-hero-cta">
+                    <a href="#sobre-nosotros" class="landing-btn-primary">Conocer Más</a>
+                    <a href="#contacto" class="landing-btn-secondary">Contacto</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SECCIÓN: SOBRE NOSOTROS                                     -->
+    <!-- ============================================================ -->
+    <section class="landing-about" id="sobre-nosotros">
+        <div class="landing-about-container">
+            <!-- Título de la sección -->
+            <h2 class="landing-section-title">Sobre Nosotros</h2>
+            <p class="landing-section-subtitle">
+                Conoce nuestra historia y compromiso con la calidad
+            </p>
+            
+            <!-- Contenido: Imagen + Texto -->
+            <div class="landing-about-content">
+                <!-- Imagen de la panadería - PERSONALIZABLE -->
+                <div class="landing-about-image">
+                    <!-- 
+                        AGREGA AQUÍ UNA IMAGEN DE TU PANADERÍA
+                        Reemplaza 'images/panaderia-interior.jpg' con tu imagen
+                    -->
+                    <img src="{% static 'images/ImgLending.png' %}" 
+                         alt="Interior de La Forneria"
+                         onerror="this.src='https://via.placeholder.com/600x500/1a1a1a/d4af37?text=La+Forneria'">
+                    <!-- El onerror muestra un placeholder si no existe la imagen -->
+                </div>
+                
+                <!-- Texto sobre la empresa -->
+                <div class="landing-about-text">
+                    <h3>Nuestra Historia</h3>
+                    
+                    <p>
+                        La Fornería es una tienda de especialidad gastronómica fundada en mayo de 2024, en la ciudad de La Serena, Chile. 
+                        Nace de la pasión compartida por la cocina y las raíces italianas de sus fundadores: Javier Merino, oriundo de Santiago, 
+                        y Loretta Trevigno, residente de La Serena. Ambos se conocieron durante un viaje de vacaciones de Javier al norte del país, 
+                        ocasión que marcó el inicio de una relación personal y profesional que daría vida a un proyecto con identidad propia.
+                    </p>
+                    
+                    <p>
+                        Con una trayectoria de más de ocho años en su área profesional, Javier anhelaba emprender su propio negocio. 
+                        La conexión con Loretta y sus intereses comunes, particularmente en la gastronomía italiana, los motivaron a dar forma 
+                        a una propuesta innovadora que combinara tradición, calidad y conciencia alimentaria.
+                    </p>
+                    
+                    <p>
+                        Inspirado en el término italiano <em>forno</em> (horno), el nombre La Fornería refleja el espíritu cálido y artesanal del proyecto. 
+                        Más que una tienda, representa un espacio donde la cocina y el horno se convierten en protagonistas de una experiencia culinaria 
+                        auténtica y acogedora.
+                    </p>
+                    
+                    <p>
+                        Desde sus inicios, La Fornería se ha posicionado como un emporio que valora la alimentación saludable y el sabor gourmet. 
+                        Su oferta destaca por productos frescos y cuidadosamente elaborados, como pasteles artesanales, pancitos crujientes, 
+                        empanadas al horno y el café Lavazza, todo acompañado de opciones libres de gluten, sin azúcar añadida y veganas. 
+                        Además, su catálogo se enriquece con una fina selección de productos gourmet, entre ellos pastas italianas, pescados, 
+                        mariscos, charcutería local, pizzas a la piedra, aperitivos y congelados.
+                    </p>
+                    
+                    <p>
+                        La Fornería no solo representa el sueño cumplido de sus fundadores, sino también un compromiso con el bienestar, 
+                        la calidad y el sabor auténtico, características que hoy definen su propuesta y la preferencia de su creciente clientela.
+                    </p>
+                    
+                    <!-- Características destacadas -->
+                    <div class="landing-about-features">
+                        <div class="landing-feature-item">
+                            <div class="landing-feature-icon">
+                                <i class="bi bi-award"></i>
+                            </div>
+                            <span class="landing-feature-text">Calidad artesanal</span>
+                        </div>
+                        
+                        <div class="landing-feature-item">
+                            <div class="landing-feature-icon">
+                                <i class="bi bi-heart"></i>
+                            </div>
+                            <span class="landing-feature-text">Calidez y cercanía familiar</span>
+                        </div>
+                        
+                        <div class="landing-feature-item">
+                            <div class="landing-feature-icon">
+                                <i class="bi bi-cup-hot"></i>
+                            </div>
+                            <span class="landing-feature-text">Pasión por la tradición gastronómica</span>
+                        </div>
+                        
+                        <div class="landing-feature-item">
+                            <div class="landing-feature-icon">
+                                <i class="bi bi-lightbulb"></i>
+                            </div>
+                            <span class="landing-feature-text">Espíritu emprendedor</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- FOOTER                                                      -->
+    <!-- ============================================================ -->
+    <footer class="landing-footer" id="contacto">
+        <div class="landing-footer-container">
+            <!-- Columna 1: Información de la empresa -->
+            <div class="landing-footer-section">
+                <h4>La Forneria Emporio</h4>
+                <p>
+                    Tienda de especialidad gastronómica en La Serena, Chile.
+                    Productos frescos, saludables y gourmet con tradición italiana.
+                </p>
+                <div class="landing-footer-mission">
+                    <p><strong>Misión:</strong> Abastecer a las familias con productos gastronómicos de alta calidad, 
+                    saludables y sabrosos, ofreciendo una experiencia única basada en la tradición artesanal.</p>
+                </div>
+            </div>
+            
+            <!-- Columna 2: Enlaces rápidos -->
+            <div class="landing-footer-section">
+                <h4>Enlaces Rápidos</h4>
+                <a href="#inicio">Inicio</a>
+                <a href="#sobre-nosotros">Sobre Nosotros</a>
+                <a href="#contacto">Contacto</a>
+                <a href="{% url 'login' %}">Acceder al Sistema</a>
+            </div>
+            
+            <!-- Columna 3: Contacto -->
+            <div class="landing-footer-section">
+                <h4>Contacto</h4>
+                <p>
+                    <i class="bi bi-geo-alt"></i> 
+                    Los Arrayanes 901, La Serena, Chile
+                </p>
+                <p>
+                    <i class="bi bi-telephone"></i> 
+                    Teléfono: 1111111111
+                </p>
+                <p>
+                    <i class="bi bi-envelope"></i> 
+                    Email: ejemplo@ejemplo.com
+                </p>
+                <p>
+                    <i class="bi bi-instagram"></i> 
+                    Instagram: <a href="https://instagram.com/laforneríaemporio" target="_blank" style="color: var(--landing-gold);">@laforneríaemporio</a>
+                </p>
+            </div>
+            
+            <!-- Columna 4: Horarios -->
+            <div class="landing-footer-section">
+                <h4>Horario de Atención</h4>
+                <p><strong>Lunes a Viernes:</strong></p>
+                <p>08:00 - 20:00 horas</p>
+                <p><strong>Sábado y Domingo:</strong></p>
+                <p>09:00 - 20:00 horas</p>
+            </div>
+        </div>
+        
+        <!-- Copyright -->
+        <div class="landing-footer-bottom">
+            <p>&copy; 2024 La Forneria Emporio. Todos los derechos reservados.</p>
+            <p style="margin-top: 10px; font-size: 12px;">Fundada en mayo de 2024 en La Serena, Chile</p>
+        </div>
+    </footer>
+
+    <!-- ============================================================ -->
+    <!-- JAVASCRIPT                                                  -->
+    <!-- ============================================================ -->
+    <script>
+        // Efecto de scroll en el header
+        window.addEventListener('scroll', function() {
+            const header = document.getElementById('mainHeader');
+            if (window.scrollY > 50) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
+        
+        // Smooth scroll para los enlaces del menú
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

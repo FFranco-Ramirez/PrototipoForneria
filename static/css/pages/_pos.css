@@ -1,0 +1,803 @@
+/* ================================================================
+   =                                                              =
+   =           ESTILOS: PUNTO DE VENTA (POS)                      =
+   =                                                              =
+   ================================================================
+
+   Este archivo contiene todos los estilos CSS específicos
+   para la interfaz del Punto de Venta (POS).
+   
+   TEMA: Negro y Dorado (Dark Gold Theme)
+   - Fondo principal: #1a1a1a (negro oscuro)
+   - Acentos: #d4af37 (dorado) y #ffd700 (dorado claro)
+   - Texto: Blanco y grises
+*/
+
+
+/* ================================================================
+   CONTENEDOR PRINCIPAL
+   ================================================================ */
+
+.pos-container {
+    background-color: #1a1a1a;
+    min-height: 100vh;
+    color: #ffffff;
+}
+
+/* Layout con Sidebar */
+.pos-container.d-flex {
+    display: flex !important;
+    flex-direction: row;
+}
+
+.pos-container .main-content {
+    flex-grow: 1;
+    background-color: #1a1a1a;
+    overflow-x: hidden;
+}
+
+
+/* ================================================================
+   SIDEBAR DEL DASHBOARD EN EL POS
+   ================================================================ */
+
+.dashboard-sidebar {
+    width: 260px;
+    min-width: 260px;
+    background: linear-gradient(180deg, #1a1a1a, #0e0e0e);
+    color: #ffffff;
+    height: 100vh;
+    position: sticky;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 4px 0 15px rgba(0, 0, 0, 0.5);
+    overflow-y: auto;
+}
+
+/* Header del sidebar */
+.sidebar-header {
+    padding: 1.5rem 1rem;
+    text-align: center;
+    border-bottom: 2px solid #d4af37;
+    background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
+}
+
+.sidebar-header h4 {
+    color: #ffd700;
+    font-weight: bold;
+    font-size: 1.5rem;
+    margin: 0.5rem 0 0 0;
+}
+
+.sidebar-header i {
+    font-size: 2rem;
+    color: #d4af37;
+}
+
+/* Menú del sidebar */
+.sidebar-menu {
+    list-style: none;
+    padding: 1rem 0.5rem;
+    margin: 0;
+    flex-grow: 1;
+}
+
+.sidebar-menu li {
+    margin-bottom: 0.5rem;
+}
+
+.sidebar-menu a {
+    display: flex;
+    align-items: center;
+    padding: 0.8rem 1rem;
+    color: #ffffff;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.sidebar-menu a:hover {
+    background-color: rgba(212, 175, 55, 0.1);
+    color: #ffd700;
+    transform: translateX(5px);
+}
+
+.sidebar-menu li.active a {
+    background: linear-gradient(145deg, #d4af37, #c19b2e);
+    color: #1a1a1a;
+    font-weight: bold;
+    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+}
+
+.sidebar-menu a i {
+    margin-right: 0.8rem;
+    font-size: 1.2rem;
+    min-width: 24px;
+    text-align: center;
+}
+
+/* Footer del sidebar */
+.sidebar-footer {
+    padding: 1rem;
+    border-top: 1px solid #3a3a3a;
+    background-color: #0e0e0e;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.user-info i {
+    font-size: 2rem;
+    color: #d4af37;
+}
+
+.user-name {
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.user-role {
+    color: #888;
+    font-size: 0.8rem;
+}
+
+/* Scrollbar del sidebar */
+.dashboard-sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.dashboard-sidebar::-webkit-scrollbar-track {
+    background: #1a1a1a;
+}
+
+.dashboard-sidebar::-webkit-scrollbar-thumb {
+    background: #d4af37;
+    border-radius: 3px;
+}
+
+.dashboard-sidebar::-webkit-scrollbar-thumb:hover {
+    background: #ffd700;
+}
+
+
+/* ================================================================
+   BARRA DE BÚSQUEDA Y FILTROS
+   ================================================================ */
+
+.pos-search-bar {
+    background-color: #2a2a2a;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.pos-search-bar .form-control {
+    background-color: #1a1a1a;
+    border: 2px solid #d4af37;
+    color: #ffffff;
+    transition: all 0.3s ease;
+}
+
+.pos-search-bar .form-control:focus {
+    background-color: #2a2a2a;
+    border-color: #ffd700;
+    box-shadow: 0 0 0 0.2rem rgba(212, 175, 55, 0.25);
+    color: #ffffff;
+}
+
+.pos-search-bar .form-control::placeholder {
+    color: #888;
+}
+
+
+/* ================================================================
+   TARJETAS DE PRODUCTOS
+   ================================================================ */
+
+.producto-card {
+    background: linear-gradient(145deg, #2a2a2a, #1f1f1f);
+    border: 1px solid #3a3a3a;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    height: 100%;
+    min-height: 200px;
+    max-height: 220px;
+    padding: 0.8rem;
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.producto-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(212, 175, 55, 0.3);
+    border-color: #d4af37;
+}
+
+.producto-nombre {
+    color: #ffd700;
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-bottom: 0.3rem;
+    line-height: 1.2;
+    max-height: 2.4em;
+    overflow: hidden;
+}
+
+.producto-precio {
+    color: #d4af37;
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin: 0.3rem 0;
+}
+
+.producto-stock {
+    background-color: rgba(212, 175, 55, 0.15);
+    color: #ffd700;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    display: inline-block;
+    margin-bottom: 0.4rem;
+    border: 1px solid rgba(212, 175, 55, 0.3);
+}
+
+.producto-stock small {
+    color: #ffd700 !important;
+    font-weight: 500;
+}
+
+.producto-stock i {
+    color: #d4af37;
+}
+
+.producto-stock.sin-stock {
+    background-color: rgba(220, 53, 69, 0.15);
+    color: #ff6b6b;
+    border-color: rgba(220, 53, 69, 0.3);
+}
+
+.producto-stock.sin-stock small {
+    color: #ff6b6b !important;
+}
+
+/* Botón de agregar al carrito */
+.btn-agregar-carrito,
+.btn-agregar-producto {
+    background: linear-gradient(145deg, #d4af37, #c19b2e);
+    border: none;
+    color: #1a1a1a;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    width: 100%;
+    padding: 0.4rem 0.6rem;
+    border-radius: 6px;
+    margin-top: 0.3rem;
+    font-size: 0.85rem;
+}
+
+.btn-agregar-carrito:hover,
+.btn-agregar-producto:hover {
+    background: linear-gradient(145deg, #ffd700, #d4af37);
+    transform: scale(1.02);
+    box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
+    color: #000;
+}
+
+.btn-agregar-carrito:disabled,
+.btn-agregar-producto:disabled {
+    background: #3a3a3a;
+    color: #666;
+    cursor: not-allowed;
+}
+
+
+/* ================================================================
+   SIDEBAR DEL CARRITO
+   ================================================================ */
+
+.pos-sidebar {
+    background: #ffffff;
+    border: 2px solid #d4af37;
+    border-radius: 10px;
+    height: auto;
+    max-height: calc(100vh - 140px);
+    position: sticky;
+    top: 20px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    display: flex;
+    flex-direction: column;
+}
+
+.carrito-header {
+    background: linear-gradient(145deg, #d4af37, #c19b2e);
+    color: #1a1a1a;
+    padding: 0.8rem;
+    font-size: 1.1rem;
+    font-weight: bold;
+    text-align: center;
+    border-bottom: 2px solid #ffd700;
+    border-radius: 8px 8px 0 0;
+    flex-shrink: 0;
+}
+
+.carrito-items {
+    padding: 0.8rem;
+    flex: 1;
+    overflow-y: auto;
+    background-color: #ffffff;
+    min-height: 250px;
+    max-height: 350px;
+}
+
+/* Scrollbar personalizada para el carrito */
+.carrito-items::-webkit-scrollbar {
+    width: 8px;
+}
+
+.carrito-items::-webkit-scrollbar-track {
+    background: #f8f9fa;
+}
+
+.carrito-items::-webkit-scrollbar-thumb {
+    background: #d4af37;
+    border-radius: 4px;
+}
+
+.carrito-items::-webkit-scrollbar-thumb:hover {
+    background: #ffd700;
+}
+
+.pos-sidebar::-webkit-scrollbar {
+    width: 8px;
+}
+
+.pos-sidebar::-webkit-scrollbar-track {
+    background: #f8f9fa;
+}
+
+.pos-sidebar::-webkit-scrollbar-thumb {
+    background: #d4af37;
+    border-radius: 4px;
+}
+
+.pos-sidebar::-webkit-scrollbar-thumb:hover {
+    background: #ffd700;
+}
+
+
+/* ================================================================
+   ITEMS DEL CARRITO
+   ================================================================ */
+
+.carrito-item-card {
+    background: #ffffff;
+    border: 1px solid #d4af37;
+    border-radius: 6px;
+    padding: 0.6rem;
+    margin-bottom: 0.6rem;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+}
+
+.carrito-item-card:hover {
+    border-color: #ffd700;
+    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+}
+
+.carrito-item-body {
+    color: #1a1a1a;
+}
+
+/* Botones de control de cantidad */
+.btn-outline-warning {
+    border-color: #d4af37;
+    color: #d4af37;
+}
+
+.btn-outline-warning:hover {
+    background-color: #d4af37;
+    color: #1a1a1a;
+}
+
+/* Input de cantidad */
+.input-cantidad {
+    background-color: #ffffff !important;
+    border: 1px solid #d4af37 !important;
+    color: #1a1a1a !important;
+    text-align: center;
+    font-weight: bold;
+}
+
+.input-cantidad:focus {
+    background-color: #ffffff !important;
+    border-color: #ffd700 !important;
+    box-shadow: 0 0 0 0.2rem rgba(212, 175, 55, 0.25) !important;
+}
+
+
+/* ================================================================
+   SECCIÓN DE CLIENTE Y TIPO DE VENTA
+   ================================================================ */
+
+.cliente-section {
+    background-color: #f8f9fa;
+    padding: 0.8rem;
+    border-radius: 0;
+    margin: 0;
+    border: none;
+    border-bottom: 1px solid #d4af37;
+    flex-shrink: 0;
+}
+
+.cliente-section label {
+    color: #1a1a1a;
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+    font-size: 0.9rem;
+}
+
+.cliente-section .form-select {
+    background-color: #ffffff;
+    border: 2px solid #d4af37;
+    color: #1a1a1a;
+}
+
+.cliente-section .form-select:focus {
+    background-color: #ffffff;
+    border-color: #ffd700;
+    box-shadow: 0 0 0 0.2rem rgba(212, 175, 55, 0.25);
+}
+
+.cliente-section .form-select option {
+    background-color: #ffffff;
+    color: #1a1a1a;
+}
+
+/* Botones de Presencial/Delivery */
+.tipo-venta-btns .btn {
+    background-color: #ffffff;
+    border: 2px solid #d4af37;
+    color: #1a1a1a;
+    transition: all 0.3s ease;
+}
+
+.tipo-venta-btns .btn:hover {
+    background-color: #f8f9fa;
+    border-color: #ffd700;
+    color: #1a1a1a;
+}
+
+.tipo-venta-btns .btn.active {
+    background: linear-gradient(145deg, #d4af37, #c19b2e);
+    border-color: #ffd700;
+    color: #1a1a1a;
+    font-weight: bold;
+}
+
+
+/* ================================================================
+   SECCIÓN DE TOTALES
+   ================================================================ */
+
+.totales-section {
+    background: #f8f9fa;
+    padding: 0.8rem;
+    border-radius: 0;
+    border: none;
+    border-top: 2px solid #d4af37;
+    margin: 0;
+    flex-shrink: 0;
+}
+
+.totales-section .row {
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+}
+
+.totales-section strong {
+    color: #1a1a1a;
+}
+
+.totales-section span {
+    color: #1a1a1a;
+    font-size: 1.1rem;
+}
+
+/* Total destacado */
+.totales-section .border-top {
+    border-top: 2px solid #d4af37 !important;
+    padding-top: 1rem;
+    margin-top: 1rem;
+}
+
+.totales-section .fs-4 {
+    color: #d4af37;
+    font-weight: bold;
+}
+
+.totales-section .text-gold-light {
+    color: #d4af37 !important;
+}
+
+/* Toggle de IVA */
+.totales-section .form-check-input {
+    background-color: #ffffff;
+    border-color: #d4af37;
+    cursor: pointer;
+}
+
+.totales-section .form-check-input:checked {
+    background-color: #d4af37;
+    border-color: #d4af37;
+}
+
+.totales-section .form-check-input:focus {
+    border-color: #ffd700;
+    box-shadow: 0 0 0 0.2rem rgba(212, 175, 55, 0.25);
+}
+
+.totales-section .form-check-label {
+    cursor: pointer;
+    user-select: none;
+}
+
+
+/* ================================================================
+   BOTONES DE ACCIÓN FIJOS
+   ================================================================ */
+
+.carrito-botones-fijos {
+    position: sticky;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #ffffff;
+    padding: 0.8rem;
+    border-top: 2px solid #d4af37;
+    box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+}
+
+.btn-procesar-venta {
+    background: linear-gradient(145deg, #28a745, #218838);
+    border: none;
+    color: #ffffff;
+    font-weight: bold;
+    font-size: 1rem;
+    padding: 0.6rem;
+    transition: all 0.3s ease;
+}
+
+.btn-procesar-venta:hover:not(:disabled) {
+    background: linear-gradient(145deg, #34ce57, #28a745);
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+}
+
+.btn-procesar-venta:disabled {
+    background: #3a3a3a;
+    color: #666;
+    cursor: not-allowed;
+}
+
+.btn-cancelar-venta {
+    background: linear-gradient(145deg, #dc3545, #c82333);
+    border: none;
+    color: #ffffff;
+    font-weight: bold;
+    font-size: 0.95rem;
+    padding: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.btn-cancelar-venta:hover {
+    background: linear-gradient(145deg, #e4606d, #dc3545);
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
+}
+
+
+/* ================================================================
+   MODALES
+   ================================================================ */
+
+.modal-content {
+    background-color: #1f1f1f;
+    border: 2px solid #d4af37;
+    color: #ffffff;
+}
+
+.modal-header {
+    background: linear-gradient(145deg, #d4af37, #c19b2e);
+    color: #1a1a1a;
+    border-bottom: 2px solid #ffd700;
+}
+
+.modal-header .btn-close {
+    filter: brightness(0);
+}
+
+.modal-body {
+    background-color: #1f1f1f;
+}
+
+.modal-footer {
+    background-color: #1a1a1a;
+    border-top: 1px solid #3a3a3a;
+}
+
+/* Inputs en modales */
+.modal-body .form-control,
+.modal-body .form-select {
+    background-color: #2a2a2a;
+    border: 2px solid #d4af37;
+    color: #ffffff;
+}
+
+.modal-body .form-control:focus,
+.modal-body .form-select:focus {
+    background-color: #3a3a3a;
+    border-color: #ffd700;
+    box-shadow: 0 0 0 0.2rem rgba(212, 175, 55, 0.25);
+    color: #ffffff;
+}
+
+.modal-body .form-label {
+    color: #d4af37;
+    font-weight: 600;
+}
+
+
+/* ================================================================
+   MENSAJES Y ALERTAS
+   ================================================================ */
+
+.alert-info {
+    background-color: rgba(23, 162, 184, 0.1);
+    border-color: #17a2b8;
+    color: #17a2b8;
+}
+
+.carrito-vacio {
+    text-align: center;
+    padding: 2rem;
+    color: #6c757d;
+    background-color: #ffffff;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.carrito-vacio i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    color: #adb5bd;
+}
+
+
+/* ================================================================
+   BADGES Y ETIQUETAS
+   ================================================================ */
+
+.badge {
+    padding: 0.4rem 0.7rem;
+    font-size: 0.85rem;
+    border-radius: 5px;
+}
+
+.badge.bg-success {
+    background: linear-gradient(145deg, #28a745, #218838) !important;
+}
+
+.badge.bg-warning {
+    background: linear-gradient(145deg, #ffc107, #e0a800) !important;
+    color: #1a1a1a !important;
+}
+
+
+/* ================================================================
+   RESPONSIVE
+   ================================================================ */
+
+@media (max-width: 992px) {
+    .pos-sidebar {
+        position: relative;
+        height: auto;
+        border-left: none;
+        border-top: 3px solid #d4af37;
+    }
+    
+    .carrito-items {
+        max-height: 400px;
+    }
+}
+
+@media (max-width: 768px) {
+    .producto-card {
+        margin-bottom: 1rem;
+    }
+    
+    .pos-search-bar {
+        padding: 1rem;
+    }
+    
+    .carrito-header {
+        font-size: 1.1rem;
+    }
+}
+
+
+/* ================================================================
+   ANIMACIONES
+   ================================================================ */
+
+@keyframes pulse-gold {
+    0% {
+        box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 15px rgba(212, 175, 55, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(212, 175, 55, 0);
+    }
+}
+
+.btn-procesar-venta:not(:disabled) {
+    animation: pulse-gold 2s infinite;
+}
+
+
+/* ================================================================
+   UTILIDADES ADICIONALES
+   ================================================================ */
+
+.text-gold {
+    color: #d4af37 !important;
+}
+
+.text-gold-light {
+    color: #ffd700 !important;
+}
+
+.bg-dark-custom {
+    background-color: #1a1a1a !important;
+}
+
+.bg-dark-custom-light {
+    background-color: #2a2a2a !important;
+}
+
+.border-gold {
+    border-color: #d4af37 !important;
+}
+
+/* Clases específicas para inputs y spans en el header */
+.input-group-text.bg-dark-custom {
+    background-color: #1a1a1a !important;
+    border-color: #d4af37 !important;
+}
+
+.input-group-text.text-gold {
+    color: #d4af37 !important;
+}
+
+
+/* ================================================================
+   FIN DE ESTILOS POS
+   ================================================================ */

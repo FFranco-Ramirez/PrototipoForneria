@@ -1,0 +1,845 @@
+-- phpMyAdmin SQL Dump
+-- version 5.2.1
+-- https://www.phpmyadmin.net/
+--
+-- Servidor: 127.0.0.1:3306
+-- Tiempo de generación: 30-11-2025 a las 21:56:58
+-- Versión del servidor: 9.1.0
+-- Versión de PHP: 8.3.14
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+
+--
+-- Base de datos: `forneria`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `alertas`
+--
+
+DROP TABLE IF EXISTS `alertas`;
+CREATE TABLE IF NOT EXISTS `alertas` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `tipo_alerta` enum('verde','amarilla','roja') NOT NULL,
+  `mensaje` varchar(255) NOT NULL,
+  `fecha_generada` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `estado` varchar(20) DEFAULT 'activa',
+  `productos_id` int NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_alertas_productos1_idx` (`productos_id`),
+  KEY `idx_tipo_alerta` (`tipo_alerta`),
+  KEY `idx_estado` (`estado`),
+  KEY `idx_fecha` (`fecha_generada`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `auth_group`
+--
+
+DROP TABLE IF EXISTS `auth_group`;
+CREATE TABLE IF NOT EXISTS `auth_group` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(150) CHARACTER SET utf8mb3 COLLATE utf8mb3_spanish_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `name` (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `auth_group_permissions`
+--
+
+DROP TABLE IF EXISTS `auth_group_permissions`;
+CREATE TABLE IF NOT EXISTS `auth_group_permissions` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `group_id` int NOT NULL,
+  `permission_id` int NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `auth_group_permissions_group_id_permission_id_0cd325b0_uniq` (`group_id`,`permission_id`),
+  KEY `auth_group_permissions_group_id_b120cbf9` (`group_id`),
+  KEY `auth_group_permissions_permission_id_84c5c92e` (`permission_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `auth_permission`
+--
+
+DROP TABLE IF EXISTS `auth_permission`;
+CREATE TABLE IF NOT EXISTS `auth_permission` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_spanish_ci NOT NULL,
+  `content_type_id` int NOT NULL,
+  `codename` varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_spanish_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `auth_permission_content_type_id_codename_01ab375a_uniq` (`content_type_id`,`codename`),
+  KEY `auth_permission_content_type_id_2f476e4b` (`content_type_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=45 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Volcado de datos para la tabla `auth_permission`
+--
+
+INSERT INTO `auth_permission` (`id`, `name`, `content_type_id`, `codename`) VALUES
+(25, 'Can add log entry', 7, 'add_logentry'),
+(26, 'Can change log entry', 7, 'change_logentry'),
+(27, 'Can delete log entry', 7, 'delete_logentry'),
+(28, 'Can view log entry', 7, 'view_logentry'),
+(29, 'Can add permission', 8, 'add_permission'),
+(30, 'Can change permission', 8, 'change_permission'),
+(31, 'Can delete permission', 8, 'delete_permission'),
+(32, 'Can view permission', 8, 'view_permission'),
+(33, 'Can add group', 9, 'add_group'),
+(34, 'Can change group', 9, 'change_group'),
+(35, 'Can delete group', 9, 'delete_group'),
+(36, 'Can view group', 9, 'view_group'),
+(37, 'Can add user', 10, 'add_user'),
+(38, 'Can change user', 10, 'change_user'),
+(39, 'Can delete user', 10, 'delete_user'),
+(40, 'Can view user', 10, 'view_user'),
+(41, 'Can add content type', 11, 'add_contenttype'),
+(42, 'Can change content type', 11, 'change_contenttype'),
+(43, 'Can delete content type', 11, 'delete_contenttype'),
+(44, 'Can view content type', 11, 'view_contenttype');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `auth_user`
+--
+
+DROP TABLE IF EXISTS `auth_user`;
+CREATE TABLE IF NOT EXISTS `auth_user` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `password` varchar(128) CHARACTER SET utf8mb3 COLLATE utf8mb3_spanish_ci NOT NULL,
+  `last_login` datetime(6) DEFAULT NULL,
+  `is_superuser` tinyint(1) NOT NULL,
+  `username` varchar(150) CHARACTER SET utf8mb3 COLLATE utf8mb3_spanish_ci NOT NULL,
+  `first_name` varchar(150) CHARACTER SET utf8mb3 COLLATE utf8mb3_spanish_ci NOT NULL,
+  `last_name` varchar(150) CHARACTER SET utf8mb3 COLLATE utf8mb3_spanish_ci NOT NULL,
+  `email` varchar(254) CHARACTER SET utf8mb3 COLLATE utf8mb3_spanish_ci NOT NULL,
+  `is_staff` tinyint(1) NOT NULL,
+  `is_active` tinyint(1) NOT NULL,
+  `date_joined` datetime(6) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `username` (`username`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Volcado de datos para la tabla `auth_user`
+--
+
+INSERT INTO `auth_user` (`id`, `password`, `last_login`, `is_superuser`, `username`, `first_name`, `last_name`, `email`, `is_staff`, `is_active`, `date_joined`) VALUES
+(3, 'pbkdf2_sha256$1000000$crfAeR2DU3l1aUmMJVNUWm$1hDEmF0RumMTVfKO31GZMvibD3XOz1UoqgmB1MOxfAg=', '2025-11-30 19:17:58.446743', 1, 'admin', '', '', 'admin@gmail.com', 1, 1, '2025-10-30 00:26:32.302271'),
+(4, 'pbkdf2_sha256$1000000$jQc9Ndgxq2gRkZ70t2cOoT$HqzzzCSKy7fAW0ez1qQqucKfvhsnri6Xt7nZdJN940s=', NULL, 1, 'caracter', '', '', 'a@gmail.com', 0, 1, '2025-11-08 14:16:06.272789'),
+(5, 'pbkdf2_sha256$1000000$ZHmFfCoLN6wpO8Xd2uKknH$RkS/R7EsHgdgtR4ZXLRSJfytsglT98gHRPBRj5kAQR4=', '2025-11-10 16:02:32.556684', 0, 'FrancoRM', '', '', 'wawev29564@wacold.com', 0, 1, '2025-11-10 01:47:44.405969');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `auth_user_groups`
+--
+
+DROP TABLE IF EXISTS `auth_user_groups`;
+CREATE TABLE IF NOT EXISTS `auth_user_groups` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `user_id` int NOT NULL,
+  `group_id` int NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `auth_user_groups_user_id_group_id_94350c0c_uniq` (`user_id`,`group_id`),
+  KEY `auth_user_groups_user_id_6a12ed8b` (`user_id`),
+  KEY `auth_user_groups_group_id_97559544` (`group_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `auth_user_user_permissions`
+--
+
+DROP TABLE IF EXISTS `auth_user_user_permissions`;
+CREATE TABLE IF NOT EXISTS `auth_user_user_permissions` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `user_id` int NOT NULL,
+  `permission_id` int NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `auth_user_user_permissions_user_id_permission_id_14a6b632_uniq` (`user_id`,`permission_id`),
+  KEY `auth_user_user_permissions_user_id_a95ead1b` (`user_id`),
+  KEY `auth_user_user_permissions_permission_id_1fbb5f2c` (`permission_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `cargo`
+--
+
+DROP TABLE IF EXISTS `cargo`;
+CREATE TABLE IF NOT EXISTS `cargo` (
+  `id` int NOT NULL,
+  `nombre` varchar(45) CHARACTER SET utf8mb3 COLLATE utf8mb3_spanish_ci NOT NULL,
+  `descripcion` varchar(45) CHARACTER SET utf8mb3 COLLATE utf8mb3_spanish_ci NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `categorias`
+--
+
+DROP TABLE IF EXISTS `categorias`;
+CREATE TABLE IF NOT EXISTS `categorias` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `nombre` varchar(100) DEFAULT NULL,
+  `descripcion` varchar(200) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Volcado de datos para la tabla `categorias`
+--
+
+INSERT INTO `categorias` (`id`, `nombre`, `descripcion`) VALUES
+(1, 'Perecible', 'Categoria perecible'),
+(2, 'No perecible', 'Categoria no perecible');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `clientes`
+--
+
+DROP TABLE IF EXISTS `clientes`;
+CREATE TABLE IF NOT EXISTS `clientes` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `rut` varchar(12) DEFAULT NULL,
+  `nombre` varchar(150) NOT NULL,
+  `correo` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Volcado de datos para la tabla `clientes`
+--
+
+INSERT INTO `clientes` (`id`, `rut`, `nombre`, `correo`) VALUES
+(1, '', 'mateo', ''),
+(2, '', 'mateo', '');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `contrato`
+--
+
+DROP TABLE IF EXISTS `contrato`;
+CREATE TABLE IF NOT EXISTS `contrato` (
+  `id` int NOT NULL,
+  `detalle_contrato` varchar(45) NOT NULL,
+  `fecha_inicio` date NOT NULL,
+  `fecha_fin` date NOT NULL,
+  `empleado_id` int NOT NULL,
+  `cargo_id` int NOT NULL,
+  `departamento_id` int NOT NULL,
+  `turno_has_jornada_id` int NOT NULL,
+  PRIMARY KEY (`id`,`empleado_id`),
+  KEY `fk_contrato_empleado1_idx` (`empleado_id`),
+  KEY `fk_contrato_cargo1_idx` (`cargo_id`),
+  KEY `fk_contrato_departamento1_idx` (`departamento_id`),
+  KEY `fk_contrato_turno_has_jornada1_idx` (`turno_has_jornada_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `cuenta_bancaria`
+--
+
+DROP TABLE IF EXISTS `cuenta_bancaria`;
+CREATE TABLE IF NOT EXISTS `cuenta_bancaria` (
+  `id` int NOT NULL,
+  `banco` varchar(45) CHARACTER SET utf8mb3 COLLATE utf8mb3_spanish_ci NOT NULL,
+  `tipo_cuenta` varchar(45) CHARACTER SET utf8mb3 COLLATE utf8mb3_spanish_ci NOT NULL,
+  `numero_cuenta` int NOT NULL,
+  `correo` varchar(45) CHARACTER SET utf8mb3 COLLATE utf8mb3_spanish_ci NOT NULL,
+  `empleado_id` int NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_cuenta_bancaria_empleado1_idx` (`empleado_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `departamento`
+--
+
+DROP TABLE IF EXISTS `departamento`;
+CREATE TABLE IF NOT EXISTS `departamento` (
+  `id` int NOT NULL,
+  `nombre` varchar(45) CHARACTER SET utf8mb3 COLLATE utf8mb3_spanish_ci NOT NULL,
+  `descripcion` varchar(45) CHARACTER SET utf8mb3 COLLATE utf8mb3_spanish_ci NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `detalle_venta`
+--
+
+DROP TABLE IF EXISTS `detalle_venta`;
+CREATE TABLE IF NOT EXISTS `detalle_venta` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `cantidad` int NOT NULL,
+  `precio_unitario` decimal(10,2) NOT NULL,
+  `descuento_pct` decimal(5,2) DEFAULT NULL,
+  `ventas_id` int NOT NULL,
+  `productos_id` int NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_detalle_venta_ventas1_idx` (`ventas_id`),
+  KEY `fk_detalle_venta_productos1_idx` (`productos_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Volcado de datos para la tabla `detalle_venta`
+--
+
+INSERT INTO `detalle_venta` (`id`, `cantidad`, `precio_unitario`, `descuento_pct`, `ventas_id`, `productos_id`) VALUES
+(1, 12, 0.00, 0.00, 1, 4),
+(2, 3, 1200.00, 0.00, 2, 4),
+(3, 3, 1400.00, 0.00, 2, 11);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `direccion`
+--
+
+DROP TABLE IF EXISTS `direccion`;
+CREATE TABLE IF NOT EXISTS `direccion` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `calle` varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `numero` varchar(10) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `depto` varchar(10) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  `comuna` varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `region` varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `codigo_postal` varchar(45) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `django_admin_log`
+--
+
+DROP TABLE IF EXISTS `django_admin_log`;
+CREATE TABLE IF NOT EXISTS `django_admin_log` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `action_time` datetime(6) NOT NULL,
+  `object_id` longtext CHARACTER SET utf8mb3 COLLATE utf8mb3_spanish_ci,
+  `object_repr` varchar(200) CHARACTER SET utf8mb3 COLLATE utf8mb3_spanish_ci NOT NULL,
+  `action_flag` smallint UNSIGNED NOT NULL,
+  `change_message` longtext CHARACTER SET utf8mb3 COLLATE utf8mb3_spanish_ci NOT NULL,
+  `content_type_id` int DEFAULT NULL,
+  `user_id` int NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `django_admin_log_content_type_id_c4bce8eb` (`content_type_id`),
+  KEY `django_admin_log_user_id_c564eba6` (`user_id`)
+) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `django_content_type`
+--
+
+DROP TABLE IF EXISTS `django_content_type`;
+CREATE TABLE IF NOT EXISTS `django_content_type` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `app_label` varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_spanish_ci NOT NULL,
+  `model` varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_spanish_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `django_content_type_app_label_model_76bd3d3b_uniq` (`app_label`,`model`)
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Volcado de datos para la tabla `django_content_type`
+--
+
+INSERT INTO `django_content_type` (`id`, `app_label`, `model`) VALUES
+(7, 'admin', 'logentry'),
+(9, 'auth', 'group'),
+(8, 'auth', 'permission'),
+(10, 'auth', 'user'),
+(11, 'contenttypes', 'contenttype');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `django_migrations`
+--
+
+DROP TABLE IF EXISTS `django_migrations`;
+CREATE TABLE IF NOT EXISTS `django_migrations` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `app` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_spanish_ci NOT NULL,
+  `name` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_spanish_ci NOT NULL,
+  `applied` datetime(6) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=38 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Volcado de datos para la tabla `django_migrations`
+--
+
+INSERT INTO `django_migrations` (`id`, `app`, `name`, `applied`) VALUES
+(19, 'contenttypes', '0001_initial', '2025-11-06 17:45:09.029554'),
+(20, 'auth', '0001_initial', '2025-11-06 17:45:09.037555'),
+(21, 'admin', '0001_initial', '2025-11-06 17:45:09.042553'),
+(22, 'admin', '0002_logentry_remove_auto_add', '2025-11-06 17:45:09.047554'),
+(23, 'admin', '0003_logentry_add_action_flag_choices', '2025-11-06 17:45:09.052659'),
+(24, 'contenttypes', '0002_remove_content_type_name', '2025-11-06 17:49:27.320277'),
+(25, 'auth', '0002_alter_permission_name_max_length', '2025-11-06 17:52:23.911632'),
+(26, 'auth', '0003_alter_user_email_max_length', '2025-11-06 17:52:23.912632'),
+(27, 'auth', '0004_alter_user_username_opts', '2025-11-06 17:52:23.912632'),
+(28, 'auth', '0005_alter_user_last_login_null', '2025-11-06 17:52:23.912632'),
+(29, 'auth', '0006_require_contenttypes_0002', '2025-11-06 17:52:23.913632'),
+(30, 'auth', '0007_alter_validators_add_error_messages', '2025-11-06 17:52:23.913632'),
+(31, 'auth', '0008_alter_user_username_max_length', '2025-11-06 17:52:23.914632'),
+(32, 'auth', '0009_alter_user_last_name_max_length', '2025-11-06 17:52:23.914632'),
+(33, 'auth', '0010_alter_group_name_max_length', '2025-11-06 17:52:23.915632'),
+(34, 'auth', '0011_update_proxy_permissions', '2025-11-06 17:52:23.915632'),
+(35, 'auth', '0012_alter_user_first_name_max_length', '2025-11-06 17:52:23.916631'),
+(36, 'sessions', '0001_initial', '2025-11-06 17:52:23.916631'),
+(37, 'ventas', '0001_initial', '2025-11-06 17:52:23.916631');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `django_session`
+--
+
+DROP TABLE IF EXISTS `django_session`;
+CREATE TABLE IF NOT EXISTS `django_session` (
+  `session_key` varchar(40) CHARACTER SET utf8mb3 COLLATE utf8mb3_spanish_ci NOT NULL,
+  `session_data` longtext CHARACTER SET utf8mb3 COLLATE utf8mb3_spanish_ci NOT NULL,
+  `expire_date` datetime(6) NOT NULL,
+  PRIMARY KEY (`session_key`),
+  KEY `django_session_expire_date_a5c62663` (`expire_date`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Volcado de datos para la tabla `django_session`
+--
+
+INSERT INTO `django_session` (`session_key`, `session_data`, `expire_date`) VALUES
+('5i303li0qn7fqlwrkxbr86dgl2vl4d9i', '.eJxVjMsOwiAQAP-FsyFb5OnRu9_QLCwrVQNJaU_GfzckPeh1ZjJvMeO-lXnveZ0XEhdxFqdfFjE9cx2CHljvTaZWt3WJciTysF3eGuXX9Wj_BgV7GdvgDcBknHWKAyWAzIDEPCnSjo2DHNimlKMJimwwETmx1x6Vjs4r8fkC26s4GQ:1vPmvm:neVUfvzdpjSlVvYvJQcUpjqQxMGDRjdhpnda9FimfT0', '2025-12-14 19:17:58.460743');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `empleado`
+--
+
+DROP TABLE IF EXISTS `empleado`;
+CREATE TABLE IF NOT EXISTS `empleado` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `nombres` varchar(100) NOT NULL,
+  `A_paterno` varchar(45) NOT NULL,
+  `A_materno` varchar(45) NOT NULL,
+  `run` varchar(45) NOT NULL,
+  `correo` varchar(100) NOT NULL,
+  `fono` int NOT NULL,
+  `clave` varchar(45) NOT NULL,
+  `nacionalidad` varchar(45) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `run_UNIQUE` (`run`),
+  UNIQUE KEY `fono_UNIQUE` (`fono`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `forma_pago`
+--
+
+DROP TABLE IF EXISTS `forma_pago`;
+CREATE TABLE IF NOT EXISTS `forma_pago` (
+  `id` int NOT NULL,
+  `nombre` varchar(45) CHARACTER SET utf8mb3 COLLATE utf8mb3_spanish_ci NOT NULL,
+  `descripcion` varchar(45) CHARACTER SET utf8mb3 COLLATE utf8mb3_spanish_ci NOT NULL,
+  `pago_id` int NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_forma_pago_pago1_idx` (`pago_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `jornada`
+--
+
+DROP TABLE IF EXISTS `jornada`;
+CREATE TABLE IF NOT EXISTS `jornada` (
+  `id` int NOT NULL,
+  `nombre` varchar(45) CHARACTER SET utf8mb3 COLLATE utf8mb3_spanish_ci NOT NULL,
+  `horas_semanales` int NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `liquidacion`
+--
+
+DROP TABLE IF EXISTS `liquidacion`;
+CREATE TABLE IF NOT EXISTS `liquidacion` (
+  `id` int NOT NULL,
+  `periodo` date NOT NULL,
+  `imponible` int NOT NULL,
+  `no_imponible` int NOT NULL,
+  `tributable` int NOT NULL,
+  `descuentos` int NOT NULL,
+  `bruto` int NOT NULL,
+  `liquido` int NOT NULL,
+  `fecha_cierre` date NOT NULL,
+  `estado` varchar(45) NOT NULL,
+  `contrato_id` int NOT NULL,
+  `contrato_empleado_id` int NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_liquidacion_contrato1_idx` (`contrato_id`,`contrato_empleado_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `movimientos_inventario`
+--
+
+DROP TABLE IF EXISTS `movimientos_inventario`;
+CREATE TABLE IF NOT EXISTS `movimientos_inventario` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `tipo_movimiento` enum('entrada','salida') NOT NULL,
+  `cantidad` int NOT NULL,
+  `fecha` timestamp NOT NULL,
+  `productos_id` int NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_movimientos_inventario_productos1_idx` (`productos_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `nutricional`
+--
+
+DROP TABLE IF EXISTS `nutricional`;
+CREATE TABLE IF NOT EXISTS `nutricional` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `calorias` decimal(10,2) DEFAULT NULL,
+  `proteinas` decimal(10,2) DEFAULT NULL,
+  `grasas` decimal(10,2) DEFAULT NULL,
+  `carbohidratos` decimal(10,2) DEFAULT NULL,
+  `azucares` decimal(10,2) DEFAULT NULL,
+  `sodio` decimal(10,2) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Volcado de datos para la tabla `nutricional`
+--
+
+INSERT INTO `nutricional` (`id`, `calorias`, `proteinas`, `grasas`, `carbohidratos`, `azucares`, `sodio`) VALUES
+(1, NULL, NULL, NULL, NULL, NULL, NULL),
+(2, NULL, NULL, NULL, NULL, NULL, NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `pago`
+--
+
+DROP TABLE IF EXISTS `pago`;
+CREATE TABLE IF NOT EXISTS `pago` (
+  `id` int NOT NULL,
+  `fecha_pago` date NOT NULL,
+  `monto` int NOT NULL,
+  `comprobante` varchar(45) CHARACTER SET utf8mb3 COLLATE utf8mb3_spanish_ci NOT NULL,
+  `estado` varchar(45) CHARACTER SET utf8mb3 COLLATE utf8mb3_spanish_ci NOT NULL,
+  `liquidacion_id` int NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_pago_liquidacion1_idx` (`liquidacion_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `productos`
+--
+
+DROP TABLE IF EXISTS `productos`;
+CREATE TABLE IF NOT EXISTS `productos` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `nombre` varchar(100) NOT NULL,
+  `descripcion` varchar(300) DEFAULT NULL,
+  `marca` varchar(100) DEFAULT NULL,
+  `precio` decimal(10,2) NOT NULL,
+  `caducidad` date NOT NULL,
+  `elaboracion` date DEFAULT NULL,
+  `tipo` varchar(100) DEFAULT NULL,
+  `stock_actual` int DEFAULT NULL,
+  `stock_minimo` int DEFAULT NULL,
+  `stock_maximo` int DEFAULT NULL,
+  `presentacion` varchar(100) DEFAULT NULL,
+  `formato` varchar(100) DEFAULT NULL,
+  `creado` timestamp NULL DEFAULT NULL,
+  `modificado` timestamp NULL DEFAULT NULL,
+  `eliminado` timestamp NULL DEFAULT NULL,
+  `categorias_id` int NOT NULL,
+  `nutricional_id` int NOT NULL,
+  `cantidad` int NOT NULL DEFAULT '0',
+  `estado_merma` varchar(20) NOT NULL DEFAULT 'activo' COMMENT 'Estado del producto: activo, vencido, deteriorado, dañado',
+  PRIMARY KEY (`id`),
+  KEY `fk_productos_categorias1_idx` (`categorias_id`),
+  KEY `fk_productos_nutricional1_idx` (`nutricional_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Volcado de datos para la tabla `productos`
+--
+
+INSERT INTO `productos` (`id`, `nombre`, `descripcion`, `marca`, `precio`, `caducidad`, `elaboracion`, `tipo`, `stock_actual`, `stock_minimo`, `stock_maximo`, `presentacion`, `formato`, `creado`, `modificado`, `eliminado`, `categorias_id`, `nutricional_id`, `cantidad`, `estado_merma`) VALUES
+(1, 'pan', 'rico pan crujiente', 'propia', 1000.00, '2025-11-30', '2025-11-01', 'Panaderia', NULL, NULL, NULL, NULL, '50 l', '2025-11-10 18:28:02', '2025-11-10 18:28:02', NULL, 1, 1, 500, 'activo'),
+(2, 'ajicolo', 'picante', 'propia', 100.00, '2025-12-01', '2025-11-01', 'vegetal', NULL, NULL, NULL, NULL, '1 kg', '2025-11-10 18:34:30', '2025-11-10 19:15:18', NULL, 1, 2, 10, 'activo'),
+(3, 'Pan integral', 'Pan integral fresco', 'Forneria', 1500.00, '2025-11-12', NULL, 'Panaderia', NULL, NULL, NULL, 'unidad', '500 g', NULL, NULL, NULL, 1, 1, 30, 'activo'),
+(4, 'Baguette clásico', 'Baguette crujiente', 'Forneria', 1200.00, '2025-11-12', NULL, 'Panaderia', NULL, NULL, NULL, 'unidad', '300 g', NULL, NULL, NULL, 1, 2, 10, 'activo'),
+(5, 'Croissant mantequilla', 'Croissant de mantequilla', 'Forneria', 900.00, '2025-11-12', NULL, 'Pasteleria', NULL, NULL, NULL, 'unidad', '1 unidad', NULL, NULL, NULL, 1, 1, 40, 'activo'),
+(6, 'Muffin chocolate', 'Muffin sabor chocolate', 'Forneria', 800.00, '2025-11-12', NULL, 'Pasteleria', NULL, NULL, NULL, 'unidad', '1 unidad', NULL, NULL, NULL, 1, 2, 35, 'activo'),
+(7, 'Galletas avena', 'Galletas de avena', 'Forneria', 1800.00, '2025-11-12', NULL, 'Snack', NULL, NULL, NULL, 'pack', '200 g', NULL, NULL, NULL, 2, 1, 50, 'activo'),
+(8, 'Brownie cacao', 'Brownie de cacao', 'Forneria', 1000.00, '2025-11-13', NULL, 'Pasteleria', NULL, NULL, NULL, 'unidad', '1 unidad', NULL, NULL, NULL, 1, 1, 30, 'activo'),
+(9, 'Empanada de queso', 'Empanada rellena de queso', 'Forneria', 1300.00, '2025-11-13', NULL, 'Panaderia', NULL, NULL, NULL, 'unidad', '1 unidad', NULL, NULL, NULL, 1, 2, 24, 'activo'),
+(10, 'Focaccia romero', 'Focaccia con romero', 'Forneria', 2500.00, '2025-11-13', NULL, 'Panaderia', NULL, NULL, NULL, 'unidad', '400 g', NULL, NULL, NULL, 1, 1, 18, 'activo'),
+(11, 'Ciabatta rústica', 'Pan ciabatta rústico', 'Forneria', 1400.00, '2025-11-13', NULL, 'Panaderia', NULL, NULL, NULL, 'unidad', '300 g', NULL, NULL, NULL, 1, 2, 25, 'activo'),
+(12, 'Pan de centeno', 'Pan con harina de centeno', 'Forneria', 2200.00, '2025-11-13', NULL, 'Panaderia', NULL, NULL, NULL, 'unidad', '600 g', NULL, NULL, NULL, 1, 1, 20, 'activo'),
+(13, 'Pan de molde', 'Pan de molde familiar', 'Forneria', 2000.00, '2025-11-14', NULL, 'Panaderia', NULL, NULL, NULL, 'unidad', '700 g', NULL, NULL, NULL, 1, 2, 22, 'activo'),
+(14, 'Rollo de canela', 'Rollo de canela', 'Forneria', 1000.00, '2025-11-14', NULL, 'Pasteleria', NULL, NULL, NULL, 'unidad', '1 unidad', NULL, NULL, NULL, 1, 1, 30, 'activo'),
+(15, 'Pan brioche', 'Pan brioche suave', 'Forneria', 2300.00, '2025-11-14', NULL, 'Panaderia', NULL, NULL, NULL, 'unidad', '500 g', NULL, NULL, NULL, 1, 2, 16, 'activo'),
+(16, 'Pan pita', 'Pan pita clásico', 'Forneria', 1200.00, '2025-11-14', NULL, 'Panaderia', NULL, NULL, NULL, 'pack', '6 unidades', NULL, NULL, NULL, 1, 1, 36, 'activo'),
+(17, 'Pan de ajo', 'Pan con ajo y perejil', 'Forneria', 1800.00, '2025-11-14', NULL, 'Panaderia', NULL, NULL, NULL, 'pack', '4 unidades', NULL, NULL, NULL, 1, 2, 26, 'activo'),
+(18, 'Pan de maíz', 'Pan con harina de maíz', 'Forneria', 2100.00, '2025-11-15', NULL, 'Panaderia', NULL, NULL, NULL, 'unidad', '500 g', NULL, NULL, NULL, 1, 1, 20, 'activo'),
+(19, 'Pan sin gluten', 'Pan apto celíacos', 'Forneria', 2600.00, '2025-11-15', NULL, 'Panaderia', NULL, NULL, NULL, 'unidad', '500 g', NULL, NULL, NULL, 1, 2, 14, 'activo'),
+(20, 'Pan de queso', 'Pan con queso', 'Forneria', 2400.00, '2025-11-15', NULL, 'Panaderia', NULL, NULL, NULL, 'pack', '6 unidades', NULL, NULL, NULL, 1, 1, 30, 'activo'),
+(21, 'Pan de chocolate', 'Pan con chips de chocolate', 'Forneria', 2400.00, '2025-11-15', NULL, 'Panaderia', NULL, NULL, NULL, 'unidad', '500 g', NULL, NULL, NULL, 1, 2, 12, 'activo'),
+(22, 'Pan de coco', 'Pan sabor coco', 'Forneria', 2300.00, '2025-11-15', NULL, 'Panaderia', NULL, NULL, NULL, 'unidad', '500 g', NULL, NULL, NULL, 1, 1, 12, 'activo'),
+(23, 'Magdalenas vainilla', 'Magdalenas sabor vainilla', 'Forneria', 1500.00, '2025-11-16', NULL, 'Pasteleria', NULL, NULL, NULL, 'pack', '6 unidades', NULL, NULL, NULL, 1, 2, 24, 'activo'),
+(24, 'Tarta de manzana', 'Tarta de manzana casera', 'Forneria', 3500.00, '2025-11-16', NULL, 'Pasteleria', NULL, NULL, NULL, 'unidad', '1 unidad', NULL, NULL, NULL, 1, 1, 8, 'activo'),
+(25, 'Queque de limón', 'Bizcocho de limón', 'Forneria', 2800.00, '2025-11-16', NULL, 'Pasteleria', NULL, NULL, NULL, 'unidad', '1 unidad', NULL, NULL, NULL, 1, 2, 10, 'activo'),
+(26, 'Alfajores', 'Alfajores rellenos', 'Forneria', 2200.00, '2025-11-16', NULL, 'Snack', NULL, NULL, NULL, 'pack', '6 unidades', NULL, NULL, NULL, 2, 1, 30, 'activo'),
+(27, 'Galletas mantequilla', 'Galletas de mantequilla', 'Forneria', 1900.00, '2025-11-17', NULL, 'Snack', NULL, NULL, NULL, 'pack', '250 g', NULL, NULL, NULL, 2, 2, 40, 'activo'),
+(28, 'Palitos de pan', 'Palitos horneados', 'Forneria', 1700.00, '2025-11-17', NULL, 'Snack', NULL, NULL, NULL, 'pack', '200 g', NULL, NULL, NULL, 2, 1, 50, 'activo'),
+(29, 'Crackers integrales', 'Galletas integrales crujientes', 'Forneria', 2000.00, '2025-11-17', NULL, 'Snack', NULL, NULL, NULL, 'pack', '250 g', NULL, NULL, NULL, 2, 2, 45, 'activo'),
+(30, 'Barrita de cereal', 'Barrita energética', 'Forneria', 1600.00, '2025-11-18', NULL, 'Snack', NULL, NULL, NULL, 'pack', '5 unidades', NULL, NULL, NULL, 2, 1, 60, 'activo'),
+(31, 'Grissini', 'Grissini italianos', 'Forneria', 1800.00, '2025-11-18', NULL, 'Snack', NULL, NULL, NULL, 'pack', '200 g', NULL, NULL, NULL, 2, 2, 30, 'activo'),
+(32, 'Pan de hamburguesa', 'Pan para hamburguesa', 'Forneria', 2200.00, '2025-11-18', NULL, 'Panaderia', NULL, NULL, NULL, 'pack', '4 unidades', NULL, NULL, NULL, 1, 1, 24, 'activo');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `roles`
+--
+
+DROP TABLE IF EXISTS `roles`;
+CREATE TABLE IF NOT EXISTS `roles` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `nombre` varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `descripcion` varchar(200) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `turno`
+--
+
+DROP TABLE IF EXISTS `turno`;
+CREATE TABLE IF NOT EXISTS `turno` (
+  `id` int NOT NULL,
+  `hora_entrada` time NOT NULL,
+  `hora_salida` time NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `turno_has_jornada`
+--
+
+DROP TABLE IF EXISTS `turno_has_jornada`;
+CREATE TABLE IF NOT EXISTS `turno_has_jornada` (
+  `turno_id` int NOT NULL,
+  `jornada_id` int NOT NULL,
+  `id` int NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`id`),
+  KEY `fk_turno_has_jornada_jornada1_idx` (`jornada_id`),
+  KEY `fk_turno_has_jornada_turno1_idx` (`turno_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `usuarios`
+--
+
+DROP TABLE IF EXISTS `usuarios`;
+CREATE TABLE IF NOT EXISTS `usuarios` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `run` varchar(10) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `fono` int DEFAULT NULL,
+  `Direccion_id` int NOT NULL,
+  `Roles_id` int NOT NULL,
+  `user_id` int NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `run_UNIQUE` (`run`),
+  UNIQUE KEY `user_id_UNIQUE` (`user_id`),
+  KEY `fk_Usuarios_Direccion1_idx` (`Direccion_id`),
+  KEY `fk_Usuarios_Roles1_idx` (`Roles_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `ventas`
+--
+
+DROP TABLE IF EXISTS `ventas`;
+CREATE TABLE IF NOT EXISTS `ventas` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `fecha` timestamp NOT NULL,
+  `total_sin_iva` decimal(10,2) NOT NULL,
+  `total_iva` decimal(10,2) NOT NULL,
+  `descuento` decimal(10,2) NOT NULL,
+  `total_con_iva` decimal(10,2) NOT NULL,
+  `canal_venta` enum('presencial','delivery') NOT NULL,
+  `folio` varchar(20) DEFAULT NULL,
+  `monto_pagado` decimal(10,2) DEFAULT NULL,
+  `vuelto` decimal(10,2) DEFAULT NULL,
+  `clientes_id` int NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_ventas_clientes1_idx` (`clientes_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Volcado de datos para la tabla `ventas`
+--
+
+INSERT INTO `ventas` (`id`, `fecha`, `total_sin_iva`, `total_iva`, `descuento`, `total_con_iva`, `canal_venta`, `folio`, `monto_pagado`, `vuelto`, `clientes_id`) VALUES
+(1, '2025-11-23 23:04:57', 0.00, 0.00, 0.00, 0.00, 'presencial', 'BOL-20251123200457', 20000.00, 20000.00, 1),
+(2, '2025-11-26 04:31:47', 7800.00, 1482.00, 0.00, 9282.00, 'presencial', 'BOL-20251126013146', 10000.00, 718.00, 1);
+
+--
+-- Restricciones para tablas volcadas
+--
+
+--
+-- Filtros para la tabla `alertas`
+--
+ALTER TABLE `alertas`
+  ADD CONSTRAINT `fk_alertas_productos1` FOREIGN KEY (`productos_id`) REFERENCES `productos` (`id`);
+
+--
+-- Filtros para la tabla `contrato`
+--
+ALTER TABLE `contrato`
+  ADD CONSTRAINT `fk_contrato_cargo1` FOREIGN KEY (`cargo_id`) REFERENCES `cargo` (`id`),
+  ADD CONSTRAINT `fk_contrato_departamento1` FOREIGN KEY (`departamento_id`) REFERENCES `departamento` (`id`),
+  ADD CONSTRAINT `fk_contrato_empleado1` FOREIGN KEY (`empleado_id`) REFERENCES `empleado` (`id`),
+  ADD CONSTRAINT `fk_contrato_turno_has_jornada1` FOREIGN KEY (`turno_has_jornada_id`) REFERENCES `turno_has_jornada` (`id`);
+
+--
+-- Filtros para la tabla `cuenta_bancaria`
+--
+ALTER TABLE `cuenta_bancaria`
+  ADD CONSTRAINT `fk_cuenta_bancaria_empleado1` FOREIGN KEY (`empleado_id`) REFERENCES `empleado` (`id`);
+
+--
+-- Filtros para la tabla `detalle_venta`
+--
+ALTER TABLE `detalle_venta`
+  ADD CONSTRAINT `fk_detalle_venta_productos1` FOREIGN KEY (`productos_id`) REFERENCES `productos` (`id`),
+  ADD CONSTRAINT `fk_detalle_venta_ventas1` FOREIGN KEY (`ventas_id`) REFERENCES `ventas` (`id`);
+
+--
+-- Filtros para la tabla `forma_pago`
+--
+ALTER TABLE `forma_pago`
+  ADD CONSTRAINT `fk_forma_pago_pago1` FOREIGN KEY (`pago_id`) REFERENCES `pago` (`id`);
+
+--
+-- Filtros para la tabla `liquidacion`
+--
+ALTER TABLE `liquidacion`
+  ADD CONSTRAINT `fk_liquidacion_contrato1` FOREIGN KEY (`contrato_id`,`contrato_empleado_id`) REFERENCES `contrato` (`id`, `empleado_id`);
+
+--
+-- Filtros para la tabla `movimientos_inventario`
+--
+ALTER TABLE `movimientos_inventario`
+  ADD CONSTRAINT `fk_movimientos_inventario_productos1` FOREIGN KEY (`productos_id`) REFERENCES `productos` (`id`);
+
+--
+-- Filtros para la tabla `pago`
+--
+ALTER TABLE `pago`
+  ADD CONSTRAINT `fk_pago_liquidacion1` FOREIGN KEY (`liquidacion_id`) REFERENCES `liquidacion` (`id`);
+
+--
+-- Filtros para la tabla `productos`
+--
+ALTER TABLE `productos`
+  ADD CONSTRAINT `fk_productos_categorias1` FOREIGN KEY (`categorias_id`) REFERENCES `categorias` (`id`),
+  ADD CONSTRAINT `fk_productos_nutricional1` FOREIGN KEY (`nutricional_id`) REFERENCES `nutricional` (`id`);
+
+--
+-- Filtros para la tabla `turno_has_jornada`
+--
+ALTER TABLE `turno_has_jornada`
+  ADD CONSTRAINT `fk_turno_has_jornada_jornada1` FOREIGN KEY (`jornada_id`) REFERENCES `jornada` (`id`),
+  ADD CONSTRAINT `fk_turno_has_jornada_turno1` FOREIGN KEY (`turno_id`) REFERENCES `turno` (`id`);
+
+--
+-- Filtros para la tabla `usuarios`
+--
+ALTER TABLE `usuarios`
+  ADD CONSTRAINT `fk_Usuarios_auth_user` FOREIGN KEY (`user_id`) REFERENCES `auth_user` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_Usuarios_Direccion1` FOREIGN KEY (`Direccion_id`) REFERENCES `direccion` (`id`),
+  ADD CONSTRAINT `fk_Usuarios_Roles1` FOREIGN KEY (`Roles_id`) REFERENCES `roles` (`id`);
+
+--
+-- Filtros para la tabla `ventas`
+--
+ALTER TABLE `ventas`
+  ADD CONSTRAINT `fk_ventas_clientes1` FOREIGN KEY (`clientes_id`) REFERENCES `clientes` (`id`);
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

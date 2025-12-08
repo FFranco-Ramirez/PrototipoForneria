@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block contenido %}
+<div class="dashboard-main-container">
+    {% include 'includes/sidebar.html' with active_page='proveedores' %}
+    
+    <div class="dashboard-content-wrapper">
+        <div class="card">
+            <div class="card-header">
+                <h2>Eliminar Proveedor</h2>
+                <a href="{% url 'proveedores_list' %}" class="btn btn-secondary">Volver</a>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-warning">
+                    <h4>¿Está seguro que desea eliminar este proveedor?</h4>
+                    <p><strong>Nombre:</strong> {{ proveedor.nombre }}</p>
+                    {% if proveedor.rut %}
+                    <p><strong>RUT:</strong> {{ proveedor.rut }}</p>
+                    {% endif %}
+                    {% if tiene_facturas %}
+                    <div class="alert alert-danger mt-3">
+                        <strong>⚠️ Advertencia:</strong> Este proveedor tiene facturas asociadas. 
+                        La eliminación será lógica (soft delete) y las facturas seguirán existiendo.
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="d-flex justify-content-end">
+                        <a href="{% url 'proveedores_list' %}" class="btn btn-secondary me-2">Cancelar</a>
+                        <button type="submit" class="btn btn-danger">Sí, eliminar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
