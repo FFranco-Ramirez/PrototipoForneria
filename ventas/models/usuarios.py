@@ -9,6 +9,9 @@ class Roles(models.Model):
     class Meta:
         managed = False
         db_table = 'roles'
+    
+    def __str__(self):
+        return self.nombre
 
 # Modelo para la Dirección
 class Direccion(models.Model):

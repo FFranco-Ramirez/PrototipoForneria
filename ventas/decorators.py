@@ -24,7 +24,8 @@ from functools import wraps
 from django.shortcuts import redirect
 from django.contrib import messages
 from django.contrib.auth.models import Group
-from ventas.models import Usuarios
+from ventas.models.usuarios import Usuarios
+from ventas.funciones.permisos import puede_acceder_seccion, obtener_rol_usuario
 
 
 # ================================================================
@@ -92,40 +93,40 @@ def require_rol(*roles_permitidos):
 
 
 # ================================================================
-# =        FUNCIÓN AUXILIAR: OBTENER ROL DEL USUARIO             =
+# =        DECORADOR: REQUERIR SECCIÓN                           =
 # ================================================================
 
-def obtener_rol_usuario(user):
+def require_seccion(seccion):
     """
-    Obtiene el rol del usuario desde la base de datos.
+    Decorador que verifica que el usuario tenga acceso a una sección específica.
+    Usa el sistema de permisos por roles.
     
     Args:
-        user: Usuario de Django (User)
+        seccion: Nombre de la sección (ej: 'pos', 'inventario', 'reportes')
         
-    Returns:
-        str: Nombre del rol o None si no tiene
+    Ejemplo:
+        @require_seccion('pos')
+        def vista_pos(request):
+            # Solo usuarios con acceso a 'pos' pueden acceder
+            ...
     """
-    if not user.is_authenticated:
-        return None
-    
-    # Si es superusuario, retornar 'Administrador'
-    if user.is_superuser:
-        return 'Administrador'
-    
-    # Intentar obtener desde tabla usuarios
-    try:
-        usuario_perfil = Usuarios.objects.get(user=user)
-        if usuario_perfil.roles:
-            return usuario_perfil.roles.nombre
-    except Usuarios.DoesNotExist:
-        pass
-    
-    # Intentar obtener desde grupos de Django
-    grupos = user.groups.all()
-    if grupos.exists():
-        return grupos.first().name
-    
-    return None
+    def decorator(view_func):
+        @wraps(view_func)
+        def _wrapped_view(request, *args, **kwargs):
+            if not request.user.is_authenticated:
+                messages.error(request, 'Debes iniciar sesión para acceder a esta página.')
+                return redirect('login')
+            
+            if puede_acceder_seccion(request.user, seccion):
+                return view_func(request, *args, **kwargs)
+            else:
+                messages.error(
+                    request, 
+                    f'No tienes permisos para acceder a esta sección.'
+                )
+                return redirect('dashboard')
+        return _wrapped_view
+    return decorator
 
 
 # ================================================================

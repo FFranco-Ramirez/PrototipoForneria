@@ -9,8 +9,15 @@
     {% include 'includes/sidebar.html' with active_page='usuarios' %}
 
     <div class="dashboard-content-wrapper">
+        <!-- Header con título -->
+        {% include 'includes/dashboard_header.html' with page_title='Usuarios' %}
+        
         <div class="inventory-container dark-gold-theme">
-          <h2>Usuarios</h2>
+          <div class="header-actions" style="margin-bottom: 20px;">
+            <a href="{% url 'usuario_crear' %}" class="btn btn-primary">
+                <span>➕</span> Crear Usuario
+            </a>
+          </div>
 
   {% if messages %}
     <ul class="messages">
@@ -28,6 +35,7 @@
         <th>Correo</th>
         <th>Nombre</th>
         <th>Apellidos</th>
+        <th>Rol</th>
         <th>Staff</th>
         <th>Super</th>
         <th>Activo</th>
@@ -36,13 +44,15 @@
       </tr>
     </thead>
     <tbody>
-      {% for u in usuarios %}
+      {% for item in usuarios_con_perfiles %}
+      {% with u=item.user perfil=item.perfil %}
       <tr>
         <td>{{ u.id }}</td>
         <td>{{ u.username }}</td>
         <td>{{ u.email }}</td>
         <td>{{ u.first_name|default:"—" }}</td>
         <td>{{ u.last_name|default:"—" }}</td>
+        <td>{{ perfil.roles.nombre|default:"Sin rol" }}</td>
         <td>{{ u.is_staff|yesno:"Sí,No" }}</td>
         <td>{{ u.is_superuser|yesno:"Sí,No" }}</td>
         <td>{{ u.is_active|yesno:"Sí,No" }}</td>
@@ -56,8 +66,9 @@
           {% endif %}
         </td>
       </tr>
+      {% endwith %}
       {% empty %}
-      <tr><td colspan="10">No hay usuarios.</td></tr>
+      <tr><td colspan="11">No hay usuarios.</td></tr>
       {% endfor %}
     </tbody>
   </table>

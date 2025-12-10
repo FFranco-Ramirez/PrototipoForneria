@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block body_class %}dark-gold-theme{% endblock %}
+
+{% block contenido %}
+<div class="dashboard-main-container">
+    <!-- Sidebar Reutilizable -->
+    {% include 'includes/sidebar.html' with active_page='usuarios' %}
+
+    <div class="dashboard-content-wrapper">
+        <!-- Header sin título específico -->
+        {% include 'includes/user_header.html' %}
+        
+        <div class="edit-product-container dark-gold-theme">
+            <div class="edit-header">
+                <h2>Crear Nuevo Usuario</h2>
+                <a href="{% url 'usuarios_list' %}" class="btn btn-link back-link">Volver a Usuarios</a>
+            </div>
+
+            {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                <li class="{{ message.tags }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+
+            <form method="post" novalidate>
+                {% csrf_token %}
+
+                <div class="edit-grid">
+                    <section class="edit-card">
+                        <h3 class="edit-section-title">Datos del usuario</h3>
+                        <div class="form-grid">
+                            <div class="form-row">
+                                {{ form.username.label_tag }} {{ form.username }}
+                                {% if form.username.errors %}<div class="field-error">{{ form.username.errors|striptags }}</div>{% endif %}
+                            </div>
+
+                            <div class="form-row">
+                                {{ form.email.label_tag }} {{ form.email }}
+                                {% if form.email.errors %}<div class="field-error">{{ form.email.errors|striptags }}</div>{% endif %}
+                            </div>
+
+                            <div class="form-row">
+                                {{ form.first_name.label_tag }} {{ form.first_name }}
+                                {% if form.first_name.errors %}<div class="field-error">{{ form.first_name.errors|striptags }}</div>{% endif %}
+                            </div>
+
+                            <div class="form-row">
+                                {{ form.last_name.label_tag }} {{ form.last_name }}
+                                {% if form.last_name.errors %}<div class="field-error">{{ form.last_name.errors|striptags }}</div>{% endif %}
+                            </div>
+
+                            <div class="form-row">
+                                {{ form.run.label_tag }} {{ form.run }}
+                                {% if form.run.errors %}<div class="field-error">{{ form.run.errors|striptags }}</div>{% endif %}
+                            </div>
+
+                            <div class="form-row">
+                                {{ form.password.label_tag }} {{ form.password }}
+                                {% if form.password.errors %}<div class="field-error">{{ form.password.errors|striptags }}</div>{% endif %}
+                            </div>
+
+                            <div class="form-row">
+                                {{ form.password_confirm.label_tag }} {{ form.password_confirm }}
+                                {% if form.password_confirm.errors %}<div class="field-error">{{ form.password_confirm.errors|striptags }}</div>{% endif %}
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="edit-card">
+                        <h3 class="edit-section-title">Rol y Permisos</h3>
+                        <div class="form-grid">
+                            <div class="form-row">
+                                {{ form.rol.label_tag }} {{ form.rol }}
+                                {% if form.rol.errors %}<div class="field-error">{{ form.rol.errors|striptags }}</div>{% endif %}
+                                <div class="roles-description">
+                                    <p class="role-info-title">Seleccione el rol que define los permisos del usuario:</p>
+                                    <div class="role-item">
+                                        <strong class="role-name">👑 Administrador</strong>
+                                        <p class="role-desc">Acceso completo al sistema. Puede gestionar usuarios, productos, inventario, ventas, reportes, proveedores, producción y todas las configuraciones del sistema.</p>
+                                    </div>
+                                    <div class="role-item">
+                                        <strong class="role-name">📊 Contador</strong>
+                                        <p class="role-desc">Puede ver reportes financieros, consultar ventas, revisar inventario (solo lectura), ver movimientos de inventario y alertas. Ideal para análisis y contabilidad.</p>
+                                    </div>
+                                    <div class="role-item">
+                                        <strong class="role-name">🛒 Vendedor</strong>
+                                        <p class="role-desc">Puede realizar ventas en el punto de venta (POS), ver inventario disponible (solo lectura) y consultar alertas de productos. Ideal para personal de ventas.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            {# Campos ocultos para valores por defecto #}
+                            {{ form.is_active }}
+                            {{ form.is_staff }}
+                            {{ form.is_superuser }}
+                        </div>
+                    </section>
+                </div>
+
+                <div class="edit-actions">
+                    <button type="submit" class="btn btn-primary">Crear Usuario</button>
+                    <a href="{% url 'usuarios_list' %}" class="btn btn-link">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

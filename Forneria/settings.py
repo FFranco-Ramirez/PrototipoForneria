@@ -243,3 +243,39 @@ if not DEBUG:
     SECURE_BROWSER_XSS_FILTER = True
     SECURE_CONTENT_TYPE_NOSNIFF = True
     X_FRAME_OPTIONS = 'DENY'
+
+# ============================================================
+# CONFIGURACIÓN DE EMAIL
+# ============================================================
+# Para desarrollo: usar consola (los emails se imprimen en la terminal)
+# Para producción: configurar SMTP real en variables de entorno
+
+# Backend de email
+# Opciones:
+# - 'django.core.mail.backends.console.EmailBackend' (desarrollo - imprime en consola)
+# - 'django.core.mail.backends.smtp.EmailBackend' (producción - envía emails reales)
+EMAIL_BACKEND = config(
+    'EMAIL_BACKEND',
+    default='django.core.mail.backends.console.EmailBackend'
+)
+
+# Configuración SMTP (solo necesario si EMAIL_BACKEND es smtp)
+EMAIL_HOST = config('EMAIL_HOST', default='smtp.gmail.com')
+EMAIL_PORT = config('EMAIL_PORT', default=587, cast=int)
+EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=True, cast=bool)
+EMAIL_USE_SSL = config('EMAIL_USE_SSL', default=False, cast=bool)
+EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
+
+# Email desde el cual se envían los correos
+DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='noreply@forneria.com')
+SERVER_EMAIL = DEFAULT_FROM_EMAIL  # Para errores del servidor
+
+# URL base del sitio (para enlaces en emails, etc.)
+# En desarrollo: dejar vacío o usar http://localhost:8000
+# En producción: usar https://tudominio.com o http://tu-ip-elastica
+# Si está vacío, Django usará request.build_absolute_uri() automáticamente
+SITE_URL = config('SITE_URL', default='http://35.172.127.25')
+
+# Tiempo de expiración del token de recuperación (en horas)
+PASSWORD_RESET_TIMEOUT = 24  # 24 horas

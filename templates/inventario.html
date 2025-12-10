@@ -9,9 +9,9 @@
     {% include 'includes/sidebar.html' with active_page='inventario' %}
 
     <div class="dashboard-content-wrapper">
+        {% include 'includes/dashboard_header.html' with page_title='Inventario' %}
         <div class="inventory-container dark-gold-theme">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h2 style="margin: 0;">Inventario</h2>
                 <div style="display: flex; gap: 10px;">
                     <a href="{% url 'agregar_producto' %}" class="btn btn-success">
                         <i class="bi bi-plus-circle"></i> Agregar Producto

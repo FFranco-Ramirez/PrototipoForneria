@@ -14,10 +14,7 @@
     {% include 'includes/sidebar.html' with active_page='reportes' %}
 
     <div class="dashboard-content-wrapper">
-        <header class="dashboard-header">
-            <h1 class="dashboard-main-title">
-                <i class="bi bi-graph-up-arrow"></i> Sistema de Reportes
-            </h1>
+        {% include 'includes/dashboard_header.html' with page_title='Sistema de Reportes' %}
         </header>
 
         <main class="dashboard-content">

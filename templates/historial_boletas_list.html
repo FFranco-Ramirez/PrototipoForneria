@@ -24,12 +24,7 @@
     {% include 'includes/sidebar.html' with active_page='historial_boletas' %}
 
     <div class="dashboard-content-wrapper">
-        <!-- Header -->
-        <header class="dashboard-header">
-            <h1 class="dashboard-main-title">
-                <i class="bi bi-receipt-cutoff"></i> Historial de Boletas
-            </h1>
-        </header>
+        {% include 'includes/dashboard_header.html' with page_title='Historial de Boletas' %}
 
         <!-- Contenido principal -->
         <main class="dashboard-content">

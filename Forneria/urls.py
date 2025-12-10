@@ -21,7 +21,7 @@ from django.urls import path
 from ventas.views import (
     # Vistas de autenticación y navegación
     home, login_view, register_view, dashboard_view, logout_view,
-    proximamente_view, recuperar_contrasena_view,
+    proximamente_view, recuperar_contrasena_view, recuperar_contrasena_confirmar_view,
     
     # Vistas de productos e inventario
     agregar_producto_view, inventario_view, editar_producto_view, 
@@ -30,7 +30,7 @@ from ventas.views import (
     cambiar_estado_producto_ajax,
     
     # Vistas de gestión de usuarios (admin)
-    usuarios_list_view, usuario_editar_view, usuario_eliminar_view,
+    usuarios_list_view, usuario_crear_view, usuario_editar_view, usuario_eliminar_view,
     
     # Vistas del sistema POS (Punto de Venta)
     pos_view, agregar_cliente_ajax, validar_producto_ajax, procesar_venta_ajax,
@@ -141,6 +141,7 @@ urlpatterns = [
     path('registro/', register_view, name='registro'),
     path('logout/', logout_view, name='logout'),
     path('recuperar-contrasena/', recuperar_contrasena_view, name='recuperar_contrasena'),
+    path('recuperar-contrasena/confirmar/<uidb64>/<token>/', recuperar_contrasena_confirmar_view, name='recuperar_contrasena_confirmar'),
     
     # Dashboard principal (requiere autenticación)
     path('dashboard/', dashboard_view, name='dashboard'),
@@ -195,6 +196,9 @@ urlpatterns = [
     # ============================================================
     # Listar todos los usuarios
     path('usuarios/', usuarios_list_view, name='usuarios_list'),
+    
+    # Crear nuevo usuario
+    path('usuarios/crear/', usuario_crear_view, name='usuario_crear'),
     
     # Editar un usuario
     path('usuarios/editar/<int:user_id>/', usuario_editar_view, name='usuario_editar'),

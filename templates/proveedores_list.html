@@ -6,16 +6,14 @@
     {% include 'includes/sidebar.html' with active_page='proveedores' %}
     
     <div class="dashboard-content-wrapper">
-        <header class="dashboard-header">
-            <h1 class="dashboard-main-title">Proveedores</h1>
-            <div class="header-actions">
+        {% include 'includes/dashboard_header.html' with page_title='Proveedores' %}
+        
+        <main class="dashboard-content">
+            <div style="margin-bottom: 20px;">
                 <a href="{% url 'proveedor_crear' %}" class="btn btn-primary">
                     <span>➕</span> Nuevo Proveedor
                 </a>
             </div>
-        </header>
-        
-        <main class="dashboard-content">
             <!-- Filtros de búsqueda -->
             <div class="card mb-4">
                 <div class="card-body">

@@ -18,12 +18,14 @@ from decimal import Decimal
 from ventas.models.proveedores import FacturaProveedor, DetalleFacturaProveedor
 from ventas.models.productos import Productos
 from ventas.models.movimientos import MovimientosInventario
+from ventas.decorators import require_seccion
 import logging
 
 logger = logging.getLogger('ventas')
 
 
 @login_required
+@require_seccion('facturas_proveedores')
 @require_http_methods(["POST"])
 def agregar_detalle_factura_ajax(request, factura_id):
     """
@@ -105,6 +107,7 @@ def agregar_detalle_factura_ajax(request, factura_id):
 
 
 @login_required
+@require_seccion('facturas_proveedores')
 @require_http_methods(["POST"])
 def eliminar_detalle_factura_ajax(request, detalle_id):
     """
@@ -138,6 +141,7 @@ def eliminar_detalle_factura_ajax(request, detalle_id):
 
 
 @login_required
+@require_seccion('facturas_proveedores')
 @require_http_methods(["POST"])
 def recibir_factura_ajax(request, factura_id):
     """
@@ -264,6 +268,7 @@ def recibir_factura_ajax(request, factura_id):
 
 
 @login_required
+@require_seccion('facturas_proveedores')
 @require_http_methods(["POST"])
 def quitar_recepcion_factura_ajax(request, factura_id):
     """

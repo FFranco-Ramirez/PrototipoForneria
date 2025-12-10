@@ -158,6 +158,172 @@ class RegistrationForms(forms.Form):
 
         return cleaned_data
 
+class AdminUserCreateForm(forms.ModelForm):
+    password = forms.CharField(
+        label="Contraseña",
+        required=True,
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Ingrese la contraseña',
+            'autocomplete': 'new-password',
+        })
+    )
+    
+    password_confirm = forms.CharField(
+        label="Confirmar contraseña",
+        required=True,
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Confirme la contraseña',
+            'autocomplete': 'new-password',
+        })
+    )
+    
+    rol = forms.ModelChoiceField(
+        queryset=None,
+        required=False,
+        label="Rol",
+        widget=forms.Select(attrs={'class': 'form-control'}),
+        empty_label="Seleccione un rol"
+    )
+    
+    run = forms.CharField(
+        label="RUN",
+        required=False,
+        max_length=10,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ej: 12345678-9'})
+    )
+
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'first_name', 'last_name', 'is_active', 'is_staff', 'is_superuser']
+        widgets = {
+            'username': forms.TextInput(attrs={'class': 'form-control', 'autocomplete': 'username'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control', 'autocomplete': 'email'}),
+            'first_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control'}),
+        }
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        from ..models.usuarios import Roles
+        self.fields['rol'].queryset = Roles.objects.all()
+        # Ocultar estos campos y establecer valores por defecto
+        self.fields['is_active'].widget = forms.HiddenInput()
+        self.fields['is_staff'].widget = forms.HiddenInput()
+        self.fields['is_superuser'].widget = forms.HiddenInput()
+        self.fields['is_active'].initial = True
+        self.fields['is_staff'].initial = True
+        self.fields['is_superuser'].initial = False
+
+    def clean_username(self):
+        username = validador_usuario(self.cleaned_data.get('username'))
+        if User.objects.filter(username=username).exists():
+            raise forms.ValidationError("El nombre de usuario ya existe")
+        return username
+
+    def clean_email(self):
+        email = validador_correo(self.cleaned_data.get('email'))
+        if User.objects.filter(email=email).exists():
+            raise forms.ValidationError("El correo electrónico ya está registrado")
+        return email
+
+    def clean_password_confirm(self):
+        password = self.cleaned_data.get('password')
+        password_confirm = self.cleaned_data.get('password_confirm')
+        if password and password_confirm and password != password_confirm:
+            raise forms.ValidationError("Las contraseñas no coinciden")
+        return password_confirm
+
+    def clean_first_name(self):
+        valor = sanitizador_texto(self.cleaned_data.get('first_name') or '')
+        return valor
+
+    def clean_last_name(self):
+        valor = sanitizador_texto(self.cleaned_data.get('last_name') or '')
+        return valor
+
+    def clean_password(self):
+        pwd = self.cleaned_data.get('password')
+        if pwd:
+            return validador_contrasena_registro(pwd)
+        return pwd
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        password = self.cleaned_data.get('password')
+        if password:
+            user.set_password(password)
+        if commit:
+            user.save()
+        return user
+
+# ================================================================
+# =        FORMULARIOS PARA RECUPERACIÓN DE CONTRASEÑA          =
+# ================================================================
+
+class PasswordResetRequestForm(forms.Form):
+    """
+    Formulario para solicitar recuperación de contraseña.
+    Solo requiere el email del usuario.
+    """
+    email = forms.EmailField(
+        label="Correo electrónico",
+        required=True,
+        widget=forms.EmailInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Ingrese su correo electrónico',
+            'autocomplete': 'email',
+        })
+    )
+    
+    def clean_email(self):
+        email = validador_correo(self.cleaned_data.get('email'))
+        # Verificar que el email exista en la base de datos
+        if not User.objects.filter(email=email).exists():
+            raise forms.ValidationError(
+                "No existe una cuenta asociada a este correo electrónico."
+            )
+        return email
+
+class PasswordResetConfirmForm(forms.Form):
+    """
+    Formulario para confirmar y establecer nueva contraseña.
+    Requiere nueva contraseña y confirmación.
+    """
+    new_password = forms.CharField(
+        label="Nueva contraseña",
+        required=True,
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Ingrese su nueva contraseña',
+            'autocomplete': 'new-password',
+        })
+    )
+    
+    new_password_confirm = forms.CharField(
+        label="Confirmar nueva contraseña",
+        required=True,
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Confirme su nueva contraseña',
+            'autocomplete': 'new-password',
+        })
+    )
+    
+    def clean_new_password(self):
+        password = self.cleaned_data.get('new_password')
+        if password:
+            return validador_contrasena_registro(password)
+        return password
+    
+    def clean_new_password_confirm(self):
+        password = self.cleaned_data.get('new_password')
+        password_confirm = self.cleaned_data.get('new_password_confirm')
+        if password and password_confirm and password != password_confirm:
+            raise forms.ValidationError("Las contraseñas no coinciden")
+        return password_confirm
+
 class AdminUserEditForm(forms.ModelForm):
     password = forms.CharField(
         label="Nueva contraseña",
@@ -167,6 +333,14 @@ class AdminUserEditForm(forms.ModelForm):
             'placeholder': 'Dejar vacío para no cambiar',
             'autocomplete': 'new-password',
         })
+    )
+    
+    rol = forms.ModelChoiceField(
+        queryset=None,
+        required=False,
+        label="Rol",
+        widget=forms.Select(attrs={'class': 'form-control'}),
+        empty_label="Seleccione un rol"
     )
 
     class Meta:
@@ -181,6 +355,11 @@ class AdminUserEditForm(forms.ModelForm):
             'is_staff': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'is_superuser': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        from ..models.usuarios import Roles
+        self.fields['rol'].queryset = Roles.objects.all()
 
     def clean_username(self):
         username = validador_usuario(self.cleaned_data.get('username'))

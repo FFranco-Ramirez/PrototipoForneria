@@ -133,6 +133,7 @@
 /* --- Nombre del Usuario --- */
 .user-name {
     font-weight: 600;          /* Texto semi-negrita. */
+    color: #343a40 !important; /* Color de texto oscuro para que se vea en fondo blanco. */
 }
 
 /* --- Avatar del Usuario (el círculo con la inicial) --- */
@@ -239,7 +240,6 @@
     display: flex;
     flex-direction: column;
     gap: 20px;                 /* Espacio entre cards dentro de la columna */
-    align-items: stretch;      /* Las cards dentro de la columna se estiran para llenar el espacio */
 }
 
 /* --- Estilo Base de las Tarjetas de Métricas --- */
@@ -252,9 +252,9 @@
     display: flex;             /* Usa Flexbox para el contenido interno. */
     flex-direction: column;    /* Apila los elementos verticalmente. */
     justify-content: flex-start; /* Alinea el contenido en la parte superior. */
-    align-items: stretch;      /* Estira los elementos para llenar el ancho disponible. */
+    align-items: center;       /* Centra el contenido horizontalmente. */
     min-height: 250px;         /* Altura mínima para que todas las tarjetas tengan un tamaño consistente. */
-    flex: 1;                   /* Permite que las cards se estiren para llenar el espacio disponible */
+    width: 100%;               /* IMPORTANTE: Ocupa todo el ancho de la columna */
 }
 
 /* --- Título de la Tarjeta de Métrica ("Ventas del Día") --- */
@@ -304,6 +304,13 @@
     background-color: transparent;
 }
 
+/* --- Columnas Vacías sin altura mínima (para filas de alineación) --- */
+.empty-column[style*="min-height: 0"] {
+    min-height: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
 /* --- Responsive: En pantallas pequeñas --- */
 @media (max-width: 1200px) {
     .dashboard-row {
@@ -323,4 +330,34 @@
     .dashboard-col {
         flex: 1 1 100%;        /* 1 columna en móviles */
     }
+}
+
+/* --- Estilos para el card de Ventas del Día colapsable --- */
+#ventas-dia-card {
+    transition: height 0.3s ease;
+    overflow: hidden;
+}
+
+#ventas-dia-toggle {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    padding: 4px 8px;
+    color: #6c757d;
+    font-size: 18px;
+    transition: color 0.2s ease;
+}
+
+#ventas-dia-toggle:hover {
+    color: #343a40;
+}
+
+#ventas-dia-toggle:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+#tabla-ventas-dia-container {
+    width: 100%;
+    margin-top: 10px;
 }

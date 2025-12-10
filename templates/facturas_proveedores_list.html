@@ -6,16 +6,14 @@
     {% include 'includes/sidebar.html' with active_page='facturas_proveedores' %}
     
     <div class="dashboard-content-wrapper">
-        <header class="dashboard-header">
-            <h1 class="dashboard-main-title">Facturas de Proveedores</h1>
-            <div class="header-actions">
+        {% include 'includes/dashboard_header.html' with page_title='Facturas de Proveedores' %}
+        
+        <main class="dashboard-content">
+            <div style="margin-bottom: 20px;">
                 <a href="{% url 'factura_proveedor_crear' %}" class="btn btn-primary">
                     <span>➕</span> Nueva Factura
                 </a>
             </div>
-        </header>
-        
-        <main class="dashboard-content">
             <!-- Resumen de facturas -->
             <div class="row mb-4">
                 <div class="col-md-3">

@@ -100,8 +100,13 @@
       </section>
 
       <section class="edit-card">
-        <h3 class="edit-section-title">Permisos y estado</h3>
+        <h3 class="edit-section-title">Rol y Permisos</h3>
         <div class="form-grid">
+          <div class="form-row">
+            {{ form.rol.label_tag }} {{ form.rol }}
+            {% if form.rol.errors %}<div class="field-error">{{ form.rol.errors|striptags }}</div>{% endif %}
+          </div>
+
           <div class="form-row">
             {{ form.is_active }} {{ form.is_active.label_tag }}
             {% if form.is_active.errors %}<div class="field-error">{{ form.is_active.errors|striptags }}</div>{% endif %}

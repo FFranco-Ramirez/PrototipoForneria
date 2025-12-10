@@ -14,6 +14,7 @@ from django.db.models import Q, Sum, Count
 from django.http import JsonResponse
 from ventas.models.proveedores import Proveedor, FacturaProveedor, DetalleFacturaProveedor
 from ventas.models.productos import Productos
+from ventas.decorators import require_seccion
 import logging
 
 logger = logging.getLogger('ventas')
@@ -24,6 +25,7 @@ logger = logging.getLogger('ventas')
 # ================================================================
 
 @login_required
+@require_seccion('proveedores')
 def proveedores_list_view(request):
     """
     Vista para listar todos los proveedores.
@@ -74,6 +76,7 @@ def proveedores_list_view(request):
 
 
 @login_required
+@require_seccion('proveedores')
 def proveedor_crear_view(request):
     """
     Vista para crear un nuevo proveedor.
@@ -143,6 +146,7 @@ def proveedor_crear_view(request):
 
 
 @login_required
+@require_seccion('proveedores')
 def proveedor_editar_view(request, proveedor_id):
     """
     Vista para editar un proveedor existente.
@@ -203,6 +207,7 @@ def proveedor_editar_view(request, proveedor_id):
 
 
 @login_required
+@require_seccion('proveedores')
 def proveedor_eliminar_view(request, proveedor_id):
     """
     Vista para eliminar (borrado lógico) un proveedor.

@@ -5,52 +5,10 @@
 
 {% block contenido %}
 <div class="dashboard-main-container">
-    <nav class="dashboard-sidebar">
-        <div class="sidebar-header">
-            <h2 class="sidebar-title">Fornería</h2>
-        </div>
-        <ul class="sidebar-menu">
-            <li class="sidebar-item">
-                <a href="{% url 'dashboard' %}" class="sidebar-link">
-                    <span>📊</span> Dashboard
-                </a>
-            </li>
-            <li class="sidebar-item">
-                <a href="{% url 'pos' %}" class="sidebar-link">
-                    <span>🛒</span> Ventas (POS)
-                </a>
-            </li>
-            <li class="sidebar-item">
-                <a href="{% url 'inventario' %}" class="sidebar-link">
-                    <span>📦</span> Inventario
-                </a>
-            </li>
-            <li class="sidebar-item">
-                <a href="{% url 'alertas_list' %}" class="sidebar-link">
-                    <span>🔔</span> Alertas
-                </a>
-            </li>
-            <li class="sidebar-item">
-                <a href="{% url 'proximamente_feature' 'reportes' %}" class="sidebar-link">
-                    <span>📈</span> Reportes
-                </a>
-            </li>
-            {% if request.user.is_authenticated and request.user.is_superuser %}
-            <li class="sidebar-item">
-                <a href="{% url 'usuarios_list' %}" class="sidebar-link">
-                    <span>👥</span> Usuarios
-                </a>
-            </li>
-            {% endif %}
-        </ul>
-        <div class="sidebar-footer">
-            <a href="{% url 'proximamente_feature' 'configuracion' %}" class="sidebar-link">
-                <span>⚙️</span> Configuración
-            </a>
-        </div>
-    </nav>
-
+    {% include 'includes/sidebar.html' %}
     <div class="dashboard-content-wrapper">
+        {% include 'includes/user_header.html' %}
+        <main class="dashboard-content">
         <div class="coming-soon">
           <h2 class="coming-soon-title">Construyendo</h2>
 
@@ -60,6 +18,7 @@
     <button type="button" class="btn-primary" onclick="volver()">Volver</button>
   </div>
         </div>
+        </main>
     </div>
 </div>
 {% endblock %}

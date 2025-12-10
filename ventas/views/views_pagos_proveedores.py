@@ -15,12 +15,14 @@ from django.utils import timezone
 from decimal import Decimal
 from datetime import date, datetime
 from ventas.models.proveedores import FacturaProveedor, PagoProveedor, Proveedor
+from ventas.decorators import require_seccion
 import logging
 
 logger = logging.getLogger('ventas')
 
 
 @login_required
+@require_seccion('pagos_proveedores')
 def pagos_proveedores_list_view(request):
     """
     Vista para listar todos los pagos realizados a proveedores.
@@ -80,6 +82,7 @@ def pagos_proveedores_list_view(request):
 
 
 @login_required
+@require_seccion('pagos_proveedores')
 def pago_proveedor_crear_view(request, factura_id=None):
     """
     Vista para crear un nuevo pago a un proveedor.
@@ -213,6 +216,7 @@ def pago_proveedor_crear_view(request, factura_id=None):
 
 
 @login_required
+@require_seccion('pagos_proveedores')
 def pago_proveedor_eliminar_view(request, pago_id):
     """
     Vista para eliminar (borrado lógico) un pago.

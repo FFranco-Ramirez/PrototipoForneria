@@ -1,8 +1,19 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib import messages
-from ..funciones.formularios import RegistrationForms, LoginForm
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_str
+from django.core.mail import send_mail
+from django.conf import settings
+from django.template.loader import render_to_string
+from ..funciones.formularios import (
+    RegistrationForms, LoginForm, AdminUserCreateForm, AdminUserEditForm,
+    PasswordResetRequestForm, PasswordResetConfirmForm
+)
+from ..models.usuarios import Usuarios, Roles
 
 # ================================================================
 # =                    VISTA: LANDING PAGE                       =
@@ -127,11 +138,115 @@ def proximamente_view(request, feature=None):
 
 def recuperar_contrasena_view(request):
     """
-    Vista provisional para recuperar contraseña.
-    Muestra una página informativa indicando que la funcionalidad
-    estará disponible próximamente.
+    Vista para solicitar recuperación de contraseña.
+    El usuario ingresa su email y se le envía un enlace con token.
     """
-    return render(request, 'recuperar_contrasena.html')
+    if request.method == 'POST':
+        form = PasswordResetRequestForm(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data['email']
+            try:
+                user = User.objects.get(email=email)
+                
+                # Generar token seguro
+                token = default_token_generator.make_token(user)
+                uid = urlsafe_base64_encode(force_bytes(user.pk))
+                
+                # Crear URL de recuperación
+                # Si SITE_URL está configurado, usarlo; si no, usar request.build_absolute_uri()
+                if settings.SITE_URL:
+                    # En producción: usar la URL base configurada
+                    reset_url = f"{settings.SITE_URL.rstrip('/')}/recuperar-contrasena/confirmar/{uid}/{token}/"
+                else:
+                    # En desarrollo: usar la URL de la request actual
+                    reset_url = request.build_absolute_uri(
+                        f'/recuperar-contrasena/confirmar/{uid}/{token}/'
+                    )
+                
+                # Renderizar template de email
+                email_subject = 'Recuperación de Contraseña - Fornería'
+                email_body = render_to_string('emails/password_reset.html', {
+                    'user': user,
+                    'reset_url': reset_url,
+                    'site_name': 'Fornería',
+                })
+                
+                # Enviar email
+                try:
+                    send_mail(
+                        email_subject,
+                        '',  # Versión texto plano (vacía, usamos HTML)
+                        settings.DEFAULT_FROM_EMAIL,
+                        [email],
+                        html_message=email_body,
+                        fail_silently=False,
+                    )
+                    messages.success(
+                        request,
+                        'Se ha enviado un correo electrónico con las instrucciones para recuperar tu contraseña. '
+                        'Por favor, revisa tu bandeja de entrada.'
+                    )
+                    return redirect('login')
+                except Exception as e:
+                    messages.error(
+                        request,
+                        f'Error al enviar el correo electrónico: {str(e)}. '
+                        'Por favor, contacta al administrador.'
+                    )
+            except User.DoesNotExist:
+                # Por seguridad, no revelamos si el email existe o no
+                messages.success(
+                    request,
+                    'Si el correo electrónico existe en nuestro sistema, recibirás un email con las instrucciones.'
+                )
+                return redirect('login')
+    else:
+        form = PasswordResetRequestForm()
+    
+    return render(request, 'recuperar_contrasena.html', {'form': form})
+
+def recuperar_contrasena_confirmar_view(request, uidb64, token):
+    """
+    Vista para confirmar el token y permitir cambiar la contraseña.
+    """
+    try:
+        # Decodificar el UID
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+    
+    # Verificar token
+    if user is not None and default_token_generator.check_token(user, token):
+        if request.method == 'POST':
+            form = PasswordResetConfirmForm(request.POST)
+            if form.is_valid():
+                # Cambiar la contraseña
+                new_password = form.cleaned_data['new_password']
+                user.set_password(new_password)
+                user.save()
+                
+                messages.success(
+                    request,
+                    'Tu contraseña ha sido restablecida exitosamente. '
+                    'Ahora puedes iniciar sesión con tu nueva contraseña.'
+                )
+                return redirect('login')
+        else:
+            form = PasswordResetConfirmForm()
+        
+        return render(request, 'recuperar_contrasena_confirmar.html', {
+            'form': form,
+            'valid_token': True
+        })
+    else:
+        # Token inválido o expirado
+        messages.error(
+            request,
+            'El enlace de recuperación es inválido o ha expirado. '
+            'Por favor, solicita un nuevo enlace.'
+        )
+        return redirect('recuperar_contrasena')
 
 def logout_view(request):
     logout(request)
@@ -139,9 +254,6 @@ def logout_view(request):
     return redirect('login')
 
 # NUEVO: gestión de usuarios (solo superusuario)
-from django.contrib.auth.decorators import login_required, user_passes_test
-from django.shortcuts import get_object_or_404
-from ..funciones.formularios import AdminUserEditForm
 
 def _es_superusuario(u):
     return u.is_superuser
@@ -150,12 +262,60 @@ def _es_superusuario(u):
 @user_passes_test(_es_superusuario)
 def usuarios_list_view(request):
     usuarios = User.objects.all().order_by('-is_superuser', '-is_staff', 'username')
-    return render(request, 'usuarios_list.html', {'usuarios': usuarios})
+    # Obtener perfiles Usuarios para mostrar roles
+    usuarios_con_perfiles = []
+    for u in usuarios:
+        try:
+            perfil = Usuarios.objects.get(user=u)
+            usuarios_con_perfiles.append({
+                'user': u,
+                'perfil': perfil
+            })
+        except Usuarios.DoesNotExist:
+            usuarios_con_perfiles.append({
+                'user': u,
+                'perfil': None
+            })
+    return render(request, 'usuarios_list.html', {'usuarios_con_perfiles': usuarios_con_perfiles})
+
+@login_required
+@user_passes_test(_es_superusuario)
+def usuario_crear_view(request):
+    if request.method == 'POST':
+        form = AdminUserCreateForm(request.POST)
+        if form.is_valid():
+            user = form.save(commit=False)
+            user.set_password(form.cleaned_data['password'])
+            user.save()
+
+            # Crear o actualizar el perfil de Usuarios
+            rol = form.cleaned_data.get('rol')  # Ya es un objeto Roles, no un ID
+            run = form.cleaned_data.get('run')
+            
+            if rol:
+                Usuarios.objects.create(user=user, run=run or '', roles=rol, direccion=None)
+            else:
+                Usuarios.objects.create(user=user, run=run or '', direccion=None)
+
+            messages.success(request, "Usuario creado correctamente.")
+            return redirect('usuarios_list')
+    else:
+        form = AdminUserCreateForm()
+    return render(request, 'usuario_crear.html', {'form': form})
 
 @login_required
 @user_passes_test(_es_superusuario)
 def usuario_editar_view(request, user_id):
     usuario = get_object_or_404(User, pk=user_id)
+    
+    # Obtener rol actual del usuario
+    rol_actual = None
+    try:
+        perfil = Usuarios.objects.get(user=usuario)
+        rol_actual = perfil.roles
+    except Usuarios.DoesNotExist:
+        pass
+    
     if request.method == 'POST':
         form = AdminUserEditForm(request.POST, instance=usuario)
         if form.is_valid():
@@ -164,10 +324,25 @@ def usuario_editar_view(request, user_id):
             if nueva:
                 usuario.set_password(nueva)
                 usuario.save()
+            
+            # Actualizar perfil Usuarios con el rol
+            rol = form.cleaned_data.get('rol')  # Ya es un objeto Roles, no un ID
+            try:
+                perfil = Usuarios.objects.get(user=usuario)
+                perfil.roles = rol  # Puede ser None o un objeto Roles
+                perfil.save()
+            except Usuarios.DoesNotExist:
+                # Si no existe perfil, crearlo
+                Usuarios.objects.create(user=usuario, run='', roles=rol, direccion=None)
+            
             messages.success(request, "Usuario actualizado correctamente.")
             return redirect('usuarios_list')
     else:
         form = AdminUserEditForm(instance=usuario)
+        # Inicializar el campo rol con el valor actual
+        if rol_actual:
+            form.fields['rol'].initial = rol_actual.id
+    
     return render(request, 'usuario_editar.html', {'form': form, 'usuario': usuario})
 
 @login_required

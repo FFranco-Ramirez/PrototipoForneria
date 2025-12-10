@@ -6,9 +6,13 @@
     {% include 'includes/sidebar.html' with active_page='proveedores' %}
     
     <div class="dashboard-content-wrapper">
+        {% if modo == 'crear' %}
+            {% include 'includes/dashboard_header.html' with page_title='Nuevo Proveedor' %}
+        {% else %}
+            {% include 'includes/dashboard_header.html' with page_title='Editar Proveedor' %}
+        {% endif %}
         <div class="card">
             <div class="card-header">
-                <h2>{% if modo == 'crear' %}Nuevo Proveedor{% else %}Editar Proveedor{% endif %}</h2>
                 <a href="{% url 'proveedores_list' %}" class="btn btn-secondary">Volver</a>
             </div>
             <div class="card-body">

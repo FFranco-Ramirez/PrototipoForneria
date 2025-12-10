@@ -27,6 +27,9 @@
 @import "pages/_movimientos.css";  /* Estilos de Movimientos de Inventario */
 @import "pages/_merma.css";  /* Estilos de Gestión de Merma */
 @import "pages/_reportes.css";  /* NUEVO: Estilos del Sistema de Reportes */
+@import "pages/_proveedores.css";  /* Estilos de Gestión de Proveedores */
+@import "pages/_facturas_proveedores.css";  /* Estilos de Facturas de Proveedores */
+@import "pages/_pagos_proveedores.css";  /* Estilos de Pagos a Proveedores */
 
 /* --- 2. Importación de Componentes --- */
 @import "components/_buttons.css";

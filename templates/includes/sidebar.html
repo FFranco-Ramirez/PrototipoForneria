@@ -43,21 +43,28 @@
 <span>📈</span> Reportes
 </a>
 </li>
+{% load permisos_tags %}
+{% if request.user|puede_acceder_seccion:'proveedores' %}
 <li class="sidebar-item">
 <a href="{% url 'proveedores_list' %}" class="sidebar-link{% if active_page == 'proveedores' %} active{% endif %}">
 <span>🏢</span> Proveedores
 </a>
 </li>
+{% endif %}
+{% if request.user|puede_acceder_seccion:'facturas_proveedores' %}
 <li class="sidebar-item">
 <a href="{% url 'facturas_proveedores_list' %}" class="sidebar-link{% if active_page == 'facturas_proveedores' %} active{% endif %}">
 <span>🧾</span> Facturas Proveedores
 </a>
 </li>
+{% endif %}
+{% if request.user|puede_acceder_seccion:'pagos_proveedores' %}
 <li class="sidebar-item">
 <a href="{% url 'pagos_proveedores_list' %}" class="sidebar-link{% if active_page == 'pagos_proveedores' %} active{% endif %}">
 <span>💳</span> Pagos Proveedores
 </a>
 </li>
+{% endif %}
 <li class="sidebar-item">
 <a href="{% url 'produccion_list' %}" class="sidebar-link{% if active_page == 'produccion' %} active{% endif %}">
 <span>🍞</span> Producción

@@ -6,9 +6,9 @@
 
 # --- Vistas de Autenticación y Usuarios ---
 from .views_autentication import home, login_view, register_view, dashboard_view
-from .views_autentication import proximamente_view, recuperar_contrasena_view
+from .views_autentication import proximamente_view, recuperar_contrasena_view, recuperar_contrasena_confirmar_view
 from .views_autentication import logout_view
-from .views_autentication import usuarios_list_view, usuario_editar_view, usuario_eliminar_view
+from .views_autentication import usuarios_list_view, usuario_crear_view, usuario_editar_view, usuario_eliminar_view
 
 # --- Vistas de Productos e Inventario ---
 from .views_productos import (

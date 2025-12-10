@@ -6,25 +6,8 @@
     {% include 'includes/sidebar.html' with active_page='dashboard' %}
     <!-- Main Content -->
     <div class="dashboard-content-wrapper">
-        <!-- Header -->
-        <header class="dashboard-header">
-            <h1 class="dashboard-main-title">Resumen del Día</h1>
-            <div class="header-user-info">
-                {% if request.user.is_authenticated %}
-                    <span class="user-name">{{ request.user.username }}</span>
-                    <button type="button" class="user-avatar" id="userMenuButton">
-                        {{ request.user.username|slice:":1"|upper }}
-                    </button>
-                    <div class="user-menu" id="userMenu" aria-hidden="true" hidden>
-                        <a href="{% url 'proximamente_feature' 'perfil' %}" class="user-menu-item">Ver perfil</a>
-                        <a href="{% url 'logout' %}" class="user-menu-item">Cerrar sesión</a>
-                    </div>
-                {% else %}
-                    <span class="user-name">Invitado</span>
-                    <a href="{% url 'login' %}" class="user-avatar">⇢</a>
-                {% endif %}
-            </div>
-        </header>
+        <!-- Header con título específico del dashboard -->
+        {% include 'includes/dashboard_header.html' with page_title='Resumen del Día' %}
         <!-- Content -->
         <main class="dashboard-content">
             <!-- ============================================ -->
@@ -69,10 +52,10 @@
             </div>
 
             <!-- ============================================ -->
-            <!-- FILA 2: ANÁLISIS DE VENCIMIENTOS (4 COLUMNAS) -->
+            <!-- FILA 2: ANÁLISIS DE VENCIMIENTOS 7 Y 14 DÍAS (4 COLUMNAS) -->
             <!-- ============================================ -->
             <div class="dashboard-row">
-                <!-- Columna 1: LISTADOS DE VENCIMIENTOS -->
+                <!-- Columna 1: LISTADOS DE VENCIMIENTOS (7 y 14 días) -->
                 <div class="dashboard-col">
                     <!-- Listado 7 días -->
                     <div class="dashboard-metric-card" id="vencimientos-card">
@@ -93,19 +76,9 @@
                         </div>
                         <button id="vencimientos-14-toggle" class="metric-card-button" style="display:none;">Ver más</button>
                     </div>
-
-                    <!-- Listado 30 días -->
-                    <div class="dashboard-metric-card" id="vencimientos-30-card">
-                        <h3 class="metric-card-title">Por vencer (30 días)</h3>
-                        <ul id="vencimientos-30-list" class="metric-list"></ul>
-                        <div id="vencimientos-30-extra" style="display: none;">
-                            <ul id="vencimientos-30-extra-list" class="metric-list"></ul>
-                        </div>
-                        <button id="vencimientos-30-toggle" class="metric-card-button" style="display:none;">Ver más</button>
-                    </div>
                 </div>
 
-                <!-- Columna 2: GRÁFICOS DE PÉRDIDA POTENCIAL -->
+                <!-- Columna 2: GRÁFICOS DE PÉRDIDA POTENCIAL (7 y 14 días) -->
                 <div class="dashboard-col">
                     <!-- Gráfico 7 días -->
                     <div class="dashboard-metric-card" id="d3-gauge-container-7-days">
@@ -116,32 +89,66 @@
                     <div class="dashboard-metric-card" id="d3-gauge-container-14-days">
                         <h3 class="metric-card-title">Pérdida potencial (14 días)</h3>
                     </div>
+                </div>
 
-                    <!-- Gráfico 30 días -->
-                    <div class="dashboard-metric-card" id="d3-gauge-container-30-days">
-                        <h3 class="metric-card-title">Pérdida potencial (30 días)</h3>
+                <!-- Columna 3: LISTA DE VENTAS DEL DÍA (colapsable) -->
+                <div class="dashboard-col">
+                    <div class="dashboard-metric-card" id="ventas-dia-card" style="min-height: auto; position: relative;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 10px;">
+                            <h3 class="metric-card-title" style="margin: 0; flex: 1;">
+                                <i class="bi bi-cash-coin" style="color: #D4AF37;"></i>
+                                Ventas del Día (Detalle)
+                            </h3>
+                            <button id="ventas-dia-toggle" class="btn btn-sm btn-link" style="padding: 4px 8px; text-decoration: none; color: #6c757d;">
+                                <i class="bi bi-chevron-down" id="ventas-dia-icon"></i>
+                            </button>
+                        </div>
+                        <div id="tabla-ventas-dia-container" style="display: none; max-height: 400px; overflow-y: auto; width: 100%;">
+                            <div id="tabla-ventas-dia">
+                                <p class="text-muted" id="tabla-ventas-dia-loading">Cargando...</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Columna 3 y 4: LISTA DE VENTAS DEL DÍA (ocupa 2 espacios debajo de Alertas y Top Producto) -->
-                <div class="dashboard-col" style="flex: 2;">
+                <!-- Columna 4: LISTA DE MERMA (al lado derecho de Ventas del Día) -->
+                <div class="dashboard-col">
                     <div class="dashboard-metric-card" style="min-height: auto; height: 100%;">
                         <h3 class="metric-card-title">
-                            <i class="bi bi-cash-coin" style="color: #D4AF37;"></i>
-                            Ventas del Día (Detalle)
+                            <i class="bi bi-trash-fill" style="color: #ff6b6b;"></i>
+                            Productos en Merma
                         </h3>
-                        <div id="tabla-ventas-dia" style="max-height: 400px; overflow-y: auto; flex: 1;">
-                            <p class="text-muted" id="tabla-ventas-dia-loading">Cargando...</p>
+                        <div id="tabla-merma" style="max-height: 400px; overflow-y: auto; flex: 1;">
+                            <p class="text-muted" id="tabla-merma-loading">Cargando...</p>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- ============================================ -->
-            <!-- FILA 3: TABLAS DETALLADAS (4 COLUMNAS)      -->
+            <!-- FILA 2.5: CARDS DE 30 DÍAS + STOCK BAJO (4 COLUMNAS) -->
             <!-- ============================================ -->
             <div class="dashboard-row">
-                <!-- Columna 1: LISTA DE STOCK BAJO (debajo de Ventas del Día y Stock Bajo) -->
+                <!-- Columna 1: LISTADO DE VENCIMIENTOS (30 días) -->
+                <div class="dashboard-col">
+                    <div class="dashboard-metric-card" id="vencimientos-30-card">
+                        <h3 class="metric-card-title">Por vencer (30 días)</h3>
+                        <ul id="vencimientos-30-list" class="metric-list"></ul>
+                        <div id="vencimientos-30-extra" style="display: none;">
+                            <ul id="vencimientos-30-extra-list" class="metric-list"></ul>
+                        </div>
+                        <button id="vencimientos-30-toggle" class="metric-card-button" style="display:none;">Ver más</button>
+                    </div>
+                </div>
+
+                <!-- Columna 2: GRÁFICO DE PÉRDIDA POTENCIAL (30 días) -->
+                <div class="dashboard-col">
+                    <div class="dashboard-metric-card" id="d3-gauge-container-30-days">
+                        <h3 class="metric-card-title">Pérdida potencial (30 días)</h3>
+                    </div>
+                </div>
+
+                <!-- Columna 3: LISTA DE STOCK BAJO (al lado derecho del card de 30 días) -->
                 <div class="dashboard-col">
                     <div class="dashboard-metric-card" style="min-height: auto; height: 100%;">
                         <h3 class="metric-card-title">
@@ -154,21 +161,18 @@
                     </div>
                 </div>
 
-                <!-- Columna 2: LISTA DE MERMA (debajo de Ventas del Día y Stock Bajo) -->
-                <div class="dashboard-col">
-                    <div class="dashboard-metric-card" style="min-height: auto; height: 100%;">
-                        <h3 class="metric-card-title">
-                            <i class="bi bi-trash-fill" style="color: #ff6b6b;"></i>
-                            Productos en Merma
-                        </h3>
-                        <div id="tabla-merma" style="max-height: 400px; overflow-y: auto; flex: 1;">
-                            <p class="text-muted" id="tabla-merma-loading">Cargando...</p>
-                        </div>
-                    </div>
+                <!-- Columna 4: ESPACIO RESERVADO -->
+                <div class="dashboard-col empty-column">
+                    <!-- Espacio reservado para futuras funcionalidades -->
                 </div>
+            </div>
 
-                <!-- Columna 3 y 4: ESPACIO RESERVADO -->
-                <div class="dashboard-col empty-column" style="flex: 2;">
+            <!-- ============================================ -->
+            <!-- FILA 3: TABLAS DETALLADAS (4 COLUMNAS)      -->
+            <!-- ============================================ -->
+            <div class="dashboard-row">
+                <!-- Columna 1, 2, 3 y 4: ESPACIO RESERVADO -->
+                <div class="dashboard-col empty-column" style="flex: 4;">
                     <!-- Espacio reservado para futuras funcionalidades -->
                 </div>
             </div>
@@ -178,31 +182,6 @@
 {% endblock %}
 
 {% block javascripts %}
-<script>
-document.addEventListener('DOMContentLoaded', function(){
-  const btn = document.getElementById('userMenuButton');
-  const menu = document.getElementById('userMenu');
-  if (!btn || !menu) return;
-
-  function hide(){
-    menu.hidden = true;
-    menu.classList.remove('open');
-    menu.setAttribute('aria-hidden','true');
-  }
-
-  function toggle(){
-    const willOpen = menu.hidden;
-    menu.hidden = !willOpen;
-    menu.classList.toggle('open', willOpen);
-    menu.setAttribute('aria-hidden', String(!willOpen));
-  }
-
-  btn.addEventListener('click', function(e){ e.stopPropagation(); toggle(); });
-  document.addEventListener('click', hide);
-  document.addEventListener('keydown', function(e){ if (e.key === 'Escape') hide(); });
-});
-</script>
-
 <!-- Script para cargar métricas del dashboard -->
 <script src="{% static 'js/dashboard_metrics.js' %}?v=3"></script>
 
@@ -240,6 +219,50 @@ document.addEventListener('DOMContentLoaded', function() {
         10000000,
         'Pérdida Potencial'
     );
+
+    // Funcionalidad de colapsar/expandir para Ventas del Día
+    const ventasDiaToggle = document.getElementById('ventas-dia-toggle');
+    const ventasDiaContainer = document.getElementById('tabla-ventas-dia-container');
+    const ventasDiaIcon = document.getElementById('ventas-dia-icon');
+    const ventasDiaCard = document.getElementById('ventas-dia-card');
+    const gauge14Days = document.getElementById('d3-gauge-container-14-days');
+
+    if (ventasDiaToggle && ventasDiaContainer && ventasDiaCard && gauge14Days) {
+        // Función para establecer altura inicial basada en el card de 14 días
+        function setInitialHeight() {
+            const gaugeHeight = gauge14Days.offsetHeight;
+            ventasDiaCard.style.height = gaugeHeight + 'px';
+            ventasDiaCard.style.overflow = 'hidden';
+        }
+
+        // Establecer altura inicial cuando el contenido esté cargado
+        setTimeout(() => {
+            setInitialHeight();
+        }, 500);
+
+        // Toggle para expandir/colapsar
+        ventasDiaToggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const isExpanded = ventasDiaContainer.style.display !== 'none';
+            
+            if (isExpanded) {
+                // Colapsar
+                ventasDiaContainer.style.display = 'none';
+                ventasDiaIcon.classList.remove('bi-chevron-up');
+                ventasDiaIcon.classList.add('bi-chevron-down');
+                setInitialHeight();
+            } else {
+                // Expandir
+                ventasDiaContainer.style.display = 'block';
+                ventasDiaIcon.classList.remove('bi-chevron-down');
+                ventasDiaIcon.classList.add('bi-chevron-up');
+                ventasDiaCard.style.height = 'auto';
+                ventasDiaCard.style.overflow = 'visible';
+            }
+        });
+    }
 });
 </script>
 {% endblock %}

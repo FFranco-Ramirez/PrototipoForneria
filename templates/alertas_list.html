@@ -9,26 +9,7 @@
     {% include 'includes/sidebar.html' with active_page='alertas' %}
     
     <div class="dashboard-content-wrapper">
-        <header class="dashboard-header">
-            <h1 class="dashboard-main-title">
-                <i class="bi bi-bell"></i> Sistema de Alertas
-            </h1>
-            <div class="header-user-info">
-                {% if request.user.is_authenticated %}
-                    <span class="user-name">{{ request.user.username }}</span>
-                    <button type="button" class="user-avatar" id="userMenuButton">
-                        {{ request.user.username|slice:":1"|upper }}
-                    </button>
-                    <div class="user-menu" id="userMenu" aria-hidden="true" hidden>
-                        <a href="{% url 'proximamente_feature' 'perfil' %}" class="user-menu-item">Ver perfil</a>
-                        <a href="{% url 'logout' %}" class="user-menu-item">Cerrar sesión</a>
-                    </div>
-                {% else %}
-                    <span class="user-name">Invitado</span>
-                    <a href="{% url 'login' %}" class="user-avatar">⇢</a>
-                {% endif %}
-            </div>
-        </header>
+        {% include 'includes/dashboard_header.html' with page_title='Sistema de Alertas' %}
         
         {% if messages %}
             <div class="px-4 py-3">

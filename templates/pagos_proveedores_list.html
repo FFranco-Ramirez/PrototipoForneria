@@ -6,16 +6,14 @@
     {% include 'includes/sidebar.html' with active_page='pagos_proveedores' %}
     
     <div class="dashboard-content-wrapper">
-        <header class="dashboard-header">
-            <h1 class="dashboard-main-title">Pagos a Proveedores</h1>
-            <div class="header-actions">
+        {% include 'includes/dashboard_header.html' with page_title='Pagos a Proveedores' %}
+        
+        <main class="dashboard-content">
+            <div style="margin-bottom: 20px;">
                 <a href="{% url 'pago_proveedor_crear' %}" class="btn btn-primary">
                     <span>➕</span> Registrar Pago
                 </a>
             </div>
-        </header>
-        
-        <main class="dashboard-content">
             <!-- Resumen de pagos -->
             <div class="row mb-4">
                 <div class="col-md-6">

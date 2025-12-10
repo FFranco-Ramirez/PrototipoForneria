@@ -9,17 +9,15 @@
     {% include 'includes/sidebar.html' with active_page='produccion' %}
 
     <div class="dashboard-content-wrapper">
+        {% if producto_id %}
+            {% include 'includes/dashboard_header.html' with page_title='Lotes del Producto' %}
+        {% else %}
+            {% include 'includes/dashboard_header.html' with page_title='Gestión de Producción' %}
+        {% endif %}
         <div class="inventory-container dark-gold-theme">
             <!-- Encabezado -->
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
                 <div>
-                    <h2 style="margin: 0;">
-                        {% if producto_id %}
-                            Lotes del Producto
-                        {% else %}
-                            Gestión de Producción
-                        {% endif %}
-                    </h2>
                     <p class="text-muted" style="margin: 5px 0 0 0;">
                         {% if producto_id %}
                             Lotes de producción propia del producto seleccionado

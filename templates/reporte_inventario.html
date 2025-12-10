@@ -24,12 +24,7 @@
     {% include 'includes/sidebar.html' with active_page='reportes' %}
 
     <div class="dashboard-content-wrapper">
-        <!-- Header -->
-        <header class="dashboard-header">
-            <h1 class="dashboard-main-title">
-                <i class="bi bi-box-seam"></i> Reporte de Inventario
-            </h1>
-        </header>
+        {% include 'includes/dashboard_header.html' with page_title='Reporte de Inventario' %}
 
         <!-- Contenido principal -->
         <main class="dashboard-content">

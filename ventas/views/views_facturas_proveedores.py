@@ -19,6 +19,7 @@ from datetime import date, datetime
 from ventas.models.proveedores import Proveedor, FacturaProveedor, DetalleFacturaProveedor, PagoProveedor
 from ventas.models.productos import Productos
 from ventas.models.movimientos import MovimientosInventario
+from ventas.decorators import require_seccion
 import logging
 
 logger = logging.getLogger('ventas')
@@ -29,6 +30,7 @@ logger = logging.getLogger('ventas')
 # ================================================================
 
 @login_required
+@require_seccion('facturas_proveedores')
 def facturas_proveedores_list_view(request):
     """
     Vista para listar todas las facturas de proveedores.
@@ -106,6 +108,7 @@ def facturas_proveedores_list_view(request):
 
 
 @login_required
+@require_seccion('facturas_proveedores')
 def factura_proveedor_crear_view(request):
     """
     Vista para crear una nueva factura de proveedor.
@@ -232,6 +235,7 @@ def factura_proveedor_crear_view(request):
 
 
 @login_required
+@require_seccion('facturas_proveedores')
 def factura_proveedor_detalle_view(request, factura_id):
     """
     Vista para ver el detalle completo de una factura de proveedor.
@@ -276,6 +280,7 @@ def factura_proveedor_detalle_view(request, factura_id):
 
 
 @login_required
+@require_seccion('facturas_proveedores')
 def factura_proveedor_editar_view(request, factura_id):
     """
     Vista para editar una factura de proveedor existente.
@@ -382,6 +387,7 @@ def factura_proveedor_editar_view(request, factura_id):
 
 
 @login_required
+@require_seccion('facturas_proveedores')
 def factura_proveedor_eliminar_view(request, factura_id):
     """
     Vista para eliminar (borrado lógico) una factura de proveedor.
