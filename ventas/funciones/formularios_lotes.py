@@ -9,6 +9,7 @@ from ventas.models import Productos, Lote
 from ventas.funciones.validators import validador_fecha_no_futuro
 from django.utils import timezone
 from datetime import date
+from decimal import Decimal
 
 
 class LoteProduccionForm(forms.ModelForm):

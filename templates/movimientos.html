@@ -104,12 +104,12 @@
                                 <!-- Columna: Tipo de movimiento (con badge de color) -->
                                 <td>
                                     {% if mov.tipo_movimiento == 'entrada' %}
-                                        <span class="badge badge-entrada">
-                                            <i class="bi bi-arrow-down-circle"></i> Entrada
+                                        <span class="badge badge-entrada" style="color: #000000 !important;">
+                                            <i class="bi bi-arrow-down-circle" style="color: #000000 !important;"></i> Entrada
                                         </span>
                                     {% else %}
-                                        <span class="badge badge-salida">
-                                            <i class="bi bi-arrow-up-circle"></i> Salida
+                                        <span class="badge badge-salida" style="color: #000000 !important;">
+                                            <i class="bi bi-arrow-up-circle" style="color: #000000 !important;"></i> Salida
                                         </span>
                                     {% endif %}
                                 </td>
@@ -161,7 +161,7 @@
                                             {% endif %}
                                         </div>
                                     {% else %}
-                                        <span class="text-muted">—</span>
+                                        <span class="text-muted" style="color: #000000 !important;">—</span>
                                     {% endif %}
                                 </td>
                             </tr>
@@ -200,17 +200,25 @@
 
 .movimiento-origen .text-muted {
     font-size: 0.8em;
-    color: #d4af37 !important;
-    opacity: 0.8;
+    color: #000000 !important;
+    opacity: 1;
 }
 
 .movimiento-origen .text-muted:hover {
     opacity: 1;
 }
 
+.movimientos-tabla .badge.bg-info,
+.movimientos-tabla-container .badge.bg-info,
 .badge.bg-info {
     background-color: #0dcaf0 !important;
-    color: #000;
+    color: #000000 !important;
+}
+
+.movimientos-tabla .badge.bg-info *,
+.movimientos-tabla-container .badge.bg-info *,
+.badge.bg-info * {
+    color: #000000 !important;
 }
 
 @media (max-width: 768px) {

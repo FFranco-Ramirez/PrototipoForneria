@@ -88,10 +88,12 @@ def procesar_ajuste_stock_ajax(request):
     
     try:
         # Obtener datos del JSON
+        from decimal import Decimal
+        
         data = json.loads(request.body)
         producto_id = data.get('producto_id')
         tipo = data.get('tipo')  # 'entrada' o 'salida'
-        cantidad = int(data.get('cantidad', 0))
+        cantidad = Decimal(str(data.get('cantidad', 0)))  # Permitir decimales
         motivo = data.get('motivo', 'Ajuste manual')
         
         # Validaciones
@@ -101,7 +103,7 @@ def procesar_ajuste_stock_ajax(request):
                 'mensaje': 'Debe seleccionar un producto'
             }, status=400)
         
-        if cantidad <= 0:
+        if cantidad <= Decimal('0'):
             return JsonResponse({
                 'success': False,
                 'mensaje': 'La cantidad debe ser mayor a 0'
@@ -153,10 +155,12 @@ def procesar_ajuste_stock_ajax(request):
                     estado='activo'
                 )
                 
-                # Actualizar cantidad del producto desde lotes
-                producto.cantidad = producto.calcular_cantidad_desde_lotes() if hasattr(producto, 'calcular_cantidad_desde_lotes') else (producto.cantidad or 0) + cantidad
+                # Actualizar cantidad del producto desde lotes (manejar Decimal)
+                cantidad_producto = Decimal(str(producto.cantidad)) if producto.cantidad else Decimal('0')
+                producto.cantidad = cantidad_producto + cantidad
                 if producto.stock_actual is not None:
-                    producto.stock_actual = (producto.stock_actual or 0) + cantidad
+                    stock_actual_decimal = Decimal(str(producto.stock_actual)) if producto.stock_actual else Decimal('0')
+                    producto.stock_actual = stock_actual_decimal + cantidad
                 
                 # Actualizar fecha de caducidad del producto con la del lote más antiguo
                 lote_mas_antiguo = Lote.objects.filter(
@@ -217,10 +221,12 @@ def procesar_ajuste_stock_ajax(request):
                     lote.save(update_fields=['cantidad', 'estado'])
                     cantidad_restante = cantidad_restante - cantidad_a_tomar
                 
-                # Actualizar cantidad del producto desde lotes
-                producto.cantidad = producto.calcular_cantidad_desde_lotes() if hasattr(producto, 'calcular_cantidad_desde_lotes') else (producto.cantidad or 0) - cantidad
+                # Actualizar cantidad del producto desde lotes (manejar Decimal)
+                cantidad_producto = Decimal(str(producto.cantidad)) if producto.cantidad else Decimal('0')
+                producto.cantidad = max(Decimal('0'), cantidad_producto - cantidad)
                 if producto.stock_actual is not None:
-                    producto.stock_actual = max(0, (producto.stock_actual or 0) - cantidad)
+                    stock_actual_decimal = Decimal(str(producto.stock_actual)) if producto.stock_actual else Decimal('0')
+                    producto.stock_actual = max(Decimal('0'), stock_actual_decimal - cantidad)
                 
                 # Actualizar fecha de caducidad del producto con la del lote más antiguo activo
                 lote_mas_antiguo = Lote.objects.filter(
@@ -246,10 +252,21 @@ def procesar_ajuste_stock_ajax(request):
                     tipo_referencia='ajuste_manual'
                 )
         
+        # Obtener nombre de unidad legible para el mensaje
+        nombres_unidades = {
+            'unidad': 'unidad(es)',
+            'kg': 'kilogramo(s)',
+            'g': 'gramo(s)',
+            'l': 'litro(s)',
+            'ml': 'mililitro(s)'
+        }
+        unidad = producto.unidad_stock or 'unidad'
+        nombre_unidad = nombres_unidades.get(unidad, unidad)
+        
         return JsonResponse({
             'success': True,
-            'mensaje': f'Ajuste de stock procesado correctamente. Nuevo stock: {producto.cantidad}',
-            'nuevo_stock': producto.cantidad
+            'mensaje': f'Ajuste de stock procesado correctamente. Nuevo stock: {producto.cantidad} {nombre_unidad}',
+            'nuevo_stock': str(producto.cantidad)
         })
         
     except json.JSONDecodeError:

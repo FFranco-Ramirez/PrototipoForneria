@@ -121,5 +121,68 @@
         </div>
     </div>
 </div>
+
+<script>
+// Obtener información de unidades de los productos disponibles
+const productosUnidades = {
+    {% for producto in productos %}
+    {{ producto.id }}: {
+        unidad: '{{ producto.unidad_stock }}',
+        nombre: '{{ producto.nombre|escapejs }}'
+    }{% if not forloop.last %},{% endif %}
+    {% endfor %}
+};
+
+// Mapeo de unidades a nombres legibles
+const nombresUnidades = {
+    'unidad': 'unidad(es)',
+    'kg': 'kilogramo(s)',
+    'g': 'gramo(s)',
+    'l': 'litro(s)',
+    'ml': 'mililitro(s)'
+};
+
+// Función para actualizar la unidad mostrada
+function actualizarUnidad() {
+    const selectProducto = document.getElementById('{{ form.producto.id_for_label }}');
+    const unidadSpan = document.getElementById('unidad-producto');
+    const unidadAyuda = document.getElementById('unidad-ayuda');
+    
+    if (selectProducto && selectProducto.value) {
+        const productoId = parseInt(selectProducto.value);
+        const producto = productosUnidades[productoId];
+        
+        if (producto) {
+            const unidad = producto.unidad || 'unidad';
+            const nombreUnidad = nombresUnidades[unidad] || unidad;
+            
+            // Mostrar unidad en el label
+            unidadSpan.textContent = `(${nombreUnidad})`;
+            
+            // Mostrar ayuda adicional
+            unidadAyuda.textContent = ` Ingrese la cantidad en ${nombreUnidad}.`;
+        } else {
+            unidadSpan.textContent = '';
+            unidadAyuda.textContent = '';
+        }
+    } else {
+        unidadSpan.textContent = '';
+        unidadAyuda.textContent = '';
+    }
+}
+
+// Event listener cuando se carga la página
+document.addEventListener('DOMContentLoaded', function() {
+    const selectProducto = document.getElementById('{{ form.producto.id_for_label }}');
+    
+    if (selectProducto) {
+        // Actualizar al cargar si ya hay un producto seleccionado
+        actualizarUnidad();
+        
+        // Actualizar cuando cambia la selección
+        selectProducto.addEventListener('change', actualizarUnidad);
+    }
+});
+</script>
 {% endblock %}
 

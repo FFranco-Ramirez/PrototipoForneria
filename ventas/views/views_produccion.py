@@ -169,10 +169,21 @@ def produccion_crear_view(request):
             # El formulario ya actualiza el producto y crea el movimiento en su método save()
             lote = form.save()
             
+            # Obtener nombre de unidad legible
+            nombres_unidades = {
+                'unidad': 'unidad(es)',
+                'kg': 'kilogramo(s)',
+                'g': 'gramo(s)',
+                'l': 'litro(s)',
+                'ml': 'mililitro(s)'
+            }
+            unidad = lote.productos.unidad_stock or 'unidad'
+            nombre_unidad = nombres_unidades.get(unidad, unidad)
+            
             messages.success(
                 request,
                 f'Lote de producción registrado exitosamente. '
-                f'Se agregaron {lote.cantidad} unidad(es) de {lote.productos.nombre} al inventario.'
+                f'Se agregaron {lote.cantidad} {nombre_unidad} de {lote.productos.nombre} al inventario.'
             )
             return redirect('produccion_list')
         else:
@@ -180,11 +191,9 @@ def produccion_crear_view(request):
     else:
         form = LoteProduccionForm()
     
-    # Obtener productos para mostrar en el selector (con sus unidades para el JavaScript)
-    productos = Productos.objects.filter(
-        eliminado__isnull=True,
-        estado_merma='activo'  # Solo productos activos
-    ).order_by('nombre')
+    # Obtener productos del queryset del formulario para pasar al template
+    # Esto permite que el JavaScript acceda a las unidades de medida
+    productos = form.fields['producto'].queryset
     
     context = {
         'form': form,

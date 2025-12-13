@@ -62,9 +62,10 @@
                                     <option value="">Seleccione un producto</option>
                                     {% for producto in productos %}
                                         <option value="{{ producto.id }}" 
-                                                data-stock="{{ producto.cantidad|default:0 }}">
+                                                data-stock="{{ producto.cantidad|default:0 }}"
+                                                data-unidad="{{ producto.unidad_stock|default:'unidad' }}">
                                             {{ producto.nombre }} 
-                                            (Stock: {{ producto.cantidad|default:0 }})
+                                            (Stock: {{ producto.cantidad|default:0 }} {{ producto.get_unidad_stock_display|default:'' }})
                                         </option>
                                     {% endfor %}
                                 </select>
@@ -94,17 +95,22 @@
                             <div class="col-md-6 mb-3">
                                 <label for="cantidad" class="form-label" style="color: #ffffff;">
                                     <i class="bi bi-123"></i> Cantidad <span class="text-danger">*</span>
+                                    <span id="unidad-producto-ajuste" class="text-muted ms-2"></span>
                                 </label>
                                 <input 
                                     type="number" 
                                     id="cantidad" 
                                     name="cantidad" 
                                     class="form-control"
-                                    min="1"
+                                    min="0.001"
+                                    step="0.001"
                                     required
                                     placeholder="Ingrese la cantidad"
                                 >
-                                <small class="text-muted">Debe ser mayor a 0</small>
+                                <small class="text-muted" id="help-cantidad-ajuste">
+                                    Debe ser mayor a 0
+                                    <span id="unidad-ayuda-ajuste"></span>
+                                </small>
                             </div>
                             
                             <!-- Stock Actual (solo lectura) -->
@@ -182,31 +188,78 @@ document.addEventListener('DOMContentLoaded', function() {
     const cantidadInput = document.getElementById('cantidad');
     const alertContainer = document.getElementById('alert-container');
 
-    // Actualizar stock actual al seleccionar producto
+    // Mapeo de unidades a nombres legibles
+    const nombresUnidades = {
+        'unidad': 'unidad(es)',
+        'kg': 'kilogramo(s)',
+        'g': 'gramo(s)',
+        'l': 'litro(s)',
+        'ml': 'mililitro(s)'
+    };
+
+    // Función para actualizar max según tipo y stock
+    function actualizarMaxCantidad() {
+        if (tipoSelect.value === 'salida' && stockActualInput.value) {
+            const stockActual = parseFloat(stockActualInput.value) || 0;
+            cantidadInput.setAttribute('max', stockActual.toString());
+        } else {
+            cantidadInput.removeAttribute('max');
+        }
+    }
+
+    // Actualizar stock actual y unidad al seleccionar producto
     productoSelect.addEventListener('change', function() {
         const selectedOption = this.options[this.selectedIndex];
+        const unidadSpan = document.getElementById('unidad-producto-ajuste');
+        const unidadAyuda = document.getElementById('unidad-ayuda-ajuste');
+        const cantidadInput = document.getElementById('cantidad');
+        
         if (selectedOption.value) {
-            const stock = selectedOption.getAttribute('data-stock');
-            stockActualInput.value = stock || '0';
+            const stock = selectedOption.getAttribute('data-stock') || '0';
+            const unidad = selectedOption.getAttribute('data-unidad') || 'unidad';
+            const nombreUnidad = nombresUnidades[unidad] || unidad;
+            
+            stockActualInput.value = stock;
+            
+            // Mostrar unidad de medida
+            unidadSpan.textContent = `(${nombreUnidad})`;
+            unidadAyuda.textContent = ` Ingrese la cantidad en ${nombreUnidad}.`;
+            
+            // Ajustar step y min según unidad
+            if (unidad === 'unidad') {
+                cantidadInput.setAttribute('step', '1');
+                cantidadInput.setAttribute('min', '1');
+            } else {
+                cantidadInput.setAttribute('step', '0.001');
+                cantidadInput.setAttribute('min', '0.001');
+            }
+            
+            // Actualizar max si es salida
+            if (tipoSelect.value === 'salida') {
+                actualizarMaxCantidad();
+            }
         } else {
             stockActualInput.value = '';
+            unidadSpan.textContent = '';
+            unidadAyuda.textContent = '';
         }
     });
 
     // Mostrar/ocultar campo de fecha de caducidad según tipo
     const fechaCaducidadContainer = document.getElementById('fecha-caducidad-container');
+    
     tipoSelect.addEventListener('change', function() {
         if (this.value === 'entrada') {
             fechaCaducidadContainer.style.display = 'block';
         } else {
             fechaCaducidadContainer.style.display = 'none';
         }
-        
-        if (this.value === 'salida') {
-            cantidadInput.setAttribute('max', stockActualInput.value || '0');
-        } else {
-            cantidadInput.removeAttribute('max');
-        }
+        actualizarMaxCantidad();
+    });
+    
+    // Actualizar max cuando cambie el stock actual
+    stockActualInput.addEventListener('input', function() {
+        actualizarMaxCantidad();
     });
 
     // Enviar formulario
@@ -237,10 +290,11 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        // Validar stock si es salida
+        // Validar stock si es salida (permitir decimales)
         if (formData.tipo === 'salida') {
-            const stockActual = parseInt(stockActualInput.value) || 0;
-            if (parseInt(formData.cantidad) > stockActual) {
+            const stockActual = parseFloat(stockActualInput.value) || 0;
+            const cantidadSolicitada = parseFloat(formData.cantidad) || 0;
+            if (cantidadSolicitada > stockActual) {
                 mostrarAlerta('error', `Stock insuficiente. Disponible: ${stockActual}, Solicitado: ${formData.cantidad}`);
                 return;
             }

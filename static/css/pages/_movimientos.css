@@ -80,31 +80,84 @@
 .movimientos-tabla tbody td {
     padding: 15px;              /* Espacio interior */
     vertical-align: middle;     /* Alineación vertical centrada */
-    color: #343a40;             /* Color de texto oscuro */
+    color: #000000;             /* Color de texto negro */
 }
 
 /* --- Badge de Entrada (Verde) --- */
 /* Etiqueta que indica un movimiento de entrada */
+.movimientos-tabla-container .movimientos-tabla tbody td .badge-entrada,
+.movimientos-tabla tbody td .badge-entrada,
+.movimientos-tabla .badge-entrada,
+.movimientos-tabla-container .badge-entrada,
 .badge-entrada {
-    background-color: #28a745;  /* Verde */
-    color: #ffffff;             /* Texto blanco */
-    padding: 6px 12px;          /* Espacio interior */
+    background-color: #28a745 !important;  /* Verde */
+    color: #000000 !important;             /* Texto negro */
+    padding: 6px 12px !important;          /* Espacio interior */
     border-radius: 20px;        /* Bordes muy redondeados (píldora) */
     font-size: 12px;            /* Tamaño de fuente pequeño */
     font-weight: 600;           /* Texto semi-negrita */
     text-transform: uppercase;  /* Texto en mayúsculas */
 }
 
+.movimientos-tabla-container .movimientos-tabla tbody td .badge-entrada *,
+.movimientos-tabla tbody td .badge-entrada *,
+.movimientos-tabla .badge-entrada *,
+.movimientos-tabla-container .badge-entrada *,
+.badge-entrada *,
+.badge-entrada i {
+    color: #000000 !important;  /* Texto negro para iconos también */
+}
+
 /* --- Badge de Salida (Rojo) --- */
 /* Etiqueta que indica un movimiento de salida */
+.movimientos-tabla-container .movimientos-tabla tbody td .badge-salida,
+.movimientos-tabla tbody td .badge-salida,
+.movimientos-tabla .badge-salida,
+.movimientos-tabla-container .badge-salida,
 .badge-salida {
-    background-color: #dc3545;  /* Rojo */
-    color: #ffffff;             /* Texto blanco */
-    padding: 6px 12px;          /* Espacio interior */
+    background-color: #dc3545 !important;  /* Rojo */
+    color: #000000 !important;             /* Texto negro */
+    padding: 6px 12px !important;          /* Espacio interior */
     border-radius: 20px;        /* Bordes muy redondeados (píldora) */
     font-size: 12px;            /* Tamaño de fuente pequeño */
     font-weight: 600;           /* Texto semi-negrita */
     text-transform: uppercase;  /* Texto en mayúsculas */
+}
+
+.movimientos-tabla-container .movimientos-tabla tbody td .badge-salida *,
+.movimientos-tabla tbody td .badge-salida *,
+.movimientos-tabla .badge-salida *,
+.movimientos-tabla-container .badge-salida *,
+.badge-salida *,
+.badge-salida i {
+    color: #000000 !important;  /* Texto negro para iconos también */
+}
+
+/* --- Badge de Origen/Detalle (Azul) --- */
+/* Badge que muestra el origen del movimiento */
+.movimientos-tabla .badge.bg-info,
+.movimientos-tabla-container .badge.bg-info {
+    background-color: #0dcaf0 !important;  /* Azul claro */
+    color: #000000 !important;             /* Texto negro */
+}
+
+.movimientos-tabla .badge.bg-info *,
+.movimientos-tabla-container .badge.bg-info * {
+    color: #000000 !important;  /* Texto negro para iconos también */
+}
+
+/* --- Texto secundario (referencias) --- */
+.movimientos-tabla .text-muted,
+.movimientos-tabla-container .text-muted,
+.movimiento-origen .text-muted {
+    color: #000000 !important;  /* Texto negro */
+    opacity: 1 !important;
+}
+
+.movimientos-tabla .text-muted *,
+.movimientos-tabla-container .text-muted *,
+.movimiento-origen .text-muted * {
+    color: #000000 !important;  /* Texto negro para elementos hijos */
 }
 
 /* --- Mensaje de Tabla Vacía --- */
@@ -112,7 +165,7 @@
 .movimientos-vacio {
     text-align: center;         /* Texto centrado */
     padding: 40px 20px;         /* Espacio interior generoso */
-    color: #6c757d;             /* Color de texto gris */
+    color: #000000;             /* Color de texto negro */
     font-size: 16px;            /* Tamaño de fuente */
 }
 
