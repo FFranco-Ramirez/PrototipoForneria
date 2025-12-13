@@ -1,0 +1,215 @@
+/* static/css/pages/_movimientos.css */
+/*
+    Estilos para la página de Historial de Movimientos de Inventario
+*/
+/*
+================================================================
+=                                                              =
+=        ESTILOS PARA LA PÁGINA DE MOVIMIENTOS                 =
+=                                                              =
+================================================================
+*/
+
+/* --- Contenedor de Filtros --- */
+/* Barra superior donde el usuario puede filtrar los movimientos */
+.movimientos-filtros {
+    background-color: #ffffff;  /* Fondo blanco para contraste */
+    padding: 20px;              /* Espacio interior */
+    border-radius: 8px;         /* Esquinas redondeadas */
+    margin-bottom: 20px;        /* Espacio inferior */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Sombra sutil */
+}
+
+/* --- Botón de Filtrar --- */
+/* Botón con el tema dorado de la Fornería */
+.movimientos-filtros .btn-primary {
+    background-color: #ffd700;  /* Dorado */
+    border-color: #ffd700;      /* Borde dorado */
+    color: #1a1a1a;             /* Texto negro para contraste */
+    font-weight: 600;           /* Texto semi-negrita */
+    transition: all 0.3s ease;  /* Transición suave */
+}
+
+/* --- Efecto Hover del Botón --- */
+.movimientos-filtros .btn-primary:hover {
+    background-color: #e6c200;  /* Dorado más oscuro al pasar el ratón */
+    border-color: #e6c200;
+    color: #1a1a1a;
+    transform: translateY(-2px); /* Efecto de elevación */
+    box-shadow: 0 4px 8px rgba(255, 215, 0, 0.3); /* Sombra dorada */
+}
+
+/* --- Tabla de Movimientos --- */
+/* Contenedor de la tabla con scroll horizontal en pantallas pequeñas */
+.movimientos-tabla-container {
+    background-color: #ffffff;  /* Fondo blanco */
+    border-radius: 8px;         /* Esquinas redondeadas */
+    padding: 20px;              /* Espacio interior */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Sombra sutil */
+}
+
+/* --- Encabezado de la Tabla --- */
+/* Estilo del <thead> con el tema negro y dorado */
+.movimientos-tabla thead {
+    background-color: #1a1a1a;  /* Fondo negro */
+    color: #ffd700;             /* Texto dorado */
+}
+
+/* --- Celdas del Encabezado --- */
+.movimientos-tabla thead th {
+    padding: 15px;              /* Espacio interior generoso */
+    font-weight: 600;           /* Texto semi-negrita */
+    text-transform: uppercase;  /* Texto en mayúsculas */
+    font-size: 14px;            /* Tamaño de fuente */
+    letter-spacing: 0.5px;      /* Espaciado entre letras */
+    border: none;               /* Sin bordes */
+}
+
+/* --- Filas del Cuerpo de la Tabla --- */
+.movimientos-tabla tbody tr {
+    border-bottom: 1px solid #e9ecef; /* Línea separadora sutil */
+    transition: background-color 0.2s ease; /* Transición suave */
+}
+
+/* --- Efecto Hover en las Filas --- */
+.movimientos-tabla tbody tr:hover {
+    background-color: #f8f9fa;  /* Fondo gris claro al pasar el ratón */
+}
+
+/* --- Celdas del Cuerpo de la Tabla --- */
+.movimientos-tabla tbody td {
+    padding: 15px;              /* Espacio interior */
+    vertical-align: middle;     /* Alineación vertical centrada */
+    color: #000000;             /* Color de texto negro */
+}
+
+/* --- Badge de Entrada (Verde) --- */
+/* Etiqueta que indica un movimiento de entrada */
+.movimientos-tabla-container .movimientos-tabla tbody td .badge-entrada,
+.movimientos-tabla tbody td .badge-entrada,
+.movimientos-tabla .badge-entrada,
+.movimientos-tabla-container .badge-entrada,
+.badge-entrada {
+    background-color: #28a745 !important;  /* Verde */
+    color: #000000 !important;             /* Texto negro */
+    padding: 6px 12px !important;          /* Espacio interior */
+    border-radius: 20px;        /* Bordes muy redondeados (píldora) */
+    font-size: 12px;            /* Tamaño de fuente pequeño */
+    font-weight: 600;           /* Texto semi-negrita */
+    text-transform: uppercase;  /* Texto en mayúsculas */
+}
+
+.movimientos-tabla-container .movimientos-tabla tbody td .badge-entrada *,
+.movimientos-tabla tbody td .badge-entrada *,
+.movimientos-tabla .badge-entrada *,
+.movimientos-tabla-container .badge-entrada *,
+.badge-entrada *,
+.badge-entrada i {
+    color: #000000 !important;  /* Texto negro para iconos también */
+}
+
+/* --- Badge de Salida (Rojo) --- */
+/* Etiqueta que indica un movimiento de salida */
+.movimientos-tabla-container .movimientos-tabla tbody td .badge-salida,
+.movimientos-tabla tbody td .badge-salida,
+.movimientos-tabla .badge-salida,
+.movimientos-tabla-container .badge-salida,
+.badge-salida {
+    background-color: #dc3545 !important;  /* Rojo */
+    color: #000000 !important;             /* Texto negro */
+    padding: 6px 12px !important;          /* Espacio interior */
+    border-radius: 20px;        /* Bordes muy redondeados (píldora) */
+    font-size: 12px;            /* Tamaño de fuente pequeño */
+    font-weight: 600;           /* Texto semi-negrita */
+    text-transform: uppercase;  /* Texto en mayúsculas */
+}
+
+.movimientos-tabla-container .movimientos-tabla tbody td .badge-salida *,
+.movimientos-tabla tbody td .badge-salida *,
+.movimientos-tabla .badge-salida *,
+.movimientos-tabla-container .badge-salida *,
+.badge-salida *,
+.badge-salida i {
+    color: #000000 !important;  /* Texto negro para iconos también */
+}
+
+/* --- Badge de Origen/Detalle (Azul) --- */
+/* Badge que muestra el origen del movimiento */
+.movimientos-tabla .badge.bg-info,
+.movimientos-tabla-container .badge.bg-info {
+    background-color: #0dcaf0 !important;  /* Azul claro */
+    color: #000000 !important;             /* Texto negro */
+}
+
+.movimientos-tabla .badge.bg-info *,
+.movimientos-tabla-container .badge.bg-info * {
+    color: #000000 !important;  /* Texto negro para iconos también */
+}
+
+/* --- Texto secundario (referencias) --- */
+.movimientos-tabla .text-muted,
+.movimientos-tabla-container .text-muted,
+.movimiento-origen .text-muted {
+    color: #000000 !important;  /* Texto negro */
+    opacity: 1 !important;
+}
+
+.movimientos-tabla .text-muted *,
+.movimientos-tabla-container .text-muted *,
+.movimiento-origen .text-muted * {
+    color: #000000 !important;  /* Texto negro para elementos hijos */
+}
+
+/* --- Mensaje de Tabla Vacía --- */
+/* Cuando no hay movimientos para mostrar */
+.movimientos-vacio {
+    text-align: center;         /* Texto centrado */
+    padding: 40px 20px;         /* Espacio interior generoso */
+    color: #000000;             /* Color de texto negro */
+    font-size: 16px;            /* Tamaño de fuente */
+}
+
+/* --- Icono de Tabla Vacía --- */
+.movimientos-vacio i {
+    font-size: 48px;            /* Icono grande */
+    color: #adb5bd;             /* Color gris claro */
+    margin-bottom: 15px;        /* Espacio inferior */
+    display: block;             /* Bloque para centrar */
+}
+
+/*
+================================================================
+=                                                              =
+=                    RESPONSIVE DESIGN                          =
+=                                                              =
+================================================================
+*/
+
+/* --- Tablets y Pantallas Medianas --- */
+@media (max-width: 768px) {
+    /* Reducir padding en pantallas pequeñas */
+    .movimientos-filtros,
+    .movimientos-tabla-container {
+        padding: 15px;
+    }
+    
+    /* Reducir tamaño de fuente en la tabla */
+    .movimientos-tabla thead th,
+    .movimientos-tabla tbody td {
+        padding: 10px;
+        font-size: 13px;
+    }
+}
+
+/* --- Móviles --- */
+@media (max-width: 576px) {
+    /* Ocultar columnas menos importantes en móviles */
+    .movimientos-tabla .col-fecha-completa {
+        display: none;
+    }
+    
+    /* Mostrar solo fecha corta */
+    .movimientos-tabla .col-fecha-corta {
+        display: table-cell;
+    }
+}

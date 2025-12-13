@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block body_class %}dark-gold-theme{% endblock %}
+
+{% block contenido %}
+<div class="dashboard-main-container">
+    <nav class="dashboard-sidebar">
+        <div class="sidebar-header">
+            <h2 class="sidebar-title">Fornería</h2>
+        </div>
+        <ul class="sidebar-menu">
+            <li class="sidebar-item">
+                <a href="{% url 'dashboard' %}" class="sidebar-link">
+                    <span>📊</span> Dashboard
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="{% url 'pos' %}" class="sidebar-link">
+                    <span>🛒</span> Ventas (POS)
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="{% url 'inventario' %}" class="sidebar-link">
+                    <span>📦</span> Inventario
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="{% url 'alertas_list' %}" class="sidebar-link">
+                    <span>🔔</span> Alertas
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="{% url 'proximamente_feature' 'reportes' %}" class="sidebar-link">
+                    <span>📈</span> Reportes
+                </a>
+            </li>
+            {% if request.user.is_authenticated and request.user.is_superuser %}
+            <li class="sidebar-item">
+                <a href="{% url 'usuarios_list' %}" class="sidebar-link active">
+                    <span>👥</span> Usuarios
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+        <div class="sidebar-footer">
+            <a href="{% url 'proximamente_feature' 'configuracion' %}" class="sidebar-link">
+                <span>⚙️</span> Configuración
+            </a>
+        </div>
+    </nav>
+
+    <div class="dashboard-content-wrapper">
+        <div class="edit-product-container dark-gold-theme">
+          <div class="edit-header">
+            <h2>Editar Usuario: {{ usuario.username }}</h2>
+    <a href="{% url 'usuarios_list' %}" class="btn btn-link back-link">Volver a Usuarios</a>
+  </div>
+
+  {% if messages %}
+    <ul class="messages">
+      {% for message in messages %}
+        <li class="{{ message.tags }}">{{ message }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
+  <form method="post" novalidate>
+    {% csrf_token %}
+
+    <div class="edit-grid">
+      <section class="edit-card">
+        <h3 class="edit-section-title">Datos del usuario</h3>
+        <div class="form-grid">
+          <div class="form-row">
+            {{ form.username.label_tag }} {{ form.username }}
+            {% if form.username.errors %}<div class="field-error">{{ form.username.errors|striptags }}</div>{% endif %}
+          </div>
+
+          <div class="form-row">
+            {{ form.email.label_tag }} {{ form.email }}
+            {% if form.email.errors %}<div class="field-error">{{ form.email.errors|striptags }}</div>{% endif %}
+          </div>
+
+          <div class="form-row">
+            {{ form.first_name.label_tag }} {{ form.first_name }}
+            {% if form.first_name.errors %}<div class="field-error">{{ form.first_name.errors|striptags }}</div>{% endif %}
+          </div>
+
+          <div class="form-row">
+            {{ form.last_name.label_tag }} {{ form.last_name }}
+            {% if form.last_name.errors %}<div class="field-error">{{ form.last_name.errors|striptags }}</div>{% endif %}
+          </div>
+
+          <div class="form-row">
+            {{ form.password.label_tag }} {{ form.password }}
+            {% if form.password.errors %}<div class="field-error">{{ form.password.errors|striptags }}</div>{% endif %}
+          </div>
+        </div>
+      </section>
+
+      <section class="edit-card">
+        <h3 class="edit-section-title">Rol y Permisos</h3>
+        <div class="form-grid">
+          <div class="form-row">
+            {{ form.rol.label_tag }} {{ form.rol }}
+            {% if form.rol.errors %}<div class="field-error">{{ form.rol.errors|striptags }}</div>{% endif %}
+          </div>
+
+          <div class="form-row">
+            {{ form.is_active }} {{ form.is_active.label_tag }}
+            {% if form.is_active.errors %}<div class="field-error">{{ form.is_active.errors|striptags }}</div>{% endif %}
+          </div>
+
+          <div class="form-row">
+            {{ form.is_staff }} {{ form.is_staff.label_tag }}
+            {% if form.is_staff.errors %}<div class="field-error">{{ form.is_staff.errors|striptags }}</div>{% endif %}
+          </div>
+
+          <div class="form-row">
+            {{ form.is_superuser }} {{ form.is_superuser.label_tag }}
+            {% if form.is_superuser.errors %}<div class="field-error">{{ form.is_superuser.errors|striptags }}</div>{% endif %}
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div class="edit-actions">
+      <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+      <a href="{% url 'usuarios_list' %}" class="btn btn-link">Cancelar</a>
+    </div>
+  </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

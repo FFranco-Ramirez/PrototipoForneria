@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% load static %}
+{% block contenido %}
+<!-- Contenedor principal de recuperar contraseña -->
+<div class="login-page-wrapper">
+    <div class="form-container-with-video">
+        <!-- Video de fondo detrás del formulario -->
+        <div class="form-video-background">
+            <video class="form-background-video" autoplay muted loop playsinline>
+                <source src="{% static 'gif/Forneria.mp4' %}" type="video/mp4">
+                Tu navegador no soporta videos HTML5.
+            </video>
+            <!-- Overlay oscuro sobre el video -->
+            <div class="form-video-overlay"></div>
+        </div>
+        
+        <!-- Formulario de confirmar nueva contraseña (delante del video) -->
+        <div class="form-container">
+            <!-- Logo de Fornería -->
+            <div style="text-align: center; margin-bottom: 30px;">
+                <img src="{% static 'images/Forneria.png' %}" alt="La Fornería" style="max-width: 200px; height: auto;">
+            </div>
+            
+            <h2>Restablecer Contraseña</h2>
+            
+            {% if messages %}
+                <ul class="messages">
+                    {% for message in messages %}
+                        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+            
+            {% if valid_token %}
+            <p style="color: #b0b0b0; font-size: 0.95rem; margin-bottom: 20px; text-align: center;">
+                Ingrese su nueva contraseña. Asegúrese de que cumpla con los requisitos de seguridad.
+            </p>
+
+            <form method="post" novalidate>
+                {% csrf_token %}
+                
+                <div class="form-group">
+                    {{ form.new_password.label_tag }}
+                    {{ form.new_password }}
+                    {% if form.new_password.errors %}
+                        <div class="field-error">
+                            {% for error in form.new_password.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    <small class="form-text text-muted" style="display: block; margin-top: 5px; font-size: 0.85rem; color: #b0b0b0;">
+                        La contraseña debe tener al menos 8 caracteres, incluir letras y números.
+                    </small>
+                </div>
+
+                <div class="form-group">
+                    {{ form.new_password_confirm.label_tag }}
+                    {{ form.new_password_confirm }}
+                    {% if form.new_password_confirm.errors %}
+                        <div class="field-error">
+                            {% for error in form.new_password_confirm.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <button type="submit" class="submit-button">
+                    Cambiar Contraseña
+                </button>
+            </form>
+            {% else %}
+            <div style="text-align: center; padding: 40px 20px;">
+                <p style="color: #b0b0b0; font-size: 1.1rem; margin-bottom: 30px;">
+                    El enlace de recuperación es inválido o ha expirado.
+                </p>
+                <a href="{% url 'recuperar_contrasena' %}" class="submit-button" style="display: inline-block; text-decoration: none; text-align: center;">
+                    Solicitar Nuevo Enlace
+                </a>
+            </div>
+            {% endif %}
+
+            <div class="form-link">
+                <p><a href="{% url 'login' %}">Volver al inicio de sesión</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

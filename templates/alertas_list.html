@@ -1,0 +1,351 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block body_class %}dark-gold-theme{% endblock %}
+
+{% block contenido %}
+<div class="dashboard-main-container alertas-page">
+    <!-- Sidebar Reutilizable -->
+    {% include 'includes/sidebar.html' with active_page='alertas' %}
+    
+    <div class="dashboard-content-wrapper">
+        {% include 'includes/dashboard_header.html' with page_title='Sistema de Alertas' %}
+        
+        {% if messages %}
+            <div class="px-4 py-3">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        
+        <main class="dashboard-content">
+            <div class="dashboard-metrics-grid mb-4">
+                <div class="dashboard-metric-card border-danger">
+                    <h3 class="metric-card-title text-danger">
+                        <i class="bi bi-exclamation-triangle-fill"></i> Alertas Rojas
+                    </h3>
+                    <p class="metric-card-value text-danger">{{ stats_tipo.roja|default:0 }}</p>
+                    <p class="metric-card-subtitle">0-13 días (Urgente)</p>
+                </div>
+                
+                <div class="dashboard-metric-card border-warning">
+                    <h3 class="metric-card-title text-warning">
+                        <i class="bi bi-exclamation-circle-fill"></i> Alertas Amarillas
+                    </h3>
+                    <p class="metric-card-value text-warning">{{ stats_tipo.amarilla|default:0 }}</p>
+                    <p class="metric-card-subtitle">14-29 días (Precaución)</p>
+                </div>
+                
+                <div class="dashboard-metric-card border-success">
+                    <h3 class="metric-card-title text-success">
+                        <i class="bi bi-info-circle-fill"></i> Alertas Verdes
+                    </h3>
+                    <p class="metric-card-value text-success">{{ stats_tipo.verde|default:0 }}</p>
+                    <p class="metric-card-subtitle">30+ días (OK)</p>
+                </div>
+                
+                <div class="dashboard-metric-card border-gold">
+                    <h3 class="metric-card-title text-gold">
+                        <i class="bi bi-bell-fill"></i> Alertas Activas
+                    </h3>
+                    <p class="metric-card-value text-gold">{{ stats_estado.activa|default:0 }}</p>
+                    <p class="metric-card-subtitle">Pendientes de acción</p>
+                </div>
+            </div>
+            
+            <div class="alertas-action-buttons mb-4">
+                <a href="{% url 'alerta_crear' %}" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i> Nueva Alerta
+                </a>
+                
+                <button type="button" class="btn btn-success" id="btn-generar-alertas">
+                    <i class="bi bi-arrow-repeat"></i> Generar Alertas Automáticas
+                </button>
+                
+                <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Volver al Dashboard
+                </a>
+            </div>
+            
+            <div class="card mb-4 shadow-sm alertas-filter-card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-funnel"></i> Filtros de Búsqueda
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="GET" action="{% url 'alertas_list' %}" id="form-filtros">
+                        <div class="row g-3">
+                            <div class="col-md-3">
+                                <label class="form-label fw-bold">Tipo de Alerta:</label>
+                                <div class="form-control-wrapper">
+                                    {{ form_filtro.tipo_alerta }}
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-3">
+                                <label class="form-label fw-bold">Estado:</label>
+                                <div class="form-control-wrapper">
+                                    {{ form_filtro.estado }}
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-3">
+                                <label class="form-label fw-bold">Fecha Desde:</label>
+                                <div class="form-control-wrapper">
+                                    {{ form_filtro.fecha_desde }}
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-3">
+                                <label class="form-label fw-bold">Fecha Hasta:</label>
+                                <div class="form-control-wrapper">
+                                    {{ form_filtro.fecha_hasta }}
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-9">
+                                <label class="form-label fw-bold">Buscar Producto:</label>
+                                <div class="form-control-wrapper">
+                                    {{ form_filtro.producto }}
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-3 d-flex align-items-end gap-2">
+                                <button type="submit" class="btn btn-primary flex-grow-1">
+                                    <i class="bi bi-search"></i> Filtrar
+                                </button>
+                                <a href="{% url 'alertas_list' %}" class="btn btn-secondary">
+                                    <i class="bi bi-x-circle"></i> Limpiar
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Barra de acciones masivas -->
+            <div id="bulk-actions-bar" class="bulk-actions-bar" style="display: none;">
+                <div class="bulk-actions-content">
+                    <span class="bulk-selected-count">
+                        <i class="bi bi-check-square"></i>
+                        <span id="selected-count">0</span> alertas seleccionadas
+                    </span>
+                    <div class="bulk-actions-buttons">
+                        <button type="button" class="btn btn-sm btn-success" id="btn-bulk-resuelta">
+                            <i class="bi bi-check-circle"></i> Marcar como Resuelta
+                        </button>
+                        <button type="button" class="btn btn-sm btn-secondary" id="btn-bulk-ignorada">
+                            <i class="bi bi-x-circle"></i> Marcar como Ignorada
+                        </button>
+                        <button type="button" class="btn btn-sm btn-primary" id="btn-bulk-activa">
+                            <i class="bi bi-arrow-repeat"></i> Marcar como Activa
+                        </button>
+                        <button type="button" class="btn btn-sm btn-danger" id="btn-bulk-delete">
+                            <i class="bi bi-trash"></i> Eliminar
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-light" id="btn-bulk-cancel">
+                            <i class="bi bi-x"></i> Cancelar
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm alertas-table-card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-list-ul"></i> Historial de Alertas 
+                        <span class="badge alertas-count-badge">
+                            {{ total_alertas|default:0 }} alertas
+                        </span>
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    {% if alertas %}
+                        <div class="table-responsive">
+                            <table class="table mb-0 alertas-table">
+                                <thead>
+                                    <tr>
+                                        <th width="3%">
+                                            <input type="checkbox" id="select-all-alertas" class="form-check-input">
+                                        </th>
+                                        <th width="5%">Tipo</th>
+                                        <th width="27%">Mensaje</th>
+                                        <th width="15%">Producto</th>
+                                        <th width="10%">Días</th>
+                                        <th width="12%">Fecha</th>
+                                        <th width="10%">Estado</th>
+                                        <th width="18%">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for alerta in alertas %}
+                                    <tr class="alerta-row" data-tipo="{{ alerta.tipo_alerta }}" data-alerta-id="{{ alerta.id }}">
+                                        <td class="text-center">
+                                            <input type="checkbox" class="form-check-input alerta-checkbox" value="{{ alerta.id }}">
+                                        </td>
+                                        <td class="text-center">
+                                            <i class="bi {{ alerta.get_icono }} text-{{ alerta.get_color_badge }} fs-4" 
+                                               title="{{ alerta.get_tipo_alerta_display }}"></i>
+                                        </td>
+                                        <td>
+                                            <strong>{{ alerta.mensaje }}</strong>
+                                        </td>
+                                        <td>
+                                            {% if alerta.productos %}
+                                                {{ alerta.productos.nombre }}
+                                                {% if alerta.productos.marca %}
+                                                    <br><small class="text-muted">{{ alerta.productos.marca }}</small>
+                                                {% endif %}
+                                            {% elif alerta.factura_proveedor %}
+                                                <i class="bi bi-receipt"></i> Factura {{ alerta.factura_proveedor.numero_factura }}
+                                                <br><small class="text-muted">{{ alerta.factura_proveedor.proveedor.nombre }}</small>
+                                            {% else %}
+                                                <span class="text-muted">—</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-center">
+                                            {% if alerta.get_dias_hasta_vencer is not None %}
+                                                <span class="badge bg-{{ alerta.get_color_badge }}">
+                                                    {{ alerta.get_dias_hasta_vencer_display }}
+                                                </span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">—</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <small>
+                                                {{ alerta.fecha_generada|date:"d/m/Y" }}<br>
+                                                {{ alerta.fecha_generada|date:"H:i" }}
+                                            </small>
+                                        </td>
+                                        <td>
+                                            {% if alerta.estado == 'activa' %}
+                                                <span class="badge bg-primary">Activa</span>
+                                            {% elif alerta.estado == 'resuelta' %}
+                                                <span class="badge bg-success">Resuelta</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">Ignorada</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm" role="group">
+                                                <a href="{% url 'alerta_editar' alerta.id %}" 
+                                                   class="btn btn-outline-primary btn-sm"
+                                                   title="Editar alerta">
+                                                    <i class="bi bi-pencil"></i>
+                                                </a>
+                                                <a href="{% url 'alerta_eliminar' alerta.id %}" 
+                                                   class="btn btn-outline-danger btn-sm"
+                                                   title="Eliminar alerta">
+                                                    <i class="bi bi-trash"></i>
+                                                </a>
+                                                <div class="btn-group btn-group-sm" role="group">
+                                                    <button type="button" 
+                                                            class="btn btn-outline-secondary btn-sm dropdown-toggle" 
+                                                            data-bs-toggle="dropdown">
+                                                        <i class="bi bi-check2-circle"></i>
+                                                    </button>
+                                                    <ul class="dropdown-menu">
+                                                        <li>
+                                                            <a class="dropdown-item cambiar-estado" 
+                                                               href="#" 
+                                                               data-alerta-id="{{ alerta.id }}" 
+                                                               data-estado="activa">
+                                                                <i class="bi bi-circle-fill text-primary"></i> Marcar como Activa
+                                                            </a>
+                                                        </li>
+                                                        <li>
+                                                            <a class="dropdown-item cambiar-estado" 
+                                                               href="#" 
+                                                               data-alerta-id="{{ alerta.id }}" 
+                                                               data-estado="resuelta">
+                                                                <i class="bi bi-check-circle-fill text-success"></i> Marcar como Resuelta
+                                                            </a>
+                                                        </li>
+                                                        <li>
+                                                            <a class="dropdown-item cambiar-estado" 
+                                                               href="#" 
+                                                               data-alerta-id="{{ alerta.id }}" 
+                                                               data-estado="ignorada">
+                                                                <i class="bi bi-x-circle-fill text-secondary"></i> Marcar como Ignorada
+                                                            </a>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5 alertas-empty-state">
+                            <i class="bi bi-bell-slash"></i>
+                            <p class="mt-3 empty-message">
+                                No se encontraron alertas con los filtros aplicados.
+                            </p>
+                            <p class="empty-question">
+                                <strong>¿Quieres generar alertas automáticamente?</strong>
+                            </p>
+                            <div class="d-flex gap-2 justify-content-center mt-3">
+                                <button type="button" class="btn btn-success" id="btn-generar-alertas-vacio">
+                                    <i class="bi bi-arrow-repeat"></i> Generar Alertas Automáticas
+                                </button>
+                                <a href="{% url 'alertas_list' %}" class="btn btn-outline-secondary">
+                                    <i class="bi bi-x-circle"></i> Limpiar Filtros
+                                </a>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+        </main>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script src="{% static 'js/alertas.js' %}"></script>
+<script>
+    const userMenuButton = document.getElementById('userMenuButton');
+    const userMenu = document.getElementById('userMenu');
+    
+    if (userMenuButton && userMenu) {
+        userMenuButton.addEventListener('click', () => {
+            const isHidden = userMenu.getAttribute('aria-hidden') === 'true';
+            userMenu.setAttribute('aria-hidden', !isHidden);
+            userMenu.hidden = !userMenu.hidden;
+        });
+        
+        document.addEventListener('click', (e) => {
+            if (!userMenuButton.contains(e.target) && !userMenu.contains(e.target)) {
+                userMenu.setAttribute('aria-hidden', 'true');
+                userMenu.hidden = true;
+            }
+        });
+    }
+
+    // Script para el botón de generar alertas cuando la lista está vacía
+    const btnGenerarVacio = document.getElementById('btn-generar-alertas-vacio');
+    if (btnGenerarVacio) {
+        btnGenerarVacio.addEventListener('click', function() {
+            // Reutilizar la misma función del archivo alertas.js
+            const btnOriginal = document.getElementById('btn-generar-alertas');
+            if (btnOriginal) {
+                btnOriginal.click();
+            } else {
+                // Si no existe el botón original, hacer la llamada directamente
+                generarAlertasAutomaticas();
+            }
+        });
+    }
+</script>
+{% endblock %}
+

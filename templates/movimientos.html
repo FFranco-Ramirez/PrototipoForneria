@@ -1,0 +1,230 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block contenido %}
+<!-- ================================================================ -->
+<!-- =                                                              = -->
+<!-- =           PÁGINA DE HISTORIAL DE MOVIMIENTOS                 = -->
+<!-- =                                                              = -->
+<!-- ================================================================ -->
+<!--
+    Esta página muestra el historial completo de movimientos del inventario.
+    
+    FUNCIONALIDADES:
+    - Ver todos los movimientos de entrada y salida
+    - Filtrar por tipo de movimiento
+    - Ver detalles de cada movimiento (producto, cantidad, fecha)
+-->
+
+<div class="dashboard-main-container">
+    <!-- Sidebar Reutilizable -->
+    {% include 'includes/sidebar.html' with active_page='movimientos' %}
+
+    <!-- ============================================================ -->
+    <!-- CONTENIDO PRINCIPAL                                          -->
+    <!-- ============================================================ -->
+    <div class="dashboard-content-wrapper">
+        {% include 'includes/dashboard_header.html' with page_title='Historial de Movimientos' %}
+
+        <!-- Contenido de la página -->
+        <main class="dashboard-content">
+            <!-- ============================================ -->
+            <!-- SECCIÓN DE FILTROS                           -->
+            <!-- ============================================ -->
+            <div class="movimientos-filtros">
+                <form method="get" class="row g-3 align-items-end">
+                    <!-- Filtro por tipo de movimiento -->
+                    <div class="col-md-4">
+                        <label for="tipo-filtro" class="form-label">Tipo de Movimiento</label>
+                        <select name="tipo" id="tipo-filtro" class="form-select">
+                            <option value="">Todos los movimientos</option>
+                            <option value="entrada" {% if tipo_filtro == 'entrada' %}selected{% endif %}>
+                                Entradas
+                            </option>
+                            <option value="salida" {% if tipo_filtro == 'salida' %}selected{% endif %}>
+                                Salidas
+                            </option>
+                        </select>
+                    </div>
+                    
+                    <!-- Botón de filtrar -->
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="bi bi-funnel"></i> Filtrar
+                        </button>
+                    </div>
+                    
+                    <!-- Botón para limpiar filtros -->
+                    {% if tipo_filtro %}
+                    <div class="col-md-2">
+                        <a href="{% url 'movimientos' %}" class="btn btn-secondary w-100">
+                            <i class="bi bi-x-circle"></i> Limpiar
+                        </a>
+                    </div>
+                    {% endif %}
+                </form>
+            </div>
+
+            <!-- ============================================ -->
+            <!-- TABLA DE MOVIMIENTOS                         -->
+            <!-- ============================================ -->
+            <div class="movimientos-tabla-container">
+                <div class="table-responsive">
+                    <table class="table table-hover movimientos-tabla">
+                        <!-- Encabezado de la tabla -->
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Producto</th>
+                                <th>Tipo</th>
+                                <th>Cantidad</th>
+                                <th>Origen/Detalle</th>
+                            </tr>
+                        </thead>
+                        
+                        <!-- Cuerpo de la tabla -->
+                        <tbody>
+                            {% for mov in movimientos %}
+                            <tr>
+                                <!-- Columna: Fecha del movimiento -->
+                                <td>
+                                    <span class="col-fecha-completa">
+                                        {{ mov.fecha|date:"d/m/Y H:i" }}
+                                    </span>
+                                    <span class="col-fecha-corta" style="display: none;">
+                                        {{ mov.fecha|date:"d/m" }}
+                                    </span>
+                                </td>
+                                
+                                <!-- Columna: Nombre del producto -->
+                                <td>
+                                    <strong>{{ mov.productos.nombre }}</strong>
+                                </td>
+                                
+                                <!-- Columna: Tipo de movimiento (con badge de color) -->
+                                <td>
+                                    {% if mov.tipo_movimiento == 'entrada' %}
+                                        <span class="badge badge-entrada" style="color: #000000 !important;">
+                                            <i class="bi bi-arrow-down-circle" style="color: #000000 !important;"></i> Entrada
+                                        </span>
+                                    {% else %}
+                                        <span class="badge badge-salida" style="color: #000000 !important;">
+                                            <i class="bi bi-arrow-up-circle" style="color: #000000 !important;"></i> Salida
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                
+                                <!-- Columna: Cantidad del movimiento -->
+                                <td>
+                                    <strong>{{ mov.cantidad }}</strong> unidades
+                                </td>
+                                
+                                <!-- Columna: Origen/Detalle del movimiento -->
+                                <td>
+                                    {% if mov.origen or mov.tipo_referencia %}
+                                        <div class="movimiento-origen">
+                                            {% if mov.origen %}
+                                                <span class="badge bg-info">
+                                                    {% if mov.origen == 'compra' %}
+                                                        <i class="bi bi-cart-plus"></i> Compra
+                                                    {% elif mov.origen == 'venta' %}
+                                                        <i class="bi bi-cart-dash"></i> Venta
+                                                    {% elif mov.origen == 'ajuste' %}
+                                                        <i class="bi bi-sliders"></i> Ajuste
+                                                    {% elif mov.origen == 'merma' %}
+                                                        <i class="bi bi-exclamation-triangle"></i> Merma
+                                                    {% elif mov.origen == 'devolucion' %}
+                                                        <i class="bi bi-arrow-counterclockwise"></i> Devolución
+                                                    {% elif mov.origen == 'produccion' %}
+                                                        <i class="bi bi-bag-plus"></i> Producción
+                                                    {% else %}
+                                                        {{ mov.origen|title }}
+                                                    {% endif %}
+                                                </span>
+                                            {% endif %}
+                                            {% if mov.tipo_referencia and mov.referencia_id %}
+                                                <small class="text-muted d-block mt-1">
+                                                    {% if mov.tipo_referencia == 'factura_proveedor' %}
+                                                        Factura #{{ mov.referencia_id }}
+                                                    {% elif mov.tipo_referencia == 'venta' %}
+                                                        Venta #{{ mov.referencia_id }}
+                                                    {% elif mov.tipo_referencia == 'ajuste' %}
+                                                        Ajuste #{{ mov.referencia_id }}
+                                                    {% elif mov.tipo_referencia == 'merma' %}
+                                                        Merma #{{ mov.referencia_id }}
+                                                    {% elif mov.tipo_referencia == 'lote' %}
+                                                        Lote #{{ mov.referencia_id }}
+                                                    {% else %}
+                                                        {{ mov.tipo_referencia|title }} #{{ mov.referencia_id }}
+                                                    {% endif %}
+                                                </small>
+                                            {% endif %}
+                                        </div>
+                                    {% else %}
+                                        <span class="text-muted" style="color: #000000 !important;">—</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <!-- Mensaje cuando no hay movimientos -->
+                            <tr>
+                                <td colspan="5" class="movimientos-vacio">
+                                    <i class="bi bi-inbox"></i>
+                                    <p>No hay movimientos registrados</p>
+                                    {% if tipo_filtro %}
+                                    <small>Intenta cambiar los filtros</small>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<style>
+.movimiento-origen {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.movimiento-origen .badge {
+    font-size: 0.85em;
+    padding: 5px 10px;
+    white-space: nowrap;
+}
+
+.movimiento-origen .text-muted {
+    font-size: 0.8em;
+    color: #000000 !important;
+    opacity: 1;
+}
+
+.movimiento-origen .text-muted:hover {
+    opacity: 1;
+}
+
+.movimientos-tabla .badge.bg-info,
+.movimientos-tabla-container .badge.bg-info,
+.badge.bg-info {
+    background-color: #0dcaf0 !important;
+    color: #000000 !important;
+}
+
+.movimientos-tabla .badge.bg-info *,
+.movimientos-tabla-container .badge.bg-info *,
+.badge.bg-info * {
+    color: #000000 !important;
+}
+
+@media (max-width: 768px) {
+    .movimiento-origen {
+        font-size: 0.9em;
+    }
+}
+</style>
+{% endblock %}

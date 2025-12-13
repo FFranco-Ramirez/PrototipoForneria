@@ -1,0 +1,232 @@
+/*
+  Página de Inventario
+  ---------------------------------
+  Estilos específicos para la página de gestión de inventario.
+  Estos estilos se aplican principalmente cuando el tema oscuro
+  (.dark-gold-theme) está activo.
+*/
+
+/* Título principal de la página de inventario */
+.dark-gold-theme .inventory-container h2 {
+  color: var(--gold); /* Color dorado para el título */
+  font-weight: 700; /* Texto más grueso */
+}
+
+/* Campo de búsqueda de inventario */
+.dark-gold-theme .inventory-container .inventory-search input[type="text"] {
+  background: var(--bg-alt); /* Fondo oscuro alternativo */
+  color: var(--text); /* Color de texto principal */
+  border: 1px solid var(--border); /* Borde sutil */
+}
+
+/* Botón principal en la sección de búsqueda */
+.dark-gold-theme .inventory-container .inventory-search .btn-primary {
+  background: var(--gold); /* Fondo dorado */
+  border-color: var(--gold); /* Borde dorado */
+  color: #111; /* Texto oscuro para contraste */
+  font-weight: 600; /* Texto semigrueso */
+}
+
+/* Botones con borde (Outline) */
+.dark-gold-theme .inventory-container .btn-outline-primary {
+  border-color: var(--gold); /* Borde dorado */
+  color: var(--gold); /* Texto dorado */
+}
+
+.dark-gold-theme .inventory-container .btn-outline-secondary {
+  border-color: #888; /* Borde gris */
+  color: #ddd; /* Texto gris claro */
+}
+
+.dark-gold-theme .inventory-container .btn-outline-danger {
+  border-color: var(--danger); /* Borde rojo de peligro */
+  color: var(--danger); /* Texto rojo de peligro */
+}
+
+/* Efecto hover para los botones con borde */
+.dark-gold-theme .inventory-container .btn-outline-primary:hover,
+.dark-gold-theme .inventory-container .btn-outline-secondary:hover {
+  background: #1e1e1e; /* Fondo ligeramente más claro al pasar el ratón */
+}
+
+/* Enlaces dentro de formularios en la página de inventario */
+.dark-gold-theme .inventory-container .form-link a {
+  color: var(--gold); /* Color dorado para los enlaces */
+  text-decoration: none; /* Sin subrayado */
+}
+
+/*
+
+================================================================
+=                                                              =
+=           ESTILOS PARA ACCIONES MASIVAS                      =
+=                                                              =
+================================================================
+
+Estilos para la funcionalidad de selección múltiple y
+acciones masivas en el inventario.
+*/
+
+/* ============================================================ */
+/* BARRA DE ACCIONES MASIVAS DE INVENTARIO                     */
+/* ============================================================ */
+/**
+ * Contenedor que agrupa los botones de acción masiva
+ * y el contador de productos seleccionados.
+ * Nombre específico para evitar conflictos con otras páginas.
+ * TEMA: Negro y dorado con acento rojo para eliminar
+ */
+.inventory-bulk-actions-bar {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%) !important;
+    padding: 15px !important;
+    border-radius: 12px !important;
+    border: 1px solid rgba(255, 215, 0, 0.2) !important;
+    margin-bottom: 20px !important;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* ============================================================ */
+/* CONTADOR DE PRODUCTOS SELECCIONADOS                         */
+/* ============================================================ */
+/**
+ * Badge que muestra cuántos productos están seleccionados.
+ * Cambia de color según haya o no selección.
+ * TEMA: Gris oscuro cuando no hay selección, dorado cuando hay selección
+ */
+.inventory-bulk-actions-bar #contador-seleccionados {
+    font-size: 14px !important;
+    padding: 8px 16px !important;
+    font-weight: 600 !important;
+    border-radius: 6px !important;
+    background-color: #2d2d2d !important;
+    color: #888 !important;
+    border: 1px solid #444 !important;
+}
+
+/* Badge cuando hay productos seleccionados */
+.inventory-bulk-actions-bar #contador-seleccionados.bg-primary {
+    background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%) !important;
+    color: #000 !important;
+    border: 1px solid #ffd700 !important;
+    box-shadow: 0 2px 8px rgba(255, 215, 0, 0.3) !important;
+}
+
+/* Badge cuando NO hay productos seleccionados */
+.inventory-bulk-actions-bar #contador-seleccionados.bg-secondary {
+    background-color: #2d2d2d !important;
+    color: #888 !important;
+    border: 1px solid #444 !important;
+}
+
+/* ============================================================ */
+/* BOTONES DE ACCIÓN MASIVA                                    */
+/* ============================================================ */
+/**
+ * Estilos para los botones que ejecutan acciones masivas.
+ * Se deshabilitan cuando no hay productos seleccionados.
+ * TEMA: Dorado para crear alertas, rojo para mover/eliminar
+ */
+
+/* Estado deshabilitado de los botones */
+.inventory-bulk-actions-bar button:disabled {
+    opacity: 0.4 !important;
+    cursor: not-allowed !important;
+    filter: grayscale(50%) !important;
+}
+
+/* Botón de Crear Alertas (DORADO) */
+.inventory-bulk-actions-bar #btn-crear-alertas {
+    background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%) !important;
+    border: 1px solid #ffd700 !important;
+    color: #000 !important;
+    font-weight: 600 !important;
+    padding: 8px 16px !important;
+    border-radius: 6px !important;
+    transition: all 0.3s ease !important;
+}
+
+.inventory-bulk-actions-bar #btn-crear-alertas:hover:not(:disabled) {
+    background: linear-gradient(135deg, #ffed4e 0%, #ffd700 100%) !important;
+    box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4) !important;
+    transform: translateY(-2px) !important;
+}
+
+/* Botón de Mover a Merma (ROJO) */
+.inventory-bulk-actions-bar #btn-mover-merma {
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%) !important;
+    border: 1px solid #dc3545 !important;
+    color: #fff !important;
+    font-weight: 600 !important;
+    padding: 8px 16px !important;
+    border-radius: 6px !important;
+    transition: all 0.3s ease !important;
+}
+
+.inventory-bulk-actions-bar #btn-mover-merma:hover:not(:disabled) {
+    background: linear-gradient(135deg, #c82333 0%, #bd2130 100%) !important;
+    box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4) !important;
+    transform: translateY(-2px) !important;
+}
+
+/* Botón de Eliminar (OUTLINE ROJO) */
+.inventory-bulk-actions-bar #btn-eliminar {
+    background-color: transparent !important;
+    border: 2px solid #dc3545 !important;
+    color: #dc3545 !important;
+    font-weight: 600 !important;
+    padding: 8px 16px !important;
+    border-radius: 6px !important;
+    transition: all 0.3s ease !important;
+}
+
+.inventory-bulk-actions-bar #btn-eliminar:hover:not(:disabled) {
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%) !important;
+    color: #fff !important;
+    box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4) !important;
+    transform: translateY(-2px) !important;
+}
+
+/* ============================================================ */
+/* CHECKBOXES EN LA TABLA                                      */
+/* ============================================================ */
+/**
+ * Estilos para los checkboxes de selección múltiple.
+ * Incluye el checkbox del header y los checkboxes individuales.
+ */
+
+/* Checkbox en el header (seleccionar todos) */
+#checkbox-todos {
+    cursor: pointer;                 /* Cursor de mano */
+    width: 18px;                     /* Ancho del checkbox */
+    height: 18px;                    /* Alto del checkbox */
+}
+
+/* Checkboxes individuales de productos */
+.producto-checkbox {
+    cursor: pointer;                 /* Cursor de mano */
+    width: 18px;                     /* Ancho del checkbox */
+    height: 18px;                    /* Alto del checkbox */
+}
+
+/* Fila de la tabla cuando el checkbox está marcado */
+tr:has(.producto-checkbox:checked) {
+    background-color: rgba(255, 215, 0, 0.1) !important; /* Fondo dorado suave */
+}
+
+/* ============================================================ */
+/* RESPONSIVE: ADAPTACIÓN A PANTALLAS PEQUEÑAS                 */
+/* ============================================================ */
+/**
+ * En pantallas pequeñas, los botones se apilan verticalmente
+ * para mejor usabilidad en móviles.
+ */
+@media (max-width: 768px) {
+    .inventory-bulk-actions-bar .d-flex {
+        flex-direction: column;      /* Apilar verticalmente */
+        gap: 10px;                   /* Espacio entre elementos */
+    }
+    
+    .inventory-bulk-actions-bar button {
+        width: 100%;                 /* Botones de ancho completo */
+    }
+}

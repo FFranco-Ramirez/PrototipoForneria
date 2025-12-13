@@ -1,0 +1,340 @@
+/* static/css/pages/_merma.css */
+/*
+    Estilos para la página de Gestión de Merma
+*/
+/*
+================================================================
+=                                                              =
+=           ESTILOS PARA LA PÁGINA DE MERMA                    =
+=                                                              =
+================================================================
+*/
+
+/* --- Contenedor Principal de Merma --- */
+/* Contenedor que envuelve toda la sección de merma */
+.merma-container {
+    padding: 30px;              /* Espacio interior */
+}
+
+/* --- Tarjeta de Estadísticas de Merma --- */
+/* Muestra resumen de productos en merma */
+.merma-stats-card {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); /* Gradiente negro */
+    color: #ffffff;             /* Texto blanco */
+    padding: 25px;              /* Espacio interior */
+    border-radius: 12px;        /* Esquinas redondeadas */
+    margin-bottom: 25px;        /* Espacio inferior */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* Sombra pronunciada */
+}
+
+/* --- Título de la Tarjeta de Estadísticas --- */
+.merma-stats-card h3 {
+    color: #ffd700;             /* Dorado */
+    font-size: 18px;            /* Tamaño de fuente */
+    font-weight: 600;           /* Texto semi-negrita */
+    margin-bottom: 15px;        /* Espacio inferior */
+    text-transform: uppercase;  /* Texto en mayúsculas */
+    letter-spacing: 1px;        /* Espaciado entre letras */
+}
+
+/* --- Número Grande en Estadísticas --- */
+.merma-stats-number {
+    font-size: 48px;            /* Número muy grande */
+    font-weight: bold;          /* Texto en negrita */
+    color: #ffd700;             /* Dorado */
+    line-height: 1;             /* Sin espacio entre líneas */
+}
+
+/* --- Contenedor de Búsqueda --- */
+.merma-search-container {
+    background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 25px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* --- Barra de Búsqueda --- */
+.merma-search-box {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background-color: #ffffff;
+    border-radius: 50px;
+    padding: 5px 20px;
+    box-shadow: 0 2px 8px rgba(255, 215, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+.merma-search-box:focus-within {
+    box-shadow: 0 4px 16px rgba(255, 215, 0, 0.4);
+    transform: translateY(-2px);
+}
+
+.merma-search-box i.bi-search {
+    color: #ffd700;
+    font-size: 20px;
+    margin-right: 12px;
+}
+
+.merma-search-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    padding: 12px 0;
+    font-size: 16px;
+    color: #1a1a1a;
+    background: transparent;
+}
+
+.merma-search-input::placeholder {
+    color: #999;
+}
+
+.merma-clear-btn {
+    background: none;
+    border: none;
+    color: #999;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 0;
+    margin-left: 10px;
+    transition: color 0.2s ease;
+}
+
+.merma-clear-btn:hover {
+    color: #dc3545;
+}
+
+/* --- Tabla de Productos en Merma --- */
+.merma-tabla-container {
+    background-color: #ffffff;  /* Fondo blanco */
+    border-radius: 8px;         /* Esquinas redondeadas */
+    padding: 20px;              /* Espacio interior */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Sombra sutil */
+}
+
+/* --- Encabezado de la Tabla de Merma --- */
+
+/* --- Celdas del Encabezado --- */
+.merma-tabla thead th {
+    padding: 15px;              /* Espacio interior */
+    font-weight: 600;           /* Texto semi-negrita */
+    text-transform: uppercase;  /* Texto en mayúsculas */
+    font-size: 12px;            /* Tamaño de fuente */
+    letter-spacing: 1px;        /* Espaciado entre letras */
+    border: none;               /* Sin bordes */
+    position: relative;         /* Para posicionar iconos */
+}
+
+/* --- Contenedor del Header --- */
+.header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+/* --- Headers Ordenables --- */
+.sortable-header {
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.2s ease;
+    background-color: #1a1a1a;  /* Fondo negro por defecto */
+}
+
+.sortable-header:hover {
+    background-color: rgba(255, 215, 0, 0.25) !important;
+}
+
+.sortable-header:active {
+    transform: scale(0.98);
+    background-color: rgba(255, 215, 0, 0.35) !important;
+}
+
+/* Asegurar que el hover funcione en todos los navegadores */
+.merma-tabla thead .sortable-header:hover {
+    background-color: rgba(255, 215, 0, 0.25) !important;
+}
+
+.merma-tabla thead th.sortable-header:hover {
+    background-color: rgba(255, 215, 0, 0.25) !important;
+}
+
+/* --- Iconos de Ordenamiento --- */
+.sort-icons {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    opacity: 0.3;
+    transition: opacity 0.2s ease;
+}
+
+.sortable-header:hover .sort-icons {
+    opacity: 0.6;
+}
+
+.sort-icon {
+    font-size: 10px;
+    line-height: 1;
+    color: #ffd700;
+}
+
+/* --- Estados de Ordenamiento --- */
+.sortable-header.sort-asc .sort-icons .bi-caret-up-fill {
+    opacity: 1;
+    color: #ffd700;
+}
+
+.sortable-header.sort-asc .sort-icons .bi-caret-down-fill {
+    opacity: 0.2;
+}
+
+.sortable-header.sort-desc .sort-icons .bi-caret-down-fill {
+    opacity: 1;
+    color: #ffd700;
+}
+
+.sortable-header.sort-desc .sort-icons .bi-caret-up-fill {
+    opacity: 0.2;
+}
+
+/* --- Filas de la Tabla --- */
+.merma-tabla tbody tr {
+    border-bottom: 1px solid #e9ecef; /* Línea separadora */
+    transition: background-color 0.2s ease; /* Transición suave */
+}
+
+/* --- Efecto Hover en Filas --- */
+.merma-tabla tbody tr:hover {
+    background-color: rgba(255, 215, 0, 0.2) !important;  /* Fondo dorado claro */
+}
+
+/* Asegurar que el hover funcione en todas las celdas */
+.merma-tabla tbody tr:hover td {
+    background-color: transparent !important;
+}
+
+/* --- Celdas del Cuerpo --- */
+.merma-tabla tbody td {
+    padding: 15px;              /* Espacio interior */
+    vertical-align: middle;     /* Alineación vertical */
+    color: #343a40;             /* Texto oscuro */
+}
+
+/* --- Badge de Estado de Merma: Vencido --- */
+.badge-vencido {
+    background-color: #dc3545;  /* Rojo */
+    color: #ffffff;             /* Texto blanco */
+    padding: 6px 12px;          /* Espacio interior */
+    border-radius: 20px;        /* Bordes redondeados */
+    font-size: 12px;            /* Tamaño de fuente */
+    font-weight: 600;           /* Texto semi-negrita */
+    text-transform: uppercase;  /* Texto en mayúsculas */
+}
+
+/* --- Badge de Estado de Merma: Deteriorado --- */
+.badge-deteriorado {
+    background-color: #fd7e14;  /* Naranja */
+    color: #ffffff;             /* Texto blanco */
+    padding: 6px 12px;          /* Espacio interior */
+    border-radius: 20px;        /* Bordes redondeados */
+    font-size: 12px;            /* Tamaño de fuente */
+    font-weight: 600;           /* Texto semi-negrita */
+    text-transform: uppercase;  /* Texto en mayúsculas */
+}
+
+/* --- Badge de Estado de Merma: Dañado --- */
+.badge-danado {
+    background-color: #6c757d;  /* Gris */
+    color: #ffffff;             /* Texto blanco */
+    padding: 6px 12px;          /* Espacio interior */
+    border-radius: 20px;        /* Bordes redondeados */
+    font-size: 12px;            /* Tamaño de fuente */
+    font-weight: 600;           /* Texto semi-negrita */
+    text-transform: uppercase;  /* Texto en mayúsculas */
+}
+
+/* --- Columna de Pérdida Económica --- */
+/* Resalta el valor monetario perdido */
+.merma-perdida {
+    font-weight: 700;           /* Texto en negrita */
+    color: #dc3545;             /* Rojo para indicar pérdida */
+    font-size: 16px;            /* Tamaño de fuente más grande */
+}
+
+/* --- Botón de Acción en Merma --- */
+/* Botón para eliminar definitivamente o restaurar */
+.merma-accion-btn {
+    background-color: #ffd700;  /* Dorado */
+    border-color: #ffd700;      /* Borde dorado */
+    color: #1a1a1a;             /* Texto negro */
+    font-weight: 600;           /* Texto semi-negrita */
+    padding: 8px 16px;          /* Espacio interior */
+    border-radius: 6px;         /* Esquinas redondeadas */
+    transition: all 0.3s ease;  /* Transición suave */
+}
+
+/* --- Efecto Hover del Botón --- */
+.merma-accion-btn:hover {
+    background-color: #e6c200;  /* Dorado más oscuro */
+    border-color: #e6c200;
+    color: #1a1a1a;
+    transform: translateY(-2px); /* Efecto de elevación */
+    box-shadow: 0 4px 8px rgba(255, 215, 0, 0.3); /* Sombra dorada */
+}
+
+/* --- Mensaje de Tabla Vacía --- */
+.merma-vacio {
+    text-align: center;         /* Texto centrado */
+    padding: 60px 20px;         /* Espacio interior generoso */
+    color: #6c757d;             /* Texto gris */
+}
+
+/* --- Icono de Tabla Vacía --- */
+.merma-vacio i {
+    font-size: 64px;            /* Icono muy grande */
+    color: #28a745;             /* Verde (positivo: no hay merma) */
+    margin-bottom: 20px;        /* Espacio inferior */
+    display: block;             /* Bloque para centrar */
+}
+
+/* --- Texto de Tabla Vacía --- */
+.merma-vacio p {
+    font-size: 18px;            /* Tamaño de fuente */
+    margin-bottom: 10px;        /* Espacio inferior */
+}
+
+/*
+================================================================
+=                                                              =
+=                    RESPONSIVE DESIGN                          =
+=                                                              =
+================================================================
+*/
+
+/* --- Tablets --- */
+@media (max-width: 768px) {
+    .merma-stats-number {
+        font-size: 36px;        /* Número más pequeño en tablets */
+    }
+    
+    .merma-tabla thead th,
+    .merma-tabla tbody td {
+        padding: 10px;          /* Menos padding */
+        font-size: 13px;        /* Fuente más pequeña */
+    }
+}
+
+/* --- Móviles --- */
+@media (max-width: 576px) {
+    .merma-container {
+        padding: 15px;          /* Menos padding en móviles */
+    }
+    
+    /* Ocultar columnas menos importantes */
+    .merma-tabla .col-descripcion,
+    .merma-tabla .col-formato {
+        display: none;
+    }
+}

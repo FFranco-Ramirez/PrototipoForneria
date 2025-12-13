@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block contenido %}
+<div class="dashboard-main-container">
+    {% include 'includes/sidebar.html' with active_page='proveedores' %}
+    
+    <div class="dashboard-content-wrapper">
+        {% include 'includes/dashboard_header.html' with page_title='Proveedores' %}
+        
+        <main class="dashboard-content">
+            <div style="margin-bottom: 20px;">
+                <a href="{% url 'proveedor_crear' %}" class="btn btn-primary">
+                    <span>➕</span> Nuevo Proveedor
+                </a>
+            </div>
+            <!-- Filtros de búsqueda -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <form method="get" class="row g-3">
+                        <div class="col-md-4">
+                            <input type="text" name="q" class="form-control" placeholder="Buscar por nombre, RUT, contacto..." value="{{ q }}">
+                        </div>
+                        <div class="col-md-3">
+                            <select name="estado" class="form-select">
+                                <option value="">Todos los estados</option>
+                                <option value="activo" {% if estado_filter == 'activo' %}selected{% endif %}>Activo</option>
+                                <option value="inactivo" {% if estado_filter == 'inactivo' %}selected{% endif %}>Inactivo</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-primary w-100">Buscar</button>
+                        </div>
+                        <div class="col-md-2">
+                            <a href="{% url 'proveedores_list' %}" class="btn btn-secondary w-100">Limpiar</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Tabla de proveedores -->
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>RUT</th>
+                                    <th>Contacto</th>
+                                    <th>Teléfono</th>
+                                    <th>Email</th>
+                                    <th>Estado</th>
+                                    <th>Facturas</th>
+                                    <th>Pendientes</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for proveedor in proveedores %}
+                                <tr>
+                                    <td><strong>{{ proveedor.nombre }}</strong></td>
+                                    <td>{{ proveedor.rut|default:"-" }}</td>
+                                    <td>{{ proveedor.contacto|default:"-" }}</td>
+                                    <td>{{ proveedor.telefono|default:"-" }}</td>
+                                    <td>{{ proveedor.email|default:"-" }}</td>
+                                    <td>
+                                        <span class="badge {% if proveedor.estado == 'activo' %}bg-success{% else %}bg-secondary{% endif %}">
+                                            {{ proveedor.get_estado_display }}
+                                        </span>
+                                    </td>
+                                    <td>{{ proveedor.total_facturas }}</td>
+                                    <td>
+                                        {% if proveedor.facturas_pendientes > 0 %}
+                                        <span class="text-warning">{{ proveedor.facturas_pendientes }}</span>
+                                        {% else %}
+                                        <span class="text-muted">0</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'proveedor_editar' proveedor.id %}" class="btn btn-sm btn-warning">Editar</a>
+                                        <a href="{% url 'proveedor_eliminar' proveedor.id %}" class="btn btn-sm btn-danger">Eliminar</a>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="9" class="text-center text-muted">No se encontraron proveedores.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+{% endblock %}
+

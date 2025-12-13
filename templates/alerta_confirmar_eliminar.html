@@ -1,0 +1,53 @@
+{# Template para confirmar eliminación de alerta #}
+{% extends "base.html" %}
+{% load static %}
+
+{% block body_class %}dark-gold-theme{% endblock %}
+
+{% block contenido %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header bg-danger text-white">
+                    <h4 class="mb-0">
+                        <i class="bi bi-exclamation-triangle"></i> Confirmar Eliminación
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <p class="lead">
+                        ¿Estás seguro de que deseas eliminar esta alerta?
+                    </p>
+                    
+                    {# Información de la alerta a eliminar #}
+                    <div class="alert alert-{{ alerta.get_color_badge }}">
+                        <strong>Tipo:</strong> {{ alerta.get_tipo_alerta_display }}<br>
+                        <strong>Producto:</strong> {{ alerta.productos.nombre }}<br>
+                        <strong>Mensaje:</strong> {{ alerta.mensaje }}<br>
+                        <strong>Fecha:</strong> {{ alerta.fecha_generada|date:"d/m/Y H:i" }}
+                    </div>
+                    
+                    <p class="text-danger">
+                        <i class="bi bi-exclamation-circle"></i>
+                        <strong>Advertencia:</strong> Esta acción no se puede deshacer.
+                    </p>
+                    
+                    {# Formulario de confirmación #}
+                    <form method="POST">
+                        {% csrf_token %}
+                        <div class="d-flex gap-2 mt-4">
+                            <button type="submit" class="btn btn-danger">
+                                <i class="bi bi-trash"></i> Sí, Eliminar
+                            </button>
+                            <a href="{% url 'alertas_list' %}" class="btn btn-secondary">
+                                <i class="bi bi-x-circle"></i> Cancelar
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

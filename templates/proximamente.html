@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block body_class %}dark-gold-theme{% endblock %}
+
+{% block contenido %}
+<div class="dashboard-main-container">
+    {% include 'includes/sidebar.html' %}
+    <div class="dashboard-content-wrapper">
+        {% include 'includes/user_header.html' %}
+        <main class="dashboard-content">
+        <div class="coming-soon">
+          <h2 class="coming-soon-title">Construyendo</h2>
+
+  <div id="lottie-container" aria-label="Animación de construcción"></div>
+
+  <div class="coming-soon-actions">
+    <button type="button" class="btn-primary" onclick="volver()">Volver</button>
+  </div>
+        </div>
+        </main>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
+<script>
+  // Inicializa la animación Lottie con tu JSON en static/gif/
+  const container = document.getElementById('lottie-container');
+  lottie.loadAnimation({
+    container: container,
+    renderer: 'svg',
+    loop: true,
+    autoplay: true,
+    path: "{% static 'gif/Architecture and Construction Animation.json' %}",
+  });
+
+  // Botón "Volver": regresa a la página anterior
+  function volver() {
+    // Si hay historial, navega hacia atrás
+    if (window.history.length > 1) {
+      window.history.back();
+      return;
+    }
+    // Fallback: si no hay historial (p.ej., se abrió en nueva pestaña)
+    window.location.href = document.referrer || "/";
+  }
+</script>
+{% endblock %}

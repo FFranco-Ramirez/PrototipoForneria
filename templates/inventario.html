@@ -1,0 +1,853 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block body_class %}dark-gold-theme{% endblock %}
+
+{% block contenido %}
+<div class="dashboard-main-container">
+    <!-- Sidebar Reutilizable -->
+    {% include 'includes/sidebar.html' with active_page='inventario' %}
+
+    <div class="dashboard-content-wrapper">
+        {% include 'includes/dashboard_header.html' with page_title='Inventario' %}
+        <div class="inventory-container dark-gold-theme">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <div style="display: flex; gap: 10px;">
+                    <a href="{% url 'agregar_producto' %}" class="btn btn-success">
+                        <i class="bi bi-plus-circle"></i> Agregar Producto
+                    </a>
+                    <a href="{% url 'inventario' %}?{% if q %}q={{ q }}&{% endif %}mostrar_inactivos={% if mostrar_inactivos %}false{% else %}true{% endif %}" 
+                       class="btn {% if mostrar_inactivos %}btn-info{% else %}btn-outline-info{% endif %}"
+                       title="{% if mostrar_inactivos %}Ocultar productos inactivos{% else %}Mostrar productos inactivos{% endif %}">
+                        <i class="bi bi-{% if mostrar_inactivos %}eye-slash{% else %}eye{% endif %}"></i> 
+                        {% if mostrar_inactivos %}Ocultar Inactivos{% else %}Mostrar Inactivos{% endif %}
+                    </a>
+                    <a href="{% url 'ajustes_stock' %}" class="btn btn-warning" style="color: #000;">
+                        <i class="bi bi-sliders"></i> Ajustes de Stock
+                    </a>
+                </div>
+            </div>
+
+  {% if messages %}
+    <ul class="messages">
+      {% for message in messages %}
+        <li class="{{ message.tags }}">{{ message }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
+  <!-- ============================================ -->
+  <!-- BARRA DE BÚSQUEDA                            -->
+  <!-- ============================================ -->
+  <!-- 
+    Permite buscar productos por nombre, marca o peso/tamaño.
+    La búsqueda se realiza en el servidor (Django ORM).
+  -->
+  <form method="get" class="inventory-search" novalidate>
+    <input type="text" 
+           name="q" 
+           value="{{ q }}" 
+           placeholder="Buscar por nombre, marca o peso/tamaño"
+           class="form-control">
+    <button type="submit" class="btn btn-sm btn-primary">
+      <i class="bi bi-search"></i> Buscar
+    </button>
+    {% if q %}
+      <a href="{% url 'inventario' %}" class="btn btn-sm btn-link">
+        <i class="bi bi-x-circle"></i> Limpiar
+      </a>
+    {% endif %}
+  </form>
+
+  <!-- ============================================ -->
+  <!-- BOTONES DE ACCIÓN MASIVA                     -->
+  <!-- ============================================ -->
+  <!-- 
+    Estos botones permiten realizar acciones sobre múltiples productos
+    seleccionados mediante checkboxes.
+    
+    ACCIONES DISPONIBLES:
+    - Crear Alertas: Genera alertas de vencimiento para los productos seleccionados
+    - Mover a Merma: Cambia el estado de los productos a "merma"
+    - Eliminar: Elimina los productos seleccionados (borrado lógico)
+  -->
+  <div class="inventory-bulk-actions-bar mb-3">
+    <div class="d-flex align-items-center gap-2">
+      <!-- Contador de productos seleccionados -->
+      <span id="contador-seleccionados" class="badge bg-secondary">
+        0 seleccionados
+      </span>
+      
+      <!-- Botón: Crear Alertas -->
+      <button type="button" 
+              class="btn btn-sm btn-warning" 
+              id="btn-crear-alertas"
+              onclick="accionMasiva('crear_alertas')"
+              disabled>
+        <i class="bi bi-bell"></i> Crear Alertas
+      </button>
+      
+      <!-- Botón: Mover a Merma -->
+      <button type="button" 
+              class="btn btn-sm btn-danger" 
+              id="btn-mover-merma"
+              onclick="accionMasiva('mover_merma')"
+              disabled>
+        <i class="bi bi-exclamation-triangle"></i> Mover a Merma
+      </button>
+      
+      <!-- Botón: Eliminar -->
+      <button type="button" 
+              class="btn btn-sm btn-outline-danger" 
+              id="btn-eliminar"
+              onclick="accionMasiva('eliminar')"
+              disabled>
+        <i class="bi bi-trash"></i> Eliminar
+      </button>
+    </div>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- TABLA DE INVENTARIO - VISTA SIMPLIFICADA    -->
+  <!-- ============================================ -->
+  <!-- 
+    Esta tabla muestra solo la información esencial de cada producto.
+    Se eliminaron las columnas de Categoría y Tipo para mantener la vista limpia.
+    Los precios se muestran sin decimales (formato chileno).
+    
+    NUEVA FUNCIONALIDAD:
+    - Checkbox en cada fila para selección múltiple
+    - Checkbox en el header para seleccionar/deseleccionar todos
+  -->
+  <table class="table table-striped table-sm inventory-table">
+    <thead>
+      <tr>
+        <!-- Checkbox para seleccionar/deseleccionar todos -->
+        <th style="width: 40px;">
+          <input type="checkbox" 
+                 id="checkbox-todos" 
+                 class="form-check-input"
+                 title="Seleccionar todos">
+        </th>
+        <th>Nombre</th>
+        <th>Marca</th>
+        <th>Peso/Tamaño</th>
+        <th>Precio / Unidad Venta</th>
+        <th>Cantidad (Stock)</th>
+        <th>Caducidad</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for p in productos %}
+      <tr>
+        <!-- Checkbox individual para este producto -->
+        <td>
+          <input type="checkbox" 
+                 class="form-check-input producto-checkbox" 
+                 value="{{ p.id }}"
+                 data-nombre="{{ p.nombre }}">
+        </td>
+        
+        <!-- Nombre del producto -->
+        <td>
+          <strong>{{ p.nombre }}</strong>
+          {% if p.estado_merma == 'en_merma' or p.cantidad == 0 %}
+            <span class="badge bg-danger ms-2" title="Producto en merma - necesita reabastecimiento">
+              <i class="bi bi-exclamation-triangle"></i> En Merma
+            </span>
+          {% elif p.estado_merma == 'inactivo' %}
+            <span class="badge bg-secondary ms-2" title="Producto inactivo - no disponible para venta">
+              <i class="bi bi-pause-circle"></i> Inactivo
+            </span>
+          {% endif %}
+        </td>
+        
+        <!-- Marca (muestra "—" si no tiene) -->
+        <td>{{ p.marca|default:"—" }}</td>
+        
+        <!-- Peso/Tamaño o Presentación (ej: "100g", "500ml", "Bolsa") -->
+        <td>{{ p.presentacion|default:"—" }}</td>
+        
+        <!-- Precio por unidad de venta -->
+        <td>
+          <strong>${{ p.precio_por_unidad_venta|floatformat:"0" }}</strong>
+          <small class="text-muted">/ {{ p.get_unidad_venta_display }}</small>
+        </td>
+        
+        <!-- Cantidad en stock (desde lotes si existen) con unidad -->
+        <td>
+          {% if p.cantidad_desde_lotes == 0 %}
+            <span class="text-danger fw-bold">0 {{ p.get_unidad_stock_display }}</span>
+          {% else %}
+            {% if p.unidad_stock == 'unidad' %}
+              <strong>{{ p.cantidad_desde_lotes|floatformat:"0" }} {{ p.get_unidad_stock_display }}</strong>
+            {% else %}
+              <strong>{{ p.cantidad_desde_lotes|floatformat:"3" }} {{ p.get_unidad_stock_display }}</strong>
+            {% endif %}
+            {% if p.numero_lotes_activos > 0 %}
+              <small class="text-muted d-block">({{ p.numero_lotes_activos }} lote{{ p.numero_lotes_activos|pluralize }})</small>
+            {% endif %}
+          {% endif %}
+        </td>
+        
+        <!-- Fecha de caducidad -->
+        <td>
+          {% if p.estado_merma == 'en_merma' or p.caducidad == None %}
+            <span class="text-muted">—</span>
+          {% else %}
+            {{ p.caducidad|date:"d/m/Y" }}
+          {% endif %}
+        </td>
+        
+        <!-- Acciones disponibles -->
+        <td>
+          <a href="{% url 'detalle_producto' p.id %}" 
+             class="btn btn-sm btn-outline-primary" 
+             title="Ver detalles del producto">
+            <i class="bi bi-eye"></i> Detalles
+          </a>
+          <a href="{% url 'editar_producto' p.id %}" 
+             class="btn btn-sm {% if p.estado_merma == 'en_merma' or p.cantidad == 0 %}btn-success{% else %}btn-outline-secondary{% endif %}"
+             title="{% if p.estado_merma == 'en_merma' or p.cantidad == 0 %}Reabastecer producto{% else %}Editar producto{% endif %}">
+            <i class="bi {% if p.estado_merma == 'en_merma' or p.cantidad == 0 %}bi-arrow-clockwise{% else %}bi-pencil{% endif %}"></i> 
+            {% if p.estado_merma == 'en_merma' or p.cantidad == 0 %}Reabastecer{% else %}Editar{% endif %}
+          </a>
+          {% if p.estado_merma == 'activo' %}
+            <button type="button" 
+                    class="btn btn-sm btn-outline-secondary" 
+                    onclick="cambiarEstadoProducto({{ p.id }}, 'inactivo')"
+                    title="Desactivar producto (no disponible para venta)">
+              <i class="bi bi-pause-circle"></i> Desactivar
+            </button>
+          {% elif p.estado_merma == 'inactivo' %}
+            <button type="button" 
+                    class="btn btn-sm btn-outline-success" 
+                    onclick="cambiarEstadoProducto({{ p.id }}, 'activo')"
+                    title="Activar producto (disponible para venta)">
+              <i class="bi bi-play-circle"></i> Activar
+            </button>
+          {% endif %}
+        </td>
+      </tr>
+      {% empty %}
+      <!-- Mensaje cuando no hay productos -->
+      <tr>
+        <td colspan="8" class="text-center py-4">
+          <i class="bi bi-inbox" style="font-size: 2rem; color: #6c757d;"></i>
+          <p class="mt-2 mb-0">No hay productos en el inventario.</p>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <div class="form-link">
+    <a href="{% url 'dashboard' %}">Volver al Dashboard</a>
+  </div>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================ -->
+<!-- MODAL PARA SELECCIONAR LOTES PARA MERMA     -->
+<!-- ============================================ -->
+<div class="modal fade" id="modalSeleccionarLotes" tabindex="-1" aria-labelledby="modalSeleccionarLotesLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content" style="background: rgba(26, 26, 26, 0.95); border: 1px solid #ffd700;">
+      <div class="modal-header" style="border-bottom: 1px solid #ffd700;">
+        <h5 class="modal-title" id="modalSeleccionarLotesLabel" style="color: #ffd700;">
+          <i class="bi bi-box-seam"></i> Seleccionar Lotes para Merma
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" style="color: #ffffff;">
+        <div id="modalProductoInfo" class="mb-3">
+          <h6 id="modalProductoNombre" style="color: #ffd700;"></h6>
+          <small class="text-muted" id="modalProductoUnidad"></small>
+        </div>
+        
+        <div class="mb-3">
+          <label class="form-label" style="color: #ffffff;">
+            <i class="bi bi-chat-left-text"></i> Motivo de Merma <span class="text-danger">*</span>
+          </label>
+          <textarea id="motivoMermaInput" class="form-control" rows="3" 
+                    placeholder="Ej: vencido, roto, robado, empaque dañado, contaminado, etc." 
+                    style="background: rgba(255, 255, 255, 0.1); color: #ffffff; border: 1px solid #ffd700;"></textarea>
+        </div>
+        
+        <div class="mb-3">
+          <label class="form-label" style="color: #ffffff;">
+            <i class="bi bi-box-seam"></i> Seleccionar Lotes
+          </label>
+          <div id="lotesContainer" style="max-height: 400px; overflow-y: auto;">
+            <p class="text-muted">Cargando lotes...</p>
+          </div>
+        </div>
+        
+        <div class="alert alert-info" style="background: rgba(13, 110, 253, 0.2); border: 1px solid #0d6efd; color: #ffffff;">
+          <i class="bi bi-info-circle"></i> 
+          <strong>Instrucciones:</strong> Selecciona los lotes completos que quieres enviar a merma, o ingresa una cantidad específica de un lote.
+        </div>
+      </div>
+      <div class="modal-footer" style="border-top: 1px solid #ffd700;">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-danger" id="btnConfirmarMerma">
+          <i class="bi bi-exclamation-triangle"></i> Confirmar Merma
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+<!-- ============================================ -->
+<!-- JAVASCRIPT PARA ACCIONES MASIVAS            -->
+<!-- ============================================ -->
+{% block extra_js %}
+<script>
+/*
+================================================================
+=                                                              =
+=         JAVASCRIPT PARA GESTIÓN DE ACCIONES MASIVAS         =
+=                                                              =
+================================================================
+
+Este script maneja la funcionalidad de selección múltiple y
+acciones masivas en el inventario.
+
+FUNCIONALIDADES:
+1. Seleccionar/deseleccionar todos los productos
+2. Actualizar contador de productos seleccionados
+3. Habilitar/deshabilitar botones según selección
+4. Ejecutar acciones masivas (crear alertas, mover a merma, eliminar)
+*/
+
+// ============================================================
+// VARIABLES GLOBALES
+// ============================================================
+const checkboxTodos = document.getElementById('checkbox-todos');
+const checkboxesProductos = document.querySelectorAll('.producto-checkbox');
+const contadorSeleccionados = document.getElementById('contador-seleccionados');
+    const btnCrearAlertas = document.getElementById('btn-crear-alertas');
+    const btnMoverMerma = document.getElementById('btn-mover-merma');
+    const btnEliminar = document.getElementById('btn-eliminar');
+
+// ============================================================
+// FUNCIÓN: Actualizar Estado de la Interfaz
+// ============================================================
+/**
+ * Actualiza el contador y habilita/deshabilita los botones
+ * según cuántos productos estén seleccionados.
+ */
+function actualizarEstado() {
+    // Contar cuántos checkboxes están marcados
+    const seleccionados = document.querySelectorAll('.producto-checkbox:checked');
+    const cantidad = seleccionados.length;
+    
+    // Actualizar el texto del contador
+    contadorSeleccionados.textContent = `${cantidad} seleccionado${cantidad !== 1 ? 's' : ''}`;
+    
+    // Cambiar el color del badge según la cantidad
+    if (cantidad === 0) {
+        contadorSeleccionados.className = 'badge bg-secondary';
+    } else {
+        contadorSeleccionados.className = 'badge bg-primary';
+    }
+    
+    // Habilitar o deshabilitar los botones
+    const haySeleccion = cantidad > 0;
+    btnCrearAlertas.disabled = !haySeleccion;
+    btnMoverMerma.disabled = !haySeleccion;
+    btnEliminar.disabled = !haySeleccion;
+}
+
+// ============================================================
+// EVENTO: Checkbox "Seleccionar Todos"
+// ============================================================
+/**
+ * Cuando se hace clic en el checkbox del header,
+ * selecciona o deselecciona todos los productos.
+ */
+if (checkboxTodos) {
+    checkboxTodos.addEventListener('change', function() {
+        const estaSeleccionado = this.checked;
+        
+        // Marcar o desmarcar todos los checkboxes de productos
+        checkboxesProductos.forEach(checkbox => {
+            checkbox.checked = estaSeleccionado;
+        });
+        
+        // Actualizar el estado de la interfaz
+        actualizarEstado();
+    });
+}
+
+// ============================================================
+// EVENTO: Checkboxes Individuales
+// ============================================================
+/**
+ * Cuando se hace clic en un checkbox individual,
+ * actualiza el estado del checkbox "todos" y la interfaz.
+ */
+checkboxesProductos.forEach(checkbox => {
+    checkbox.addEventListener('change', function() {
+        // Verificar si todos están seleccionados
+        const todosSeleccionados = Array.from(checkboxesProductos)
+            .every(cb => cb.checked);
+        
+        // Actualizar el checkbox "todos"
+        if (checkboxTodos) {
+            checkboxTodos.checked = todosSeleccionados;
+        }
+        
+        // Actualizar el estado de la interfaz
+        actualizarEstado();
+    });
+});
+
+// ============================================================
+// FUNCIÓN: Ejecutar Acción Masiva
+// ============================================================
+/**
+ * Ejecuta una acción sobre todos los productos seleccionados.
+ * 
+ * @param {string} accion - Tipo de acción: 'crear_alertas', 'mover_merma', 'eliminar'
+ */
+function accionMasiva(accion) {
+    // Obtener los IDs de los productos seleccionados
+    const seleccionados = document.querySelectorAll('.producto-checkbox:checked');
+    const ids = Array.from(seleccionados).map(cb => cb.value);
+    
+    // Validar que haya productos seleccionados
+    if (ids.length === 0) {
+        alert('Por favor, selecciona al menos un producto.');
+        return;
+    }
+    
+    // Obtener los nombres de los productos para mostrar en la confirmación
+    const nombres = Array.from(seleccionados)
+        .map(cb => cb.dataset.nombre)
+        .slice(0, 3); // Mostrar máximo 3 nombres
+    
+    const masProductos = ids.length > 3 ? ` y ${ids.length - 3} más` : '';
+    const listaProductos = nombres.join(', ') + masProductos;
+    
+    // Mensajes de confirmación según la acción
+    let mensaje = '';
+    let urlDestino = '';
+    
+    switch(accion) {
+        case 'crear_alertas':
+            mensaje = `¿Crear alertas para ${ids.length} producto(s)?\n\n${listaProductos}`;
+            urlDestino = '/api/acciones-masivas/crear-alertas/';
+            break;
+        case 'mover_merma':
+            // Si solo hay un producto, mostrar modal de selección de lotes
+            if (ids.length === 1) {
+                mostrarModalSeleccionarLotes(ids[0]);
+                return; // No continuar con el flujo normal
+            }
+            
+            // Para múltiples productos, usar el flujo anterior (sin selección de lotes)
+            const motivoMerma = prompt(
+                `Mover ${ids.length} producto(s) a MERMA\n\n` +
+                `El producto se reducirá a cantidad 0 pero permanecerá visible.\n` +
+                `Podrás reabastecerlo editándolo más tarde.\n\n` +
+                `Ingrese el motivo detallado:\n` +
+                `Ejemplos: "vencido", "roto", "robado", "empaque dañado", "contaminado", etc.\n\n` +
+                `Motivo:`
+            );
+            
+            if (!motivoMerma || motivoMerma.trim() === '') {
+                alert('Debe ingresar un motivo detallado para mover el producto a merma.');
+                return;
+            }
+            
+            // Confirmar acción
+            mensaje = `¿Mover ${ids.length} producto(s) a MERMA?\n\n` +
+                     `Los productos se reducirán a cantidad 0.\n` +
+                     `Motivo: ${motivoMerma.trim()}\n\n` +
+                     `${listaProductos}\n\n` +
+                     `Nota: Los productos permanecerán visibles y podrás reabastecerlos editándolos.`;
+            
+            if (!confirm(mensaje)) {
+                return;
+            }
+            
+            urlDestino = '/api/acciones-masivas/mover-merma/';
+            // Guardar datos para enviar en el body
+            window.moverMermaData = {
+                ids: ids,
+                motivo_merma: motivoMerma.trim()
+            };
+            break;
+        case 'eliminar':
+            mensaje = `¿ELIMINAR ${ids.length} producto(s)?\n\n${listaProductos}\n\n⚠️ Esta acción no se puede deshacer.`;
+            urlDestino = '/api/acciones-masivas/eliminar/';
+            break;
+    }
+    
+    // Pedir confirmación al usuario
+    if (!confirm(mensaje)) {
+        return;
+    }
+    
+    // Mostrar indicador de carga
+    const btnActual = event.target.closest('button');
+    const textoOriginal = btnActual.innerHTML;
+    btnActual.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Procesando...';
+    btnActual.disabled = true;
+    
+    // Preparar datos a enviar
+    let datosEnvio = { ids: ids };
+    
+    // Si es mover a merma, incluir solo motivo (estado siempre será 'en_merma')
+    if (accion === 'mover_merma' && window.moverMermaData) {
+        datosEnvio = {
+            ids: window.moverMermaData.ids,
+            motivo_merma: window.moverMermaData.motivo_merma
+        };
+        // Limpiar datos temporales
+        delete window.moverMermaData;
+    }
+    
+    // Enviar la petición al servidor
+    fetch(urlDestino, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify(datosEnvio)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Mostrar mensaje de éxito
+            alert(data.message || 'Acción completada exitosamente');
+            // Recargar la página para ver los cambios
+            window.location.reload();
+        } else {
+            // Mostrar mensaje de error
+            alert(data.message || 'Ocurrió un error al procesar la acción');
+            // Restaurar el botón
+            btnActual.innerHTML = textoOriginal;
+            btnActual.disabled = false;
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error de conexión. Por favor, intenta de nuevo.');
+        // Restaurar el botón
+        btnActual.innerHTML = textoOriginal;
+        btnActual.disabled = false;
+    });
+}
+
+// ============================================================
+// FUNCIÓN AUXILIAR: Obtener Cookie CSRF
+// ============================================================
+/**
+ * Obtiene el token CSRF de las cookies para enviarlo en las peticiones POST.
+ * Django requiere este token para validar las peticiones.
+ */
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+// ============================================================
+// FUNCIÓN: Mostrar Modal de Selección de Lotes
+// ============================================================
+function mostrarModalSeleccionarLotes(productoId) {
+    const modal = new bootstrap.Modal(document.getElementById('modalSeleccionarLotes'));
+    const lotesContainer = document.getElementById('lotesContainer');
+    const productoNombre = document.getElementById('modalProductoNombre');
+    const productoUnidad = document.getElementById('modalProductoUnidad');
+    
+    // Limpiar contenido anterior
+    lotesContainer.innerHTML = '<p class="text-muted">Cargando lotes...</p>';
+    document.getElementById('motivoMermaInput').value = '';
+    
+    // Guardar producto_id para usar después
+    window.moverMermaData = { producto_id: productoId };
+    
+    // Obtener información del producto y sus lotes
+    fetch(`/api/productos/${productoId}/lotes/`)
+        .then(response => response.json())
+        .then(data => {
+            if (!data.success) {
+                alert('Error al cargar lotes: ' + (data.error || 'Error desconocido'));
+                return;
+            }
+            
+            // Mostrar información del producto
+            productoNombre.textContent = data.producto.nombre;
+            productoUnidad.textContent = `Unidad: ${data.producto.unidad_stock}`;
+            
+            // Si no hay lotes, mostrar mensaje
+            if (data.lotes.length === 0) {
+                lotesContainer.innerHTML = `
+                    <div class="alert alert-warning">
+                        <i class="bi bi-info-circle"></i> Este producto no tiene lotes activos.
+                        Se moverá todo el stock a merma.
+                    </div>
+                `;
+            } else {
+                // Mostrar lotes para seleccionar
+                let html = '<div class="list-group">';
+                data.lotes.forEach(lote => {
+                    const diasTexto = lote.dias_hasta_vencer !== null 
+                        ? (lote.dias_hasta_vencer < 0 
+                            ? `<span class="badge bg-danger">Vencido hace ${Math.abs(lote.dias_hasta_vencer)} días</span>`
+                            : `<span class="badge bg-${lote.dias_hasta_vencer <= 7 ? 'danger' : lote.dias_hasta_vencer <= 30 ? 'warning' : 'success'}">${lote.dias_hasta_vencer} días</span>`)
+                        : '<span class="badge bg-secondary">Sin fecha</span>';
+                    
+                    html += `
+                        <div class="list-group-item" style="background: rgba(255, 255, 255, 0.05); border: 1px solid #ffd700; margin-bottom: 10px;">
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" 
+                                       id="lote_${lote.id}" 
+                                       data-lote-id="${lote.id}"
+                                       data-cantidad-max="${lote.cantidad}">
+                                <label class="form-check-label" for="lote_${lote.id}" style="color: #ffffff;">
+                                    <strong>${lote.numero_lote}</strong>
+                                    <br>
+                                    <small class="text-muted">
+                                        Cantidad: ${lote.cantidad} ${data.producto.unidad_stock} | 
+                                        Vence: ${lote.fecha_caducidad ? new Date(lote.fecha_caducidad).toLocaleDateString('es-CL') : 'N/A'} 
+                                        ${diasTexto}
+                                    </small>
+                                </label>
+                            </div>
+                            <div class="ms-4">
+                                <label class="form-label small" style="color: #ffffff;">
+                                    Cantidad a enviar a merma:
+                                </label>
+                                <input type="number" 
+                                       class="form-control form-control-sm cantidad-lote-input" 
+                                       data-lote-id="${lote.id}"
+                                       min="1" 
+                                       max="${lote.cantidad}" 
+                                       step="0.001"
+                                       value="${lote.cantidad}"
+                                       placeholder="${lote.cantidad}"
+                                       required
+                                       style="background: rgba(255, 255, 255, 0.1); color: #ffffff; border: 1px solid #ffd700;">
+                                <small class="text-muted" style="color: #ffd700 !important;">
+                                    <i class="bi bi-info-circle"></i> 
+                                    Mínimo: 1 | Máximo: ${lote.cantidad} ${data.producto.unidad_stock} | 
+                                    Valor por defecto = todo el lote (${lote.cantidad})
+                                </small>
+                            </div>
+                        </div>
+                    `;
+                });
+                html += '</div>';
+                lotesContainer.innerHTML = html;
+            }
+            
+            // Mostrar modal
+            modal.show();
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error al cargar los lotes del producto');
+        });
+}
+
+// ============================================================
+// EVENTO: Confirmar Merma desde Modal
+// ============================================================
+document.getElementById('btnConfirmarMerma').addEventListener('click', function() {
+    const motivoMerma = document.getElementById('motivoMermaInput').value.trim();
+    
+    if (!motivoMerma) {
+        alert('Debe ingresar un motivo para mover a merma.');
+        return;
+    }
+    
+    // Obtener lotes seleccionados
+    const checkboxes = document.querySelectorAll('#lotesContainer input[type="checkbox"]:checked');
+    
+    const lotesSeleccionados = [];
+    let tieneLotes = false;
+    let hayError = false;
+    
+    // Primero validar todos los campos
+    checkboxes.forEach(checkbox => {
+        const loteId = parseInt(checkbox.dataset.loteId);
+        const cantidadInput = document.querySelector(`.cantidad-lote-input[data-lote-id="${loteId}"]`);
+        const cantidadMax = parseFloat(checkbox.dataset.cantidadMax) || 0;
+        const cantidad = parseFloat(cantidadInput.value);
+        
+        // Validar que la cantidad sea un número válido
+        if (isNaN(cantidad) || cantidad <= 0) {
+            alert(`La cantidad del lote debe ser mayor a 0. Por favor, ingresa un valor válido.`);
+            cantidadInput.focus();
+            hayError = true;
+            return;
+        }
+        
+        // Validar que sea al menos 1
+        if (cantidad < 1) {
+            alert(`La cantidad debe ser al menos 1.`);
+            cantidadInput.focus();
+            hayError = true;
+            return;
+        }
+        
+        // Validar que no exceda la cantidad máxima del lote
+        if (cantidad > cantidadMax) {
+            alert(`La cantidad ingresada (${cantidad}) excede la cantidad disponible del lote (${cantidadMax}). Por favor, ingresa un valor menor o igual a ${cantidadMax}.`);
+            cantidadInput.focus();
+            hayError = true;
+            return;
+        }
+    });
+    
+    // Si hay errores, no continuar
+    if (hayError) {
+        return;
+    }
+    
+    // Si todas las validaciones pasaron, procesar los lotes
+    checkboxes.forEach(checkbox => {
+        const loteId = parseInt(checkbox.dataset.loteId);
+        const cantidadInput = document.querySelector(`.cantidad-lote-input[data-lote-id="${loteId}"]`);
+        const cantidadMax = parseFloat(checkbox.dataset.cantidadMax) || 0;
+        const cantidad = parseFloat(cantidadInput.value);
+        
+        // Si el checkbox está marcado y hay cantidad disponible, agregar el lote
+        if (cantidadMax > 0 && cantidad >= 1 && cantidad <= cantidadMax) {
+            lotesSeleccionados.push({
+                lote_id: loteId,
+                cantidad: cantidad
+            });
+            tieneLotes = true;
+        }
+    });
+    
+    // Si no hay lotes en el contenedor, es porque el producto no tiene lotes
+    const noTieneLotes = document.querySelectorAll('#lotesContainer .list-group-item').length === 0;
+    
+    // Validar: debe haber al menos un checkbox marcado (si hay lotes disponibles)
+    if (!tieneLotes && !noTieneLotes) {
+        alert('Debe seleccionar al menos un lote marcando el checkbox.');
+        return;
+    }
+    
+    // Obtener producto_id del modal (guardado en window.moverMermaData)
+    const productoId = window.moverMermaData?.producto_id;
+    
+    if (!productoId) {
+        alert('Error: No se pudo identificar el producto.');
+        return;
+    }
+    
+    // Cerrar modal
+    bootstrap.Modal.getInstance(document.getElementById('modalSeleccionarLotes')).hide();
+    
+    // Enviar datos a la API
+    enviarMermaConLotes(productoId, motivoMerma, lotesSeleccionados);
+});
+
+// ============================================================
+// FUNCIÓN: Enviar Merma con Lotes Específicos
+// ============================================================
+function enviarMermaConLotes(productoId, motivoMerma, lotesSeleccionados) {
+    const btnMoverMerma = document.getElementById('btn-mover-merma');
+    const textoOriginal = btnMoverMerma.innerHTML;
+    btnMoverMerma.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Procesando...';
+    btnMoverMerma.disabled = true;
+    
+    fetch('/api/mover-a-merma/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify({
+            producto_ids: [productoId],
+            motivo_merma: motivoMerma,
+            lotes: lotesSeleccionados
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        btnMoverMerma.innerHTML = textoOriginal;
+        btnMoverMerma.disabled = false;
+        
+        if (data.success) {
+            alert(data.mensaje);
+            location.reload();
+        } else {
+            alert('Error: ' + (data.error || data.mensaje || 'Error desconocido'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        btnMoverMerma.innerHTML = textoOriginal;
+        btnMoverMerma.disabled = false;
+        alert('Error al procesar la merma. Intenta nuevamente.');
+    });
+}
+
+// ============================================================
+// INICIALIZACIÓN
+// ============================================================
+// Actualizar el estado inicial al cargar la página
+actualizarEstado();
+
+// ============================================================
+// FUNCIÓN: Cambiar Estado Individual de Producto
+// ============================================================
+/**
+ * Cambia el estado de un producto individual (activo/inactivo).
+ * 
+ * @param {number} productoId - ID del producto
+ * @param {string} nuevoEstado - 'activo' o 'inactivo'
+ */
+function cambiarEstadoProducto(productoId, nuevoEstado) {
+    const estadoTexto = nuevoEstado === 'activo' ? 'activar' : 'desactivar';
+    
+    if (!confirm(`¿${estadoTexto.charAt(0).toUpperCase() + estadoTexto.slice(1)} este producto?`)) {
+        return;
+    }
+    
+    fetch(`/api/productos/${productoId}/cambiar-estado/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify({ estado: nuevoEstado })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(data.message);
+            location.reload(); // Recargar para ver el cambio
+        } else {
+            alert('Error: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error al cambiar el estado del producto');
+    });
+}
+</script>
+{% endblock %}

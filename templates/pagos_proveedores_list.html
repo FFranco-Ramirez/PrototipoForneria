@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block contenido %}
+<div class="dashboard-main-container">
+    {% include 'includes/sidebar.html' with active_page='pagos_proveedores' %}
+    
+    <div class="dashboard-content-wrapper">
+        {% include 'includes/dashboard_header.html' with page_title='Pagos a Proveedores' %}
+        
+        <main class="dashboard-content">
+            <div style="margin-bottom: 20px;">
+                <a href="{% url 'pago_proveedor_crear' %}" class="btn btn-primary">
+                    <span>➕</span> Registrar Pago
+                </a>
+            </div>
+            <!-- Resumen de pagos -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h5 class="card-title">Total Pagos</h5>
+                            <h3 class="text-primary">{{ total_pagos }}</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h5 class="card-title">Monto Total Pagado</h5>
+                            <h3 class="text-success">${{ monto_total|floatformat:0 }}</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Filtros de búsqueda -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <form method="get" class="row g-3">
+                        <div class="col-md-3">
+                            <input type="text" name="q" class="form-control" placeholder="Buscar por comprobante, factura, proveedor..." value="{{ q }}">
+                        </div>
+                        <div class="col-md-2">
+                            <input type="number" name="factura_id" class="form-control" placeholder="ID Factura" value="{{ factura_id }}">
+                        </div>
+                        <div class="col-md-2">
+                            <input type="date" name="fecha_desde" class="form-control" value="{{ fecha_desde }}" placeholder="Desde">
+                        </div>
+                        <div class="col-md-2">
+                            <input type="date" name="fecha_hasta" class="form-control" value="{{ fecha_hasta }}" placeholder="Hasta">
+                        </div>
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-primary w-100">Buscar</button>
+                        </div>
+                        <div class="col-md-1">
+                            <a href="{% url 'pagos_proveedores_list' %}" class="btn btn-secondary w-100">Limpiar</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Tabla de pagos -->
+            <div class="card">
+                <div class="card-body">
+                    {% if pagos %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Fecha de Pago</th>
+                                    <th>N° Factura</th>
+                                    <th>Proveedor</th>
+                                    <th>Monto</th>
+                                    <th>Método de Pago</th>
+                                    <th>Comprobante</th>
+                                    <th>Observaciones</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for pago in pagos %}
+                                <tr>
+                                    <td>{{ pago.fecha_pago|date:"d/m/Y" }}</td>
+                                    <td>
+                                        <a href="{% url 'factura_proveedor_detalle' factura_id=pago.factura_proveedor.id %}" class="text-decoration-none">
+                                            <strong>{{ pago.factura_proveedor.numero_factura }}</strong>
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'proveedor_editar' proveedor_id=pago.factura_proveedor.proveedor.id %}" class="text-decoration-none">
+                                            {{ pago.factura_proveedor.proveedor.nombre }}
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <strong class="text-success">${{ pago.monto|floatformat:0 }}</strong>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">
+                                            {{ pago.get_metodo_pago_display }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        {% if pago.numero_comprobante %}
+                                            <span class="text-muted">{{ pago.numero_comprobante }}</span>
+                                        {% else %}
+                                            <span class="text-muted">-</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if pago.observaciones %}
+                                            <span class="text-muted" title="{{ pago.observaciones }}">
+                                                {{ pago.observaciones|truncatewords:5 }}
+                                            </span>
+                                        {% else %}
+                                            <span class="text-muted">-</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a href="{% url 'factura_proveedor_detalle' factura_id=pago.factura_proveedor.id %}" 
+                                               class="btn btn-sm btn-info" 
+                                               title="Ver factura">
+                                                👁️ Ver
+                                            </a>
+                                            <a href="{% url 'pago_proveedor_eliminar' pago_id=pago.id %}" 
+                                               class="btn btn-sm btn-danger" 
+                                               title="Eliminar pago"
+                                               onclick="return confirm('¿Está seguro que desea eliminar este pago?');">
+                                                🗑️ Eliminar
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot>
+                                <tr class="table-primary">
+                                    <td colspan="3"><strong>Total:</strong></td>
+                                    <td><strong>${{ monto_total|floatformat:0 }}</strong></td>
+                                    <td colspan="4"></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info text-center">
+                        <p class="mb-0">No se encontraron pagos registrados.</p>
+                        <a href="{% url 'pago_proveedor_crear' %}" class="btn btn-primary mt-3">
+                            Registrar Primer Pago
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Información adicional -->
+            {% if pagos %}
+            <div class="card mt-4">
+                <div class="card-body">
+                    <h6 class="card-title">Información</h6>
+                    <p class="card-text text-muted small mb-0">
+                        <strong>Total de registros:</strong> {{ total_pagos }} pago(s) | 
+                        <strong>Monto total:</strong> ${{ monto_total|floatformat:0 }}
+                    </p>
+                </div>
+            </div>
+            {% endif %}
+        </main>
+    </div>
+</div>
+{% endblock %}
+

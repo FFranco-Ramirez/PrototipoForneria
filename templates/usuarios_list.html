@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block body_class %}dark-gold-theme{% endblock %}
+
+{% block contenido %}
+<div class="dashboard-main-container">
+    <!-- Sidebar Reutilizable -->
+    {% include 'includes/sidebar.html' with active_page='usuarios' %}
+
+    <div class="dashboard-content-wrapper">
+        <!-- Header con título -->
+        {% include 'includes/dashboard_header.html' with page_title='Usuarios' %}
+        
+        <div class="inventory-container dark-gold-theme">
+          <div class="header-actions" style="margin-bottom: 20px;">
+            <a href="{% url 'usuario_crear' %}" class="btn btn-primary">
+                <span>➕</span> Crear Usuario
+            </a>
+          </div>
+
+  {% if messages %}
+    <ul class="messages">
+      {% for message in messages %}
+        <li class="{{ message.tags }}">{{ message }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
+  <table class="table table-striped table-sm inventory-table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Usuario</th>
+        <th>Correo</th>
+        <th>Nombre</th>
+        <th>Apellidos</th>
+        <th>Rol</th>
+        <th>Staff</th>
+        <th>Super</th>
+        <th>Activo</th>
+        <th>Último login</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in usuarios_con_perfiles %}
+      {% with u=item.user perfil=item.perfil %}
+      <tr>
+        <td>{{ u.id }}</td>
+        <td>{{ u.username }}</td>
+        <td>{{ u.email }}</td>
+        <td>{{ u.first_name|default:"—" }}</td>
+        <td>{{ u.last_name|default:"—" }}</td>
+        <td>{{ perfil.roles.nombre|default:"Sin rol" }}</td>
+        <td>{{ u.is_staff|yesno:"Sí,No" }}</td>
+        <td>{{ u.is_superuser|yesno:"Sí,No" }}</td>
+        <td>{{ u.is_active|yesno:"Sí,No" }}</td>
+        <td>{{ u.last_login|default:"—" }}</td>
+        <td>
+          <a href="{% url 'usuario_editar' u.id %}" class="btn btn-sm btn-outline-secondary">Editar</a>
+          {% if u.id != request.user.id %}
+          <a href="{% url 'usuario_eliminar' u.id %}" class="btn btn-sm btn-outline-danger">Eliminar</a>
+          {% else %}
+          <span class="text-muted">No puedes eliminarte</span>
+          {% endif %}
+        </td>
+      </tr>
+      {% endwith %}
+      {% empty %}
+      <tr><td colspan="11">No hay usuarios.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <div class="form-link">
+    <a href="{% url 'dashboard' %}">Volver al Dashboard</a>
+  </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

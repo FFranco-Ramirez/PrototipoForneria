@@ -1,0 +1,1201 @@
+-- phpMyAdmin SQL Dump
+-- version 5.2.1
+-- https://www.phpmyadmin.net/
+--
+-- Servidor: 127.0.0.1:3306
+-- Tiempo de generación: 10-12-2025 a las 02:54:42
+-- Versión del servidor: 9.1.0
+-- Versión de PHP: 8.3.14
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+
+--
+-- Base de datos: `forneria`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `alertas`
+--
+
+DROP TABLE IF EXISTS `alertas`;
+CREATE TABLE IF NOT EXISTS `alertas` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `tipo_alerta` enum('verde','amarilla','roja') CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci NOT NULL,
+  `mensaje` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci NOT NULL,
+  `fecha_generada` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `estado` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci DEFAULT 'activa',
+  `productos_id` int DEFAULT NULL COMMENT 'Producto asociado a esta alerta (opcional si es alerta de factura)',
+  `factura_proveedor_id` int DEFAULT NULL COMMENT 'Factura asociada a esta alerta (opcional si es alerta de producto)',
+  PRIMARY KEY (`id`),
+  KEY `fk_alertas_productos1_idx` (`productos_id`),
+  KEY `idx_tipo_alerta` (`tipo_alerta`),
+  KEY `idx_estado` (`estado`),
+  KEY `idx_fecha` (`fecha_generada`),
+  KEY `fk_alertas_factura_proveedor_idx` (`factura_proveedor_id`),
+  KEY `idx_estado_tipo` (`estado`,`tipo_alerta`)
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish_ci;
+
+--
+-- Volcado de datos para la tabla `alertas`
+--
+
+INSERT INTO `alertas` (`id`, `tipo_alerta`, `mensaje`, `fecha_generada`, `estado`, `productos_id`, `factura_proveedor_id`) VALUES
+(4, 'roja', 'galleta vence en 6 días - URGENTE', '2025-12-08 03:09:58', 'resuelta', 3, NULL),
+(6, 'roja', 'pan vence en 6 días - URGENTE', '2025-12-08 22:59:20', 'resuelta', 2, NULL),
+(7, 'roja', 'galleta vence en 1 días - URGENTE', '2025-12-09 06:07:29', 'resuelta', 3, NULL),
+(8, 'roja', 'pan vence en 5 días - URGENTE', '2025-12-09 06:07:29', 'resuelta', 2, NULL),
+(9, 'roja', 'pan - STOCK BAJO: 10.000 unidades (mínimo: 10)', '2025-12-09 06:07:29', 'resuelta', 2, NULL),
+(10, 'roja', 'pastel chocolate vence en 5 días - URGENTE', '2025-12-10 03:21:35', 'activa', 4, NULL),
+(11, 'roja', 'galleta vence en 2 días - URGENTE', '2025-12-10 03:21:35', 'activa', 3, NULL),
+(12, 'roja', 'pan vence en 5 días - URGENTE', '2025-12-09 21:20:02', 'resuelta', 2, NULL),
+(13, 'roja', 'Factura 1 de Amasandería VENCIDA hace 2 días - $29750.00', '2025-12-10 03:21:35', 'activa', NULL, 1),
+(14, 'roja', 'pan vence en 5 días - URGENTE', '2025-12-09 23:18:31', 'resuelta', 2, NULL),
+(15, 'roja', 'pan vence en 5 días - URGENTE', '2025-12-09 23:32:18', 'resuelta', 2, NULL),
+(16, 'roja', 'pastel chocolate - STOCK BAJO: 1.000 unidades (mínimo: 2)', '2025-12-10 02:17:14', 'activa', 4, NULL),
+(17, 'roja', 'pan vence en 4 días - URGENTE', '2025-12-10 03:21:35', 'activa', 2, NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `auth_group`
+--
+
+DROP TABLE IF EXISTS `auth_group`;
+CREATE TABLE IF NOT EXISTS `auth_group` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(150) CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `name` (`name`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `auth_group_permissions`
+--
+
+DROP TABLE IF EXISTS `auth_group_permissions`;
+CREATE TABLE IF NOT EXISTS `auth_group_permissions` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `group_id` int NOT NULL,
+  `permission_id` int NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `auth_group_permissions_group_id_permission_id_0cd325b0_uniq` (`group_id`,`permission_id`),
+  KEY `auth_group_permissions_group_id_b120cbf9` (`group_id`),
+  KEY `auth_group_permissions_permission_id_84c5c92e` (`permission_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `auth_permission`
+--
+
+DROP TABLE IF EXISTS `auth_permission`;
+CREATE TABLE IF NOT EXISTS `auth_permission` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci NOT NULL,
+  `content_type_id` int NOT NULL,
+  `codename` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `auth_permission_content_type_id_codename_01ab375a_uniq` (`content_type_id`,`codename`),
+  KEY `auth_permission_content_type_id_2f476e4b` (`content_type_id`)
+) ENGINE=MyISAM AUTO_INCREMENT=97 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish_ci;
+
+--
+-- Volcado de datos para la tabla `auth_permission`
+--
+
+INSERT INTO `auth_permission` (`id`, `name`, `content_type_id`, `codename`) VALUES
+(1, 'Can add log entry', 1, 'add_logentry'),
+(2, 'Can change log entry', 1, 'change_logentry'),
+(3, 'Can delete log entry', 1, 'delete_logentry'),
+(4, 'Can view log entry', 1, 'view_logentry'),
+(5, 'Can add permission', 2, 'add_permission'),
+(6, 'Can change permission', 2, 'change_permission'),
+(7, 'Can delete permission', 2, 'delete_permission'),
+(8, 'Can view permission', 2, 'view_permission'),
+(9, 'Can add group', 3, 'add_group'),
+(10, 'Can change group', 3, 'change_group'),
+(11, 'Can delete group', 3, 'delete_group'),
+(12, 'Can view group', 3, 'view_group'),
+(13, 'Can add user', 4, 'add_user'),
+(14, 'Can change user', 4, 'change_user'),
+(15, 'Can delete user', 4, 'delete_user'),
+(16, 'Can view user', 4, 'view_user'),
+(17, 'Can add content type', 5, 'add_contenttype'),
+(18, 'Can change content type', 5, 'change_contenttype'),
+(19, 'Can delete content type', 5, 'delete_contenttype'),
+(20, 'Can view content type', 5, 'view_contenttype'),
+(21, 'Can add session', 6, 'add_session'),
+(22, 'Can change session', 6, 'change_session'),
+(23, 'Can delete session', 6, 'delete_session'),
+(24, 'Can view session', 6, 'view_session'),
+(25, 'Can add Alerta', 7, 'add_alertas'),
+(26, 'Can change Alerta', 7, 'change_alertas'),
+(27, 'Can delete Alerta', 7, 'delete_alertas'),
+(28, 'Can view Alerta', 7, 'view_alertas'),
+(29, 'Can add Categoria', 8, 'add_categorias'),
+(30, 'Can change Categoria', 8, 'change_categorias'),
+(31, 'Can delete Categoria', 8, 'delete_categorias'),
+(32, 'Can view Categoria', 8, 'view_categorias'),
+(33, 'Can add Cliente', 9, 'add_clientes'),
+(34, 'Can change Cliente', 9, 'change_clientes'),
+(35, 'Can delete Cliente', 9, 'delete_clientes'),
+(36, 'Can view Cliente', 9, 'view_clientes'),
+(37, 'Can add Detalle de Factura de Proveedor', 10, 'add_detallefacturaproveedor'),
+(38, 'Can change Detalle de Factura de Proveedor', 10, 'change_detallefacturaproveedor'),
+(39, 'Can delete Detalle de Factura de Proveedor', 10, 'delete_detallefacturaproveedor'),
+(40, 'Can view Detalle de Factura de Proveedor', 10, 'view_detallefacturaproveedor'),
+(41, 'Can add Detalle de Venta', 11, 'add_detalleventa'),
+(42, 'Can change Detalle de Venta', 11, 'change_detalleventa'),
+(43, 'Can delete Detalle de Venta', 11, 'delete_detalleventa'),
+(44, 'Can view Detalle de Venta', 11, 'view_detalleventa'),
+(45, 'Can add direccion', 12, 'add_direccion'),
+(46, 'Can change direccion', 12, 'change_direccion'),
+(47, 'Can delete direccion', 12, 'delete_direccion'),
+(48, 'Can view direccion', 12, 'view_direccion'),
+(49, 'Can add Factura de Proveedor', 13, 'add_facturaproveedor'),
+(50, 'Can change Factura de Proveedor', 13, 'change_facturaproveedor'),
+(51, 'Can delete Factura de Proveedor', 13, 'delete_facturaproveedor'),
+(52, 'Can view Factura de Proveedor', 13, 'view_facturaproveedor'),
+(53, 'Can add Movimiento de Inventario', 14, 'add_movimientosinventario'),
+(54, 'Can change Movimiento de Inventario', 14, 'change_movimientosinventario'),
+(55, 'Can delete Movimiento de Inventario', 14, 'delete_movimientosinventario'),
+(56, 'Can view Movimiento de Inventario', 14, 'view_movimientosinventario'),
+(57, 'Can add Informacion Nutricional', 15, 'add_nutricional'),
+(58, 'Can change Informacion Nutricional', 15, 'change_nutricional'),
+(59, 'Can delete Informacion Nutricional', 15, 'delete_nutricional'),
+(60, 'Can view Informacion Nutricional', 15, 'view_nutricional'),
+(61, 'Can add Pago de Proveedor', 16, 'add_pagoproveedor'),
+(62, 'Can change Pago de Proveedor', 16, 'change_pagoproveedor'),
+(63, 'Can delete Pago de Proveedor', 16, 'delete_pagoproveedor'),
+(64, 'Can view Pago de Proveedor', 16, 'view_pagoproveedor'),
+(65, 'Can add Producto', 17, 'add_productos'),
+(66, 'Can change Producto', 17, 'change_productos'),
+(67, 'Can delete Producto', 17, 'delete_productos'),
+(68, 'Can view Producto', 17, 'view_productos'),
+(69, 'Can add Proveedor', 18, 'add_proveedor'),
+(70, 'Can change Proveedor', 18, 'change_proveedor'),
+(71, 'Can delete Proveedor', 18, 'delete_proveedor'),
+(72, 'Can view Proveedor', 18, 'view_proveedor'),
+(73, 'Can add roles', 19, 'add_roles'),
+(74, 'Can change roles', 19, 'change_roles'),
+(75, 'Can delete roles', 19, 'delete_roles'),
+(76, 'Can view roles', 19, 'view_roles'),
+(77, 'Can add usuarios', 20, 'add_usuarios'),
+(78, 'Can change usuarios', 20, 'change_usuarios'),
+(79, 'Can delete usuarios', 20, 'delete_usuarios'),
+(80, 'Can view usuarios', 20, 'view_usuarios'),
+(81, 'Can add Venta', 21, 'add_ventas'),
+(82, 'Can change Venta', 21, 'change_ventas'),
+(83, 'Can delete Venta', 21, 'delete_ventas'),
+(84, 'Can view Venta', 21, 'view_ventas'),
+(85, 'Can add Registro de Merma', 22, 'add_historialmerma'),
+(86, 'Can change Registro de Merma', 22, 'change_historialmerma'),
+(87, 'Can delete Registro de Merma', 22, 'delete_historialmerma'),
+(88, 'Can view Registro de Merma', 22, 'view_historialmerma'),
+(89, 'Can add Lote', 23, 'add_lote'),
+(90, 'Can change Lote', 23, 'change_lote'),
+(91, 'Can delete Lote', 23, 'delete_lote'),
+(92, 'Can view Lote', 23, 'view_lote'),
+(93, 'Can add Historial de Boleta', 24, 'add_historialboletas'),
+(94, 'Can change Historial de Boleta', 24, 'change_historialboletas'),
+(95, 'Can delete Historial de Boleta', 24, 'delete_historialboletas'),
+(96, 'Can view Historial de Boleta', 24, 'view_historialboletas');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `auth_user`
+--
+
+DROP TABLE IF EXISTS `auth_user`;
+CREATE TABLE IF NOT EXISTS `auth_user` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `password` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci NOT NULL,
+  `last_login` datetime(6) DEFAULT NULL,
+  `is_superuser` tinyint(1) NOT NULL,
+  `username` varchar(150) CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci NOT NULL,
+  `first_name` varchar(150) CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci NOT NULL,
+  `last_name` varchar(150) CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci NOT NULL,
+  `email` varchar(254) CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci NOT NULL,
+  `is_staff` tinyint(1) NOT NULL,
+  `is_active` tinyint(1) NOT NULL,
+  `date_joined` datetime(6) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `username` (`username`)
+) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish_ci;
+
+--
+-- Volcado de datos para la tabla `auth_user`
+--
+
+INSERT INTO `auth_user` (`id`, `password`, `last_login`, `is_superuser`, `username`, `first_name`, `last_name`, `email`, `is_staff`, `is_active`, `date_joined`) VALUES
+(1, 'pbkdf2_sha256$1000000$qPplMTN7rAAAnaazBIcbQe$ic48Eq0dZC2LQSReRYP1ncdCAfps/YER1MbaIEMUONI=', '2025-12-10 02:19:17.622875', 1, 'admin', '', '', 'admin@forneria.com', 1, 1, '2025-12-07 01:14:30.508432'),
+(2, 'pbkdf2_sha256$1000000$T3K5aKSX0OBBE1VPH6aWCW$qkJtrA53+uxOSIte5ux9m1Vg0ow+ILYaGTyzvjBBo4c=', '2025-12-10 02:13:05.718613', 0, 'kevin', 'Franco Nicolas', 'Ramirez Castillo', 'franco.ramirez.castillo@gmail.com', 0, 0, '2025-12-10 02:09:43.438645');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `auth_user_groups`
+--
+
+DROP TABLE IF EXISTS `auth_user_groups`;
+CREATE TABLE IF NOT EXISTS `auth_user_groups` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `user_id` int NOT NULL,
+  `group_id` int NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `auth_user_groups_user_id_group_id_94350c0c_uniq` (`user_id`,`group_id`),
+  KEY `auth_user_groups_user_id_6a12ed8b` (`user_id`),
+  KEY `auth_user_groups_group_id_97559544` (`group_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `auth_user_user_permissions`
+--
+
+DROP TABLE IF EXISTS `auth_user_user_permissions`;
+CREATE TABLE IF NOT EXISTS `auth_user_user_permissions` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `user_id` int NOT NULL,
+  `permission_id` int NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `auth_user_user_permissions_user_id_permission_id_14a6b632_uniq` (`user_id`,`permission_id`),
+  KEY `auth_user_user_permissions_user_id_a95ead1b` (`user_id`),
+  KEY `auth_user_user_permissions_permission_id_1fbb5f2c` (`permission_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `categorias`
+--
+
+DROP TABLE IF EXISTS `categorias`;
+CREATE TABLE IF NOT EXISTS `categorias` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `nombre` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci DEFAULT NULL,
+  `descripcion` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish_ci;
+
+--
+-- Volcado de datos para la tabla `categorias`
+--
+
+INSERT INTO `categorias` (`id`, `nombre`, `descripcion`) VALUES
+(1, 'Panadería', 'Productos de panadería'),
+(2, 'Pastelería', 'Productos de pastelería'),
+(3, 'Bebidas', 'Bebidas varias'),
+(4, 'No perecible', 'Categoria no perecible'),
+(5, 'Perecible', 'Categoria perecible');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `clientes`
+--
+
+DROP TABLE IF EXISTS `clientes`;
+CREATE TABLE IF NOT EXISTS `clientes` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `rut` varchar(12) CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci DEFAULT NULL,
+  `nombre` varchar(150) CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci NOT NULL,
+  `correo` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish_ci;
+
+--
+-- Volcado de datos para la tabla `clientes`
+--
+
+INSERT INTO `clientes` (`id`, `rut`, `nombre`, `correo`) VALUES
+(1, NULL, 'Cliente Genérico', NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `detalle_factura_proveedor`
+--
+
+DROP TABLE IF EXISTS `detalle_factura_proveedor`;
+CREATE TABLE IF NOT EXISTS `detalle_factura_proveedor` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `cantidad` int NOT NULL COMMENT 'Cantidad de productos',
+  `precio_unitario` decimal(10,2) NOT NULL COMMENT 'Precio unitario del producto',
+  `descuento_pct` decimal(5,2) DEFAULT '0.00' COMMENT 'Descuento porcentual aplicado',
+  `subtotal` decimal(10,2) NOT NULL DEFAULT '0.00' COMMENT 'Subtotal del detalle (cantidad * precio_unitario - descuento)',
+  `fecha_vencimiento_producto` date DEFAULT NULL COMMENT 'Fecha de vencimiento del lote recibido',
+  `lote` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci DEFAULT NULL COMMENT 'Número de lote del producto recibido',
+  `observaciones` varchar(300) CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci DEFAULT NULL COMMENT 'Observaciones sobre este detalle',
+  `factura_proveedor_id` int NOT NULL,
+  `productos_id` int NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_detalle_factura_proveedor_factura_proveedor1_idx` (`factura_proveedor_id`),
+  KEY `fk_detalle_factura_proveedor_productos1_idx` (`productos_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish_ci COMMENT='Detalle de productos en cada factura de proveedor';
+
+--
+-- Volcado de datos para la tabla `detalle_factura_proveedor`
+--
+
+INSERT INTO `detalle_factura_proveedor` (`id`, `cantidad`, `precio_unitario`, `descuento_pct`, `subtotal`, `fecha_vencimiento_producto`, `lote`, `observaciones`, `factura_proveedor_id`, `productos_id`) VALUES
+(6, 5, 15000.00, 0.00, 75000.00, NULL, NULL, NULL, 3, 4),
+(8, 2, 15000.00, 0.00, 30000.00, NULL, NULL, NULL, 4, 4),
+(10, 2, 15000.00, 0.00, 30000.00, NULL, NULL, NULL, 5, 4),
+(15, 20, 1000.00, 0.00, 20000.00, '2025-12-12', NULL, NULL, 1, 3),
+(16, 5, 1000.00, 0.00, 5000.00, '2025-12-14', NULL, NULL, 1, 3);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `detalle_venta`
+--
+
+DROP TABLE IF EXISTS `detalle_venta`;
+CREATE TABLE IF NOT EXISTS `detalle_venta` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `cantidad` int NOT NULL,
+  `precio_unitario` decimal(10,2) NOT NULL,
+  `descuento_pct` decimal(5,2) DEFAULT '0.00',
+  `ventas_id` int NOT NULL,
+  `productos_id` int NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_detalle_venta_ventas1_idx` (`ventas_id`),
+  KEY `fk_detalle_venta_productos1_idx` (`productos_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=50 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish_ci;
+
+--
+-- Volcado de datos para la tabla `detalle_venta`
+--
+
+INSERT INTO `detalle_venta` (`id`, `cantidad`, `precio_unitario`, `descuento_pct`, `ventas_id`, `productos_id`) VALUES
+(1, 1, 2000.00, 10.00, 1, 1),
+(2, 3, 2000.00, 0.00, 2, 1),
+(3, 1, 2000.00, 0.00, 3, 1),
+(4, 1, 2000.00, 0.00, 4, 2),
+(5, 1, 2000.00, 0.00, 4, 1),
+(6, 1, 2000.00, 0.00, 5, 3),
+(7, 1, 2000.00, 0.00, 5, 2),
+(8, 1, 2000.00, 0.00, 6, 3),
+(9, 3, 2000.00, 0.00, 6, 2),
+(10, 1, 2000.00, 0.00, 7, 3),
+(11, 1, 2000.00, 0.00, 7, 2),
+(12, 3, 2000.00, 0.00, 8, 3),
+(13, 1, 2000.00, 0.00, 8, 2),
+(14, 1, 2000.00, 0.00, 9, 3),
+(15, 1, 2000.00, 0.00, 10, 3),
+(16, 1, 2000.00, 0.00, 10, 2),
+(17, 1, 2000.00, 0.00, 11, 2),
+(18, 1, 2000.00, 0.00, 11, 3),
+(19, 2, 2000.00, 0.00, 12, 3),
+(20, 1, 2000.00, 0.00, 12, 2),
+(21, 3, 2000.00, 0.00, 13, 3),
+(22, 1, 2000.00, 0.00, 13, 2),
+(23, 2, 2000.00, 0.00, 14, 3),
+(24, 1, 2000.00, 0.00, 14, 2),
+(25, 1, 2000.00, 0.00, 15, 3),
+(26, 1, 2000.00, 0.00, 15, 2),
+(27, 1, 2000.00, 0.00, 16, 3),
+(28, 1, 2000.00, 0.00, 16, 2),
+(29, 1, 2000.00, 0.00, 17, 3),
+(30, 1, 2000.00, 0.00, 18, 2),
+(31, 1, 20000.00, 0.00, 18, 4),
+(32, 1, 2000.00, 0.00, 18, 3),
+(33, 1, 2000.00, 0.00, 19, 3),
+(34, 1, 2000.00, 0.00, 19, 2),
+(35, 1, 20000.00, 0.00, 19, 4),
+(36, 11, 2000.00, 0.00, 20, 3),
+(38, 11, 2000.00, 0.00, 22, 3),
+(39, 11, 2000.00, 0.00, 23, 3),
+(40, 3, 2000.00, 0.00, 24, 3),
+(41, 1, 2000.00, 0.00, 25, 3),
+(42, 1, 2000.00, 0.00, 26, 3),
+(43, 1, 20000.00, 0.00, 26, 4),
+(44, 1, 2000.00, 0.00, 27, 3),
+(45, 1, 2000.00, 0.00, 28, 3),
+(46, 1, 2000.00, 0.00, 29, 3),
+(47, 1, 2000.00, 0.00, 30, 3),
+(48, 1, 2000.00, 0.00, 31, 3),
+(49, 1, 2000.00, 0.00, 32, 3);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `direccion`
+--
+
+DROP TABLE IF EXISTS `direccion`;
+CREATE TABLE IF NOT EXISTS `direccion` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `calle` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci NOT NULL,
+  `numero` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci NOT NULL,
+  `depto` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci DEFAULT NULL,
+  `comuna` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci NOT NULL,
+  `region` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci NOT NULL,
+  `codigo_postal` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `django_admin_log`
+--
+
+DROP TABLE IF EXISTS `django_admin_log`;
+CREATE TABLE IF NOT EXISTS `django_admin_log` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `action_time` datetime(6) NOT NULL,
+  `object_id` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci,
+  `object_repr` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci NOT NULL,
+  `action_flag` smallint UNSIGNED NOT NULL,
+  `change_message` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci NOT NULL,
+  `content_type_id` int DEFAULT NULL,
+  `user_id` int NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `django_admin_log_content_type_id_c4bce8eb` (`content_type_id`),
+  KEY `django_admin_log_user_id_c564eba6` (`user_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_spanish2_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `django_content_type`
+--
+
+DROP TABLE IF EXISTS `django_content_type`;
+CREATE TABLE IF NOT EXISTS `django_content_type` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `app_label` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci NOT NULL,
+  `model` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `django_content_type_app_label_model_76bd3d3b_uniq` (`app_label`,`model`)
+) ENGINE=MyISAM AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish_ci;
+
+--
+-- Volcado de datos para la tabla `django_content_type`
+--
+
+INSERT INTO `django_content_type` (`id`, `app_label`, `model`) VALUES
+(1, 'admin', 'logentry'),
+(2, 'auth', 'permission'),
+(3, 'auth', 'group'),
+(4, 'auth', 'user'),
+(5, 'contenttypes', 'contenttype'),
+(6, 'sessions', 'session'),
+(7, 'ventas', 'alertas'),
+(8, 'ventas', 'categorias'),
+(9, 'ventas', 'clientes'),
+(10, 'ventas', 'detallefacturaproveedor'),
+(11, 'ventas', 'detalleventa'),
+(12, 'ventas', 'direccion'),
+(13, 'ventas', 'facturaproveedor'),
+(14, 'ventas', 'movimientosinventario'),
+(15, 'ventas', 'nutricional'),
+(16, 'ventas', 'pagoproveedor'),
+(17, 'ventas', 'productos'),
+(18, 'ventas', 'proveedor'),
+(19, 'ventas', 'roles'),
+(20, 'ventas', 'usuarios'),
+(21, 'ventas', 'ventas'),
+(22, 'ventas', 'historialmerma'),
+(23, 'ventas', 'lote'),
+(24, 'ventas', 'historialboletas');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `django_migrations`
+--
+
+DROP TABLE IF EXISTS `django_migrations`;
+CREATE TABLE IF NOT EXISTS `django_migrations` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `app` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci NOT NULL,
+  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci NOT NULL,
+  `applied` datetime(6) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish_ci;
+
+--
+-- Volcado de datos para la tabla `django_migrations`
+--
+
+INSERT INTO `django_migrations` (`id`, `app`, `name`, `applied`) VALUES
+(1, 'contenttypes', '0001_initial', '2025-12-07 01:12:02.448642'),
+(2, 'auth', '0001_initial', '2025-12-07 01:12:03.246493'),
+(3, 'admin', '0001_initial', '2025-12-07 01:12:03.551656'),
+(4, 'admin', '0002_logentry_remove_auto_add', '2025-12-07 01:12:03.563203'),
+(5, 'admin', '0003_logentry_add_action_flag_choices', '2025-12-07 01:12:03.578906'),
+(6, 'contenttypes', '0002_remove_content_type_name', '2025-12-07 01:12:03.698584'),
+(7, 'auth', '0002_alter_permission_name_max_length', '2025-12-07 01:12:03.760162'),
+(8, 'auth', '0003_alter_user_email_max_length', '2025-12-07 01:12:03.822151'),
+(9, 'auth', '0004_alter_user_username_opts', '2025-12-07 01:12:03.838460'),
+(10, 'auth', '0005_alter_user_last_login_null', '2025-12-07 01:12:03.905937'),
+(11, 'auth', '0006_require_contenttypes_0002', '2025-12-07 01:12:03.907790'),
+(12, 'auth', '0007_alter_validators_add_error_messages', '2025-12-07 01:12:03.919402'),
+(13, 'auth', '0008_alter_user_username_max_length', '2025-12-07 01:12:03.973470'),
+(14, 'auth', '0009_alter_user_last_name_max_length', '2025-12-07 01:12:04.035339'),
+(15, 'auth', '0010_alter_group_name_max_length', '2025-12-07 01:12:04.097534'),
+(16, 'auth', '0011_update_proxy_permissions', '2025-12-07 01:12:04.113947'),
+(17, 'auth', '0012_alter_user_first_name_max_length', '2025-12-07 01:12:04.172411'),
+(18, 'sessions', '0001_initial', '2025-12-07 01:12:04.231895'),
+(19, 'ventas', '0001_initial', '2025-12-07 03:51:48.213656'),
+(20, 'ventas', '0002_historialmerma_lote_historialboletas', '2025-12-09 21:11:57.629983');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `django_session`
+--
+
+DROP TABLE IF EXISTS `django_session`;
+CREATE TABLE IF NOT EXISTS `django_session` (
+  `session_key` varchar(40) CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci NOT NULL,
+  `session_data` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci NOT NULL,
+  `expire_date` datetime(6) NOT NULL,
+  PRIMARY KEY (`session_key`),
+  KEY `django_session_expire_date_a5c62663` (`expire_date`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish_ci;
+
+--
+-- Volcado de datos para la tabla `django_session`
+--
+
+INSERT INTO `django_session` (`session_key`, `session_data`, `expire_date`) VALUES
+('8js8f1mr09puu74q7zlhwvk6sz9w4t65', '.eJxVjEEOwiAURO_C2hAo1g8u3fcM5AODVA1NSrsy3t026UJXk8x7M2_heV2KXxtmPyZxFVqcfrvA8Ym6g_Tgep9knOoyj0Huijxok8OU8Lod7t9B4Va2tclJ90QaLlDOANOZYJThAEXBRg2TYJ3rkI3i3unkYncJcYsMshCfLwQVOQ4:1vSQDS:ppHNXVVWu8h5fK5ylKak42BXelSBCPVHYgsmTSdeki8', '2025-12-22 01:39:06.966224'),
+('c9ahe1kkahirwn1jwe1l9uewzu9ktfrl', '.eJxVjEEOwiAURO_C2hAo1g8u3fcM5AODVA1NSrsy3t026UJXk8x7M2_heV2KXxtmPyZxFVqcfrvA8Ym6g_Tgep9knOoyj0Huijxok8OU8Lod7t9B4Va2tclJ90QaLlDOANOZYJThAEXBRg2TYJ3rkI3i3unkYncJcYsMshCfLwQVOQ4:1vSeAF:a5Ce0sZ3IQFUqG3ur7aWCdk8AqeOKuWuOF0rg92AorU', '2025-12-22 16:32:43.271891'),
+('lmp9ofyw5ip0298a0rjg7q9qan58t83b', '.eJxVjEEOwiAURO_C2hAo1g8u3fcM5AODVA1NSrsy3t026UJXk8x7M2_heV2KXxtmPyZxFVqcfrvA8Ym6g_Tgep9knOoyj0Huijxok8OU8Lod7t9B4Va2tclJ90QaLlDOANOZYJThAEXBRg2TYJ3rkI3i3unkYncJcYsMshCfLwQVOQ4:1vT9nR:tvroUWAFqF-Ti16S4GnysrhdEv4k11PVxjuMH7y4Nz0', '2025-12-24 02:19:17.623875');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `factura_proveedor`
+--
+
+DROP TABLE IF EXISTS `factura_proveedor`;
+CREATE TABLE IF NOT EXISTS `factura_proveedor` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `numero_factura` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci NOT NULL COMMENT 'Número de factura del proveedor',
+  `fecha_factura` date NOT NULL COMMENT 'Fecha de emisión de la factura',
+  `fecha_vencimiento` date DEFAULT NULL COMMENT 'Fecha de vencimiento para pago',
+  `fecha_recepcion` date DEFAULT NULL COMMENT 'Fecha en que se recibió la factura',
+  `subtotal_sin_iva` decimal(10,2) DEFAULT NULL COMMENT 'Subtotal sin IVA (se calcula automáticamente)',
+  `descuento` decimal(10,2) NOT NULL DEFAULT '0.00' COMMENT 'Descuento global aplicado',
+  `total_iva` decimal(10,2) DEFAULT NULL COMMENT 'Total de IVA (se calcula automáticamente)',
+  `total_con_iva` decimal(10,2) NOT NULL DEFAULT '0.00' COMMENT 'Total con IVA',
+  `estado_pago` enum('pendiente','pagado','parcial','atrasado','cancelado') CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci NOT NULL DEFAULT 'pendiente' COMMENT 'Estado del pago',
+  `observaciones` text CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci COMMENT 'Observaciones adicionales',
+  `creado` timestamp NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Fecha de creación',
+  `modificado` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Fecha de última modificación',
+  `eliminado` timestamp NULL DEFAULT NULL COMMENT 'Fecha de eliminación lógica',
+  `proveedor_id` int NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `numero_factura_UNIQUE` (`numero_factura`),
+  KEY `fk_factura_proveedor_proveedor1_idx` (`proveedor_id`),
+  KEY `idx_estado_pago` (`estado_pago`),
+  KEY `idx_fecha_factura` (`fecha_factura`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish_ci COMMENT='Tabla de facturas de compra a proveedores';
+
+--
+-- Volcado de datos para la tabla `factura_proveedor`
+--
+
+INSERT INTO `factura_proveedor` (`id`, `numero_factura`, `fecha_factura`, `fecha_vencimiento`, `fecha_recepcion`, `subtotal_sin_iva`, `descuento`, `total_iva`, `total_con_iva`, `estado_pago`, `observaciones`, `creado`, `modificado`, `eliminado`, `proveedor_id`) VALUES
+(1, '1', '2025-12-07', '2025-12-08', '2025-12-09', 25000.00, 0.00, 4750.00, 29750.00, 'pendiente', NULL, '2025-12-08 03:02:46', '2025-12-09 22:28:42', NULL, 1),
+(3, '2', '2025-12-07', '2025-12-23', '2025-12-08', 75000.00, 0.00, 14250.00, 89250.00, 'pagado', NULL, '2025-12-09 03:48:10', '2025-12-09 01:57:06', NULL, 2),
+(4, '3', '2025-12-05', '2025-12-09', '2025-12-08', 30000.00, 0.00, 5700.00, 35700.00, 'pagado', NULL, '2025-12-09 05:51:24', '2025-12-09 03:00:36', NULL, 2),
+(5, '4', '2025-12-09', '2025-12-10', '2025-12-09', 30000.00, 0.00, 5700.00, 35700.00, 'pagado', NULL, '2025-12-09 20:58:06', '2025-12-09 21:00:58', NULL, 2);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `historial_boletas`
+--
+
+DROP TABLE IF EXISTS `historial_boletas`;
+CREATE TABLE IF NOT EXISTS `historial_boletas` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `venta_id` int NOT NULL,
+  `folio` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci NOT NULL,
+  `fecha_emision` datetime(6) NOT NULL,
+  `fecha_venta` datetime(6) NOT NULL,
+  `cliente_nombre` varchar(150) CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci NOT NULL,
+  `total_con_iva` decimal(10,2) NOT NULL,
+  `num_productos` int NOT NULL DEFAULT '0',
+  `canal_venta` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci NOT NULL,
+  `datos_boleta` json NOT NULL,
+  `usuario_emisor` varchar(150) CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci DEFAULT NULL,
+  `modificado` tinyint(1) NOT NULL DEFAULT '0',
+  `fecha_modificacion` datetime(6) DEFAULT NULL,
+  `observaciones` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci,
+  PRIMARY KEY (`id`),
+  KEY `historial_boletas_venta_id_idx` (`venta_id`),
+  KEY `historial_boletas_folio_idx` (`folio`),
+  KEY `historial_boletas_fecha_emision_idx` (`fecha_emision`),
+  KEY `historial_boletas_cliente_nombre_idx` (`cliente_nombre`)
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish_ci;
+
+--
+-- Volcado de datos para la tabla `historial_boletas`
+--
+
+INSERT INTO `historial_boletas` (`id`, `venta_id`, `folio`, `fecha_emision`, `fecha_venta`, `cliente_nombre`, `total_con_iva`, `num_productos`, `canal_venta`, `datos_boleta`, `usuario_emisor`, `modificado`, `fecha_modificacion`, `observaciones`) VALUES
+(1, 25, 'BOL-20251209211432', '2025-12-09 21:14:32.538757', '2025-12-09 21:14:32.495446', 'Cliente Genérico', 2000.00, 1, 'presencial', '{\"cabecera\": {\"pago\": {\"vuelto\": null, \"monto_pagado\": \"2000\"}, \"fecha\": \"2025-12-09T21:14:32.495446+00:00\", \"folio\": \"BOL-20251209211432\", \"cliente\": {\"id\": 1, \"rut\": null, \"nombre\": \"Cliente Genérico\"}, \"totales\": {\"descuento\": \"0\", \"total_iva\": \"319.33\", \"total_con_iva\": \"2000.00\", \"subtotal_sin_iva\": \"1680.67\"}, \"canal_venta\": \"presencial\"}, \"detalles\": [{\"cantidad\": \"1\", \"producto\": {\"id\": 3, \"marca\": \"Fornería\", \"nombre\": \"galleta\"}, \"subtotal\": \"2000.00\", \"descuento_pct\": \"0.00\", \"precio_unitario\": \"2000.00\"}]}', 'admin', 0, NULL, NULL),
+(2, 26, 'BOL-20251209225931', '2025-12-09 22:59:31.288665', '2025-12-09 22:59:31.200743', 'Cliente Genérico', 22000.00, 2, 'presencial', '{\"cabecera\": {\"pago\": {\"vuelto\": null, \"medio_pago\": \"tarjeta_debito\", \"monto_pagado\": \"22000\"}, \"fecha\": \"2025-12-09T22:59:31.200743+00:00\", \"folio\": \"BOL-20251209225931\", \"cliente\": {\"id\": 1, \"rut\": null, \"nombre\": \"Cliente Genérico\"}, \"totales\": {\"descuento\": \"0\", \"total_iva\": \"3512.61\", \"total_con_iva\": \"22000.00\", \"subtotal_sin_iva\": \"18487.39\"}, \"canal_venta\": \"presencial\"}, \"detalles\": [{\"cantidad\": \"1\", \"producto\": {\"id\": 3, \"marca\": \"Fornería\", \"nombre\": \"galleta\"}, \"subtotal\": \"2000.00\", \"descuento_pct\": \"0.00\", \"precio_unitario\": \"2000.00\"}, {\"cantidad\": \"1\", \"producto\": {\"id\": 4, \"marca\": \"Dulcería Lilis\", \"nombre\": \"pastel chocolate\"}, \"subtotal\": \"20000.00\", \"descuento_pct\": \"0.00\", \"precio_unitario\": \"20000.00\"}]}', 'admin', 0, NULL, NULL),
+(3, 27, 'BOL-20251209230435', '2025-12-09 23:04:35.311850', '2025-12-09 23:04:35.242076', 'Cliente Genérico', 2000.00, 1, 'presencial', '{\"cabecera\": {\"pago\": {\"vuelto\": null, \"medio_pago\": \"tarjeta_debito\", \"monto_pagado\": \"2000\"}, \"fecha\": \"2025-12-09T23:04:35.242076+00:00\", \"folio\": \"BOL-20251209230435\", \"cliente\": {\"id\": 1, \"rut\": null, \"nombre\": \"Cliente Genérico\"}, \"totales\": {\"descuento\": \"0\", \"total_iva\": \"319.33\", \"total_con_iva\": \"2000.00\", \"subtotal_sin_iva\": \"1680.67\"}, \"canal_venta\": \"presencial\"}, \"detalles\": [{\"cantidad\": \"1\", \"producto\": {\"id\": 3, \"marca\": \"Fornería\", \"nombre\": \"galleta\"}, \"subtotal\": \"2000.00\", \"descuento_pct\": \"0.00\", \"precio_unitario\": \"2000.00\"}]}', 'admin', 0, NULL, NULL),
+(4, 28, 'BOL-20251209230548', '2025-12-09 23:05:48.162106', '2025-12-09 23:05:48.110578', 'Cliente Genérico', 2000.00, 1, 'presencial', '{\"cabecera\": {\"pago\": {\"vuelto\": null, \"medio_pago\": \"tarjeta_debito\", \"monto_pagado\": \"2000\"}, \"fecha\": \"2025-12-09T23:05:48.110578+00:00\", \"folio\": \"BOL-20251209230548\", \"cliente\": {\"id\": 1, \"rut\": null, \"nombre\": \"Cliente Genérico\"}, \"totales\": {\"descuento\": \"0\", \"total_iva\": \"319.33\", \"total_con_iva\": \"2000.00\", \"subtotal_sin_iva\": \"1680.67\"}, \"canal_venta\": \"presencial\"}, \"detalles\": [{\"cantidad\": \"1\", \"producto\": {\"id\": 3, \"marca\": \"Fornería\", \"nombre\": \"galleta\"}, \"subtotal\": \"2000.00\", \"descuento_pct\": \"0.00\", \"precio_unitario\": \"2000.00\"}]}', 'admin', 0, NULL, NULL),
+(5, 29, 'BOL-20251209230739', '2025-12-09 23:07:39.054209', '2025-12-09 23:07:39.009257', 'Cliente Genérico', 2000.00, 1, 'presencial', '{\"cabecera\": {\"pago\": {\"vuelto\": null, \"medio_pago\": \"tarjeta_debito\", \"monto_pagado\": \"2000\"}, \"fecha\": \"2025-12-09T23:07:39.009257+00:00\", \"folio\": \"BOL-20251209230739\", \"cliente\": {\"id\": 1, \"rut\": null, \"nombre\": \"Cliente Genérico\"}, \"totales\": {\"descuento\": \"0\", \"total_iva\": \"319.33\", \"total_con_iva\": \"2000.00\", \"subtotal_sin_iva\": \"1680.67\"}, \"canal_venta\": \"presencial\"}, \"detalles\": [{\"cantidad\": \"1\", \"producto\": {\"id\": 3, \"marca\": \"Fornería\", \"nombre\": \"galleta\"}, \"subtotal\": \"2000.00\", \"descuento_pct\": \"0.00\", \"precio_unitario\": \"2000.00\"}]}', 'admin', 0, NULL, NULL),
+(6, 30, 'BOL-20251209230802', '2025-12-09 23:08:02.992791', '2025-12-09 23:08:02.953966', 'Cliente Genérico', 2000.00, 1, 'presencial', '{\"cabecera\": {\"pago\": {\"vuelto\": null, \"medio_pago\": \"tarjeta_debito\", \"monto_pagado\": \"2000\"}, \"fecha\": \"2025-12-09T23:08:02.953966+00:00\", \"folio\": \"BOL-20251209230802\", \"cliente\": {\"id\": 1, \"rut\": null, \"nombre\": \"Cliente Genérico\"}, \"totales\": {\"descuento\": \"0\", \"total_iva\": \"319.33\", \"total_con_iva\": \"2000.00\", \"subtotal_sin_iva\": \"1680.67\"}, \"canal_venta\": \"presencial\"}, \"detalles\": [{\"cantidad\": \"1\", \"producto\": {\"id\": 3, \"marca\": \"Fornería\", \"nombre\": \"galleta\"}, \"subtotal\": \"2000.00\", \"descuento_pct\": \"0.00\", \"precio_unitario\": \"2000.00\"}]}', 'admin', 0, NULL, NULL),
+(7, 31, 'BOL-20251209231447', '2025-12-09 23:14:47.266882', '2025-12-09 23:14:47.113364', 'Cliente Genérico', 2000.00, 1, 'presencial', '{\"cabecera\": {\"pago\": {\"vuelto\": null, \"medio_pago\": \"tarjeta_debito\", \"monto_pagado\": \"2000\"}, \"fecha\": \"2025-12-09T23:14:47.113364+00:00\", \"folio\": \"BOL-20251209231447\", \"cliente\": {\"id\": 1, \"rut\": null, \"nombre\": \"Cliente Genérico\"}, \"totales\": {\"descuento\": \"0\", \"total_iva\": \"319.33\", \"total_con_iva\": \"2000.00\", \"subtotal_sin_iva\": \"1680.67\"}, \"canal_venta\": \"presencial\"}, \"detalles\": [{\"cantidad\": \"1\", \"producto\": {\"id\": 3, \"marca\": \"Fornería\", \"nombre\": \"galleta\"}, \"subtotal\": \"2000.00\", \"descuento_pct\": \"0.00\", \"precio_unitario\": \"2000.00\"}]}', 'admin', 0, NULL, NULL),
+(8, 32, 'BOL-20251209232104', '2025-12-09 23:21:05.053739', '2025-12-09 23:21:04.962369', 'Cliente Genérico', 2000.00, 1, 'presencial', '{\"cabecera\": {\"pago\": {\"vuelto\": null, \"medio_pago\": \"tarjeta_debito\", \"monto_pagado\": \"2000\"}, \"fecha\": \"2025-12-09T23:21:04.962369+00:00\", \"folio\": \"BOL-20251209232104\", \"cliente\": {\"id\": 1, \"rut\": null, \"nombre\": \"Cliente Genérico\"}, \"totales\": {\"descuento\": \"0\", \"total_iva\": \"319.33\", \"total_con_iva\": \"2000.00\", \"subtotal_sin_iva\": \"1680.67\"}, \"canal_venta\": \"presencial\"}, \"detalles\": [{\"cantidad\": \"1\", \"producto\": {\"id\": 3, \"marca\": \"Fornería\", \"nombre\": \"galleta\"}, \"subtotal\": \"2000.00\", \"descuento_pct\": \"0.00\", \"precio_unitario\": \"2000.00\"}]}', 'admin', 0, NULL, NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `historial_merma`
+--
+
+DROP TABLE IF EXISTS `historial_merma`;
+CREATE TABLE IF NOT EXISTS `historial_merma` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `producto_id` int NOT NULL,
+  `cantidad_merma` decimal(10,3) NOT NULL COMMENT 'Cantidad que se fue a merma',
+  `motivo_merma` text NOT NULL COMMENT 'Motivo detallado por el cual el producto fue movido a merma',
+  `fecha_merma` datetime NOT NULL COMMENT 'Fecha y hora en que el producto fue movido a merma',
+  `activo` tinyint(1) NOT NULL DEFAULT '1' COMMENT 'Si True, el registro está activo. Si False, está inactivo (no se elimina)',
+  `creado` timestamp NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Fecha y hora de creación del registro',
+  `modificado` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Fecha y hora de última modificación',
+  PRIMARY KEY (`id`),
+  KEY `fk_historial_merma_producto_idx` (`producto_id`),
+  KEY `idx_fecha_merma` (`fecha_merma`),
+  KEY `idx_activo` (`activo`),
+  KEY `idx_producto_activo` (`producto_id`,`activo`)
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish_ci COMMENT='Historial completo de productos en merma (no se eliminan registros, solo se desactivan)';
+
+--
+-- Volcado de datos para la tabla `historial_merma`
+--
+
+INSERT INTO `historial_merma` (`id`, `producto_id`, `cantidad_merma`, `motivo_merma`, `fecha_merma`, `activo`, `creado`, `modificado`) VALUES
+(2, 3, 10.000, 'hjhhj', '2025-12-09 17:17:30', 0, '2025-12-09 20:17:30', '2025-12-09 17:17:56'),
+(3, 3, 10.000, 'ñk', '2025-12-09 17:28:12', 0, '2025-12-09 20:28:12', '2025-12-09 17:39:00'),
+(4, 3, 10.000, 'k', '2025-12-09 17:32:09', 0, '2025-12-09 20:32:09', '2025-12-09 17:39:00'),
+(5, 3, 10.000, 'klj', '2025-12-09 17:40:18', 0, '2025-12-09 20:40:18', '2025-12-09 17:41:31'),
+(6, 2, 19.500, 'kj', '2025-12-09 19:38:19', 0, '2025-12-09 22:38:19', '2025-12-09 19:40:23'),
+(7, 2, 40.000, 'ppp', '2025-12-09 19:41:49', 0, '2025-12-09 22:41:49', '2025-12-09 19:42:21'),
+(8, 2, 1.000, 'bnm', '2025-12-09 19:49:02', 0, '2025-12-09 22:49:02', '2025-12-09 19:49:55'),
+(9, 2, 0.001, 'q3ew', '2025-12-09 19:50:37', 0, '2025-12-09 22:50:37', '2025-12-09 20:17:37'),
+(10, 2, 0.001, 'otro', '2025-12-09 20:16:54', 0, '2025-12-09 23:16:54', '2025-12-09 20:17:37'),
+(11, 2, 25.000, 'roto', '2025-12-09 20:31:50', 1, '2025-12-09 23:31:50', '2025-12-09 23:31:50'),
+(12, 2, 23.000, 'werwr', '2025-12-09 23:52:07', 1, '2025-12-10 02:52:07', '2025-12-10 02:52:07');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `lotes`
+--
+
+DROP TABLE IF EXISTS `lotes`;
+CREATE TABLE IF NOT EXISTS `lotes` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `productos_id` int NOT NULL,
+  `detalle_factura_proveedor_id` int DEFAULT NULL,
+  `numero_lote` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci DEFAULT NULL COMMENT 'Número de lote del proveedor o código interno (opcional)',
+  `cantidad` decimal(10,3) NOT NULL DEFAULT '0.000' COMMENT 'Cantidad actual del lote (permite decimales para kg, litros, etc.)',
+  `cantidad_inicial` decimal(10,3) NOT NULL COMMENT 'Cantidad original cuando se creó el lote (permite decimales para kg, litros, etc.)',
+  `fecha_elaboracion` date DEFAULT NULL COMMENT 'Fecha de elaboración del lote',
+  `fecha_caducidad` date NOT NULL COMMENT 'Fecha de caducidad del lote',
+  `fecha_recepcion` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Fecha y hora en que se recibió/creó el lote',
+  `origen` enum('compra','produccion_propia','ajuste_manual') CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci NOT NULL DEFAULT 'produccion_propia' COMMENT 'Origen del lote',
+  `estado` enum('activo','agotado','vencido','en_merma') CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci NOT NULL DEFAULT 'activo' COMMENT 'Estado actual del lote',
+  `creado` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `modificado` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `fk_lotes_productos_idx` (`productos_id`),
+  KEY `fk_lotes_detalle_factura_idx` (`detalle_factura_proveedor_id`),
+  KEY `idx_fecha_caducidad` (`fecha_caducidad`),
+  KEY `idx_estado` (`estado`),
+  KEY `idx_origen` (`origen`),
+  KEY `idx_productos_estado` (`productos_id`,`estado`)
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish_ci;
+
+--
+-- Volcado de datos para la tabla `lotes`
+--
+
+INSERT INTO `lotes` (`id`, `productos_id`, `detalle_factura_proveedor_id`, `numero_lote`, `cantidad`, `cantidad_inicial`, `fecha_elaboracion`, `fecha_caducidad`, `fecha_recepcion`, `origen`, `estado`, `creado`, `modificado`) VALUES
+(1, 3, NULL, NULL, 0.000, 20.000, '2025-12-08', '2025-12-10', '2025-12-08 16:02:05', 'ajuste_manual', 'agotado', '2025-12-08 19:02:05', '2025-12-09 19:07:11'),
+(2, 2, NULL, 'prod-08-25', 17.000, 30.000, '2025-12-08', '2025-12-14', '2025-12-08 19:16:00', 'produccion_propia', 'activo', '2025-12-08 22:16:00', '2025-12-09 23:52:06'),
+(3, 4, 10, 'FACT-5-10', 1.000, 2.000, '2025-12-09', '2025-12-15', '2025-12-09 18:00:58', 'compra', 'activo', '2025-12-09 21:00:58', '2025-12-09 22:59:31'),
+(4, 3, NULL, 'FACT-1-12', 0.000, 20.000, '2025-12-07', '2025-12-12', '2025-12-09 18:46:26', 'compra', 'agotado', '2025-12-09 21:46:26', '2025-12-09 23:05:48'),
+(5, 3, 15, 'FACT-1-15', 16.000, 20.000, '2025-12-07', '2025-12-12', '2025-12-09 18:49:16', 'compra', 'activo', '2025-12-09 21:49:16', '2025-12-09 23:21:05'),
+(6, 3, 16, 'FACT-1-16', 5.000, 5.000, '2025-12-07', '2025-12-14', '2025-12-09 18:49:16', 'compra', 'activo', '2025-12-09 21:49:16', '2025-12-09 21:49:16'),
+(7, 3, NULL, 'EDIT-3-20251209192438', 3.000, 3.000, '2025-12-09', '2025-12-12', '2025-12-09 19:24:38', 'ajuste_manual', 'activo', '2025-12-09 22:24:38', '2025-12-09 22:24:38'),
+(8, 2, NULL, 'EDIT-2-20251209194113', 4.000, 10.000, '2025-12-09', '2026-01-08', '2025-12-09 19:41:14', 'ajuste_manual', 'activo', '2025-12-09 22:41:14', '2025-12-09 23:52:06'),
+(9, 2, NULL, 'EDIT-2-20251209194825', 0.000, 1.000, '2025-12-09', '2026-01-08', '2025-12-09 19:48:26', 'ajuste_manual', 'en_merma', '2025-12-09 22:48:26', '2025-12-09 20:16:54');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `movimientos_inventario`
+--
+
+DROP TABLE IF EXISTS `movimientos_inventario`;
+CREATE TABLE IF NOT EXISTS `movimientos_inventario` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `tipo_movimiento` enum('entrada','salida') CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci NOT NULL,
+  `cantidad` int NOT NULL,
+  `fecha` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `productos_id` int NOT NULL,
+  `origen` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci DEFAULT NULL COMMENT 'origen: compra, venta, ajuste, merma, devolucion',
+  `referencia_id` int DEFAULT NULL COMMENT 'ID de la tabla origen (factura_proveedor, ventas, etc.)',
+  `tipo_referencia` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci DEFAULT NULL COMMENT 'tipo: factura_proveedor, venta, ajuste, merma, etc.',
+  PRIMARY KEY (`id`),
+  KEY `fk_movimientos_inventario_productos1_idx` (`productos_id`),
+  KEY `idx_origen` (`origen`,`tipo_referencia`,`referencia_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=82 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish_ci;
+
+--
+-- Volcado de datos para la tabla `movimientos_inventario`
+--
+
+INSERT INTO `movimientos_inventario` (`id`, `tipo_movimiento`, `cantidad`, `fecha`, `productos_id`, `origen`, `referencia_id`, `tipo_referencia`) VALUES
+(1, 'salida', 1, '2025-12-07 04:28:46', 1, 'venta', 1, 'venta'),
+(2, 'entrada', 10, '2025-12-07 06:15:40', 1, 'ajuste', NULL, 'ajuste_manual'),
+(3, 'salida', 3, '2025-12-07 06:17:36', 1, 'venta', 2, 'venta'),
+(4, 'entrada', 5, '2025-12-07 06:24:08', 1, 'ajuste', NULL, 'ajuste_manual'),
+(5, 'salida', 1, '2025-12-07 06:35:36', 1, 'venta', 3, 'venta'),
+(6, 'salida', 1, '2025-12-07 06:56:43', 2, 'venta', 4, 'venta'),
+(7, 'salida', 1, '2025-12-07 06:56:43', 1, 'venta', 4, 'venta'),
+(8, 'salida', 1, '2025-12-08 02:10:30', 3, 'venta', 5, 'venta'),
+(9, 'salida', 1, '2025-12-08 02:10:30', 2, 'venta', 5, 'venta'),
+(10, 'salida', 1, '2025-12-08 02:10:51', 3, 'venta', 6, 'venta'),
+(11, 'salida', 3, '2025-12-08 02:10:51', 2, 'venta', 6, 'venta'),
+(12, 'salida', 1, '2025-12-08 03:27:11', 3, 'venta', 7, 'venta'),
+(13, 'salida', 1, '2025-12-08 03:27:11', 2, 'venta', 7, 'venta'),
+(14, 'entrada', 5, '2025-12-08 03:59:13', 3, 'ajuste', NULL, 'ajuste_manual'),
+(15, 'entrada', 1, '2025-12-08 04:00:22', 3, 'ajuste', NULL, 'ajuste_manual'),
+(16, 'entrada', 5, '2025-12-08 04:02:50', 3, 'ajuste', NULL, 'ajuste_manual'),
+(17, 'entrada', 3, '2025-12-08 04:22:14', 3, 'compra', 1, 'factura_proveedor'),
+(18, 'salida', 3, '2025-12-08 04:26:30', 3, 'venta', 8, 'venta'),
+(19, 'salida', 1, '2025-12-08 04:26:30', 2, 'venta', 8, 'venta'),
+(20, 'salida', 1, '2025-12-08 04:30:02', 3, 'venta', 9, 'venta'),
+(21, 'entrada', 3, '2025-12-08 21:05:02', 3, 'ajuste', NULL, 'ajuste_manual'),
+(22, 'entrada', 2, '2025-12-08 21:25:56', 3, 'edicion_manual', 3, 'edicion_producto'),
+(23, 'entrada', 30, '2025-12-08 22:16:00', 2, 'produccion_propia', 2, 'lote'),
+(24, 'salida', 10, '2025-12-09 00:50:30', 2, 'edicion_manual', 2, 'edicion_producto'),
+(25, 'salida', 1, '2025-12-09 01:03:57', 3, 'venta', 10, 'venta'),
+(26, 'salida', 1, '2025-12-09 01:03:57', 2, 'venta', 10, 'venta'),
+(27, 'salida', 1, '2025-12-09 01:19:38', 2, 'venta', 11, 'venta'),
+(28, 'salida', 1, '2025-12-09 01:19:38', 3, 'venta', 11, 'venta'),
+(29, 'salida', 2, '2025-12-09 01:28:59', 3, 'venta', 12, 'venta'),
+(30, 'salida', 1, '2025-12-09 01:28:59', 2, 'venta', 12, 'venta'),
+(31, 'salida', 3, '2025-12-09 01:50:31', 3, 'venta', 13, 'venta'),
+(32, 'salida', 1, '2025-12-09 01:50:31', 2, 'venta', 13, 'venta'),
+(33, 'salida', 2, '2025-12-09 01:52:54', 3, 'venta', 14, 'venta'),
+(34, 'salida', 1, '2025-12-09 01:52:54', 2, 'venta', 14, 'venta'),
+(35, 'salida', 1, '2025-12-09 01:55:42', 3, 'venta', 15, 'venta'),
+(36, 'salida', 1, '2025-12-09 01:55:42', 2, 'venta', 15, 'venta'),
+(37, 'salida', 1, '2025-12-09 02:01:29', 3, 'venta', 16, 'venta'),
+(38, 'salida', 1, '2025-12-09 02:01:29', 2, 'venta', 16, 'venta'),
+(39, 'salida', 1, '2025-12-09 02:06:54', 3, 'venta', 17, 'venta'),
+(40, 'salida', 17, '2025-12-09 04:11:58', 4, 'edicion_manual', 4, 'edicion_producto'),
+(41, 'entrada', 5, '2025-12-09 04:14:07', 4, 'compra', 3, 'factura_proveedor'),
+(42, 'salida', 10, '2025-12-09 04:14:41', 4, 'edicion_manual', 4, 'edicion_producto'),
+(43, 'entrada', 5, '2025-12-09 04:14:50', 4, 'edicion_manual', 4, 'edicion_producto'),
+(44, 'entrada', 3, '2025-12-09 05:28:52', 3, 'ajuste', NULL, 'ajuste_manual'),
+(45, 'entrada', 30, '2025-12-09 05:32:35', 2, 'edicion_manual', 2, 'edicion_producto'),
+(46, 'entrada', 30, '2025-12-09 05:35:36', 2, 'edicion_manual', 2, 'edicion_producto'),
+(47, 'salida', 1, '2025-12-09 05:38:27', 2, 'venta', 18, 'venta'),
+(48, 'salida', 1, '2025-12-09 05:38:27', 4, 'venta', 18, 'venta'),
+(49, 'salida', 1, '2025-12-09 05:38:27', 3, 'venta', 18, 'venta'),
+(50, 'entrada', 2, '2025-12-09 05:57:43', 4, 'compra', 4, 'factura_proveedor'),
+(51, 'entrada', 10, '2025-12-09 06:06:41', 2, 'edicion_manual', 2, 'edicion_producto'),
+(52, 'entrada', 10, '2025-12-09 20:27:51', 3, 'edicion_manual', 3, 'edicion_producto'),
+(53, 'entrada', 10, '2025-12-09 20:31:41', 3, 'edicion_manual', 3, 'edicion_producto'),
+(54, 'entrada', 10, '2025-12-09 20:39:52', 3, 'edicion_manual', 3, 'edicion_producto'),
+(55, 'entrada', 10, '2025-12-09 20:45:35', 3, 'edicion_manual', 3, 'edicion_producto'),
+(56, 'entrada', 2, '2025-12-09 21:00:58', 4, 'compra', 5, 'factura_proveedor'),
+(57, 'entrada', 20, '2025-12-09 21:15:28', 2, 'edicion_manual', 2, 'edicion_producto'),
+(58, 'entrada', 1, '2025-12-09 21:18:08', 2, 'edicion_manual', 2, 'edicion_producto'),
+(59, 'salida', 1, '2025-12-09 21:21:23', 3, 'venta', 19, 'venta'),
+(60, 'salida', 1, '2025-12-09 21:21:23', 2, 'venta', 19, 'venta'),
+(61, 'salida', 1, '2025-12-09 21:21:23', 4, 'venta', 19, 'venta'),
+(62, 'entrada', 20, '2025-12-09 21:46:26', 3, 'compra', 1, 'factura_proveedor'),
+(63, 'entrada', 20, '2025-12-09 21:49:16', 3, 'compra', 1, 'factura_proveedor'),
+(64, 'entrada', 5, '2025-12-09 21:49:16', 3, 'compra', 1, 'factura_proveedor'),
+(65, 'salida', 11, '2025-12-09 21:55:45', 3, 'venta', 20, 'venta'),
+(66, 'salida', 11, '2025-12-09 22:07:12', 3, 'venta', 22, 'venta'),
+(67, 'salida', 11, '2025-12-09 22:08:03', 3, 'venta', 23, 'venta'),
+(68, 'entrada', 3, '2025-12-09 22:24:38', 3, 'edicion_manual', 7, 'lote'),
+(69, 'salida', 3, '2025-12-09 22:26:29', 3, 'venta', 24, 'venta'),
+(70, 'entrada', 10, '2025-12-09 22:41:14', 2, 'edicion_manual', 8, 'lote'),
+(71, 'entrada', 1, '2025-12-09 22:48:26', 2, 'edicion_manual', 9, 'lote'),
+(72, 'salida', 40, '2025-12-09 22:48:43', 2, 'edicion_manual', 2, 'edicion_producto'),
+(73, 'salida', 1, '2025-12-10 00:14:33', 3, 'venta', 25, 'venta'),
+(74, 'salida', 1, '2025-12-10 01:59:31', 3, 'venta', 26, 'venta'),
+(75, 'salida', 1, '2025-12-10 01:59:31', 4, 'venta', 26, 'venta'),
+(76, 'salida', 1, '2025-12-10 02:04:35', 3, 'venta', 27, 'venta'),
+(77, 'salida', 1, '2025-12-10 02:05:48', 3, 'venta', 28, 'venta'),
+(78, 'salida', 1, '2025-12-10 02:07:39', 3, 'venta', 29, 'venta'),
+(79, 'salida', 1, '2025-12-10 02:08:03', 3, 'venta', 30, 'venta'),
+(80, 'salida', 1, '2025-12-10 02:14:47', 3, 'venta', 31, 'venta'),
+(81, 'salida', 1, '2025-12-10 02:21:05', 3, 'venta', 32, 'venta');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `nutricional`
+--
+
+DROP TABLE IF EXISTS `nutricional`;
+CREATE TABLE IF NOT EXISTS `nutricional` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `calorias` int DEFAULT NULL,
+  `proteinas` decimal(5,2) DEFAULT NULL,
+  `carbohidratos` decimal(5,2) DEFAULT NULL,
+  `azucares` decimal(10,2) DEFAULT NULL,
+  `sodio` decimal(10,2) DEFAULT NULL,
+  `grasas` decimal(5,2) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish_ci;
+
+--
+-- Volcado de datos para la tabla `nutricional`
+--
+
+INSERT INTO `nutricional` (`id`, `calorias`, `proteinas`, `carbohidratos`, `azucares`, `sodio`, `grasas`) VALUES
+(1, 0, 0.00, 0.00, NULL, NULL, 0.00),
+(2, NULL, NULL, NULL, NULL, NULL, NULL),
+(3, NULL, NULL, NULL, NULL, NULL, NULL),
+(4, NULL, NULL, NULL, NULL, NULL, NULL),
+(5, NULL, NULL, NULL, NULL, NULL, NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `pago_proveedor`
+--
+
+DROP TABLE IF EXISTS `pago_proveedor`;
+CREATE TABLE IF NOT EXISTS `pago_proveedor` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `monto` decimal(10,2) NOT NULL COMMENT 'Monto del pago',
+  `fecha_pago` date NOT NULL COMMENT 'Fecha en que se realizó el pago',
+  `metodo_pago` enum('efectivo','transferencia','cheque','tarjeta') CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci DEFAULT 'efectivo' COMMENT 'Método de pago utilizado',
+  `numero_comprobante` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci DEFAULT NULL COMMENT 'Número de comprobante o referencia del pago',
+  `observaciones` text CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci COMMENT 'Observaciones sobre el pago',
+  `creado` timestamp NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Fecha de creación del registro',
+  `factura_proveedor_id` int NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_pago_proveedor_factura_proveedor1_idx` (`factura_proveedor_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish_ci COMMENT='Registro de pagos realizados a proveedores';
+
+--
+-- Volcado de datos para la tabla `pago_proveedor`
+--
+
+INSERT INTO `pago_proveedor` (`id`, `monto`, `fecha_pago`, `metodo_pago`, `numero_comprobante`, `observaciones`, `creado`, `factura_proveedor_id`) VALUES
+(1, 89250.00, '2025-12-08', 'transferencia', NULL, NULL, '2025-12-09 04:52:34', 3),
+(2, 35700.00, '2025-12-09', 'efectivo', NULL, NULL, '2025-12-09 06:00:37', 4),
+(3, 35700.00, '2025-12-09', 'efectivo', NULL, 'Pago automático al crear factura marcada como pagada', '2025-12-09 20:58:06', 5);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `productos`
+--
+
+DROP TABLE IF EXISTS `productos`;
+CREATE TABLE IF NOT EXISTS `productos` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `nombre` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci NOT NULL,
+  `descripcion` varchar(300) CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci DEFAULT NULL,
+  `marca` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci DEFAULT NULL,
+  `precio` decimal(10,2) NOT NULL,
+  `caducidad` date DEFAULT NULL,
+  `elaboracion` date DEFAULT NULL,
+  `tipo` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci DEFAULT NULL,
+  `stock_actual` int DEFAULT NULL,
+  `stock_minimo` int DEFAULT NULL,
+  `stock_maximo` int DEFAULT NULL,
+  `presentacion` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci DEFAULT NULL,
+  `formato` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci DEFAULT NULL,
+  `creado` timestamp NULL DEFAULT NULL,
+  `modificado` timestamp NULL DEFAULT NULL,
+  `eliminado` timestamp NULL DEFAULT NULL,
+  `categorias_id` int NOT NULL,
+  `nutricional_id` int NOT NULL,
+  `cantidad` decimal(10,3) NOT NULL DEFAULT '0.000' COMMENT 'Cantidad de stock (permite decimales para kg, litros, etc.)',
+  `estado_merma` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci NOT NULL DEFAULT 'activo' COMMENT 'Estado del producto: activo, vencido, deteriorado, dañado',
+  `motivo_merma` text CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci COMMENT 'Motivo detallado por el cual el producto fue movido a merma (ej: roto, robado, vencido, etc.)',
+  `fecha_merma` datetime DEFAULT NULL COMMENT 'Fecha y hora en que el producto fue movido a merma',
+  `cantidad_merma` int DEFAULT '0' COMMENT 'Cantidad de unidades que se fueron a merma (se guarda antes de poner cantidad en 0)',
+  `unidad_stock` enum('unidad','kg','g','l','ml') CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci NOT NULL DEFAULT 'unidad' COMMENT 'Unidad en que se almacena el stock (unidad, kg, g, l, ml)',
+  `unidad_venta` enum('unidad','kg','g','l','ml') CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci NOT NULL DEFAULT 'unidad' COMMENT 'Unidad en que se vende el producto (unidad, kg, g, l, ml)',
+  `precio_por_unidad_venta` decimal(10,2) NOT NULL COMMENT 'Precio por unidad de venta',
+  PRIMARY KEY (`id`),
+  KEY `fk_productos_categorias1_idx` (`categorias_id`),
+  KEY `fk_productos_nutricional1_idx` (`nutricional_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish_ci;
+
+--
+-- Volcado de datos para la tabla `productos`
+--
+
+INSERT INTO `productos` (`id`, `nombre`, `descripcion`, `marca`, `precio`, `caducidad`, `elaboracion`, `tipo`, `stock_actual`, `stock_minimo`, `stock_maximo`, `presentacion`, `formato`, `creado`, `modificado`, `eliminado`, `categorias_id`, `nutricional_id`, `cantidad`, `estado_merma`, `motivo_merma`, `fecha_merma`, `cantidad_merma`, `unidad_stock`, `unidad_venta`, `precio_por_unidad_venta`) VALUES
+(1, 'Pan Integral', 'pan', 'Fornería', 2000.00, '2025-12-13', '2025-12-06', 'Panadería', NULL, NULL, NULL, NULL, '1 kg', '2025-12-07 04:25:56', '2025-12-07 06:09:21', '2025-12-07 06:59:26', 1, 2, 20.000, 'vencido', NULL, NULL, 0, 'unidad', 'unidad', 2000.00),
+(2, 'pan', 'pan', 'forneria', 2000.00, '2025-12-14', '2025-12-08', 'pan', 30, 10, 30, 'kg', 'kg', '2025-12-07 06:55:49', '2025-12-09 23:31:21', NULL, 5, 3, 21.000, 'activo', 'werwr', '2025-12-09 23:52:07', 2, 'kg', 'kg', 2000.00),
+(3, 'galleta', 'galleta', 'Fornería', 2000.00, '2025-12-12', '2025-12-09', 'Panadería', 5, 9, 10, '100g', '100g', '2025-12-08 02:10:06', '2025-12-09 22:24:38', NULL, 5, 4, 24.000, 'activo', 'klj', '2025-12-09 17:40:18', 10, 'unidad', 'unidad', 2000.00),
+(4, 'pastel chocolate', 'pastel', 'Dulcería Lilis', 20000.00, '2025-12-15', '2025-12-08', 'Dulces', 2, 2, 6, 'torta completa', 'torta completa', '2025-12-09 03:51:14', '2025-12-09 21:00:58', NULL, 5, 5, 1.000, 'activo', NULL, NULL, 0, 'unidad', 'unidad', 20000.00);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `proveedor`
+--
+
+DROP TABLE IF EXISTS `proveedor`;
+CREATE TABLE IF NOT EXISTS `proveedor` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `nombre` varchar(150) CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci NOT NULL COMMENT 'Razón social o nombre del proveedor',
+  `rut` varchar(12) CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci DEFAULT NULL COMMENT 'RUT del proveedor (formato: 12345678-9)',
+  `contacto` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci DEFAULT NULL COMMENT 'Nombre de la persona de contacto',
+  `telefono` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci DEFAULT NULL COMMENT 'Teléfono de contacto',
+  `email` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci DEFAULT NULL COMMENT 'Correo electrónico',
+  `direccion` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci DEFAULT NULL COMMENT 'Dirección del proveedor',
+  `ciudad` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci DEFAULT NULL COMMENT 'Ciudad',
+  `region` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci DEFAULT NULL COMMENT 'Región',
+  `estado` enum('activo','inactivo') CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci NOT NULL DEFAULT 'activo' COMMENT 'Estado del proveedor',
+  `notas` text CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci COMMENT 'Notas adicionales sobre el proveedor',
+  `creado` timestamp NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Fecha de creación del registro',
+  `modificado` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Fecha de última modificación',
+  `eliminado` timestamp NULL DEFAULT NULL COMMENT 'Fecha de eliminación lógica',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `rut_UNIQUE` (`rut`),
+  KEY `idx_estado` (`estado`),
+  KEY `idx_nombre` (`nombre`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish_ci COMMENT='Tabla de proveedores de la fornería';
+
+--
+-- Volcado de datos para la tabla `proveedor`
+--
+
+INSERT INTO `proveedor` (`id`, `nombre`, `rut`, `contacto`, `telefono`, `email`, `direccion`, `ciudad`, `region`, `estado`, `notas`, `creado`, `modificado`, `eliminado`) VALUES
+(1, 'Amasandería', '18571046-7', '961474925', '961474925', 'amasanderia@gmail.com', 'Ossandón 60', 'Coquimbo', 'Coquimbo', 'activo', NULL, '2025-12-08 02:44:20', '2025-12-08 02:44:20', NULL),
+(2, 'Dulcería Lilis', '18.002.478-6', 'Juan Perez', '+56961474925', 'dulcerialilis@gmail.com', 'Ossandón 60', 'Coquimbo', 'Coquimbo', 'activo', NULL, '2025-12-09 03:42:29', '2025-12-09 03:42:29', NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `roles`
+--
+
+DROP TABLE IF EXISTS `roles`;
+CREATE TABLE IF NOT EXISTS `roles` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `nombre` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci NOT NULL,
+  `descripcion` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish_ci;
+
+--
+-- Volcado de datos para la tabla `roles`
+--
+
+INSERT INTO `roles` (`id`, `nombre`, `descripcion`) VALUES
+(1, 'Vendedor', 'Puede realizar ventas y ver inventario'),
+(2, 'Contador', 'Puede ver reportes, ventas e inventario'),
+(3, 'Administrador', 'Acceso completo al sistema');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `usuarios`
+--
+
+DROP TABLE IF EXISTS `usuarios`;
+CREATE TABLE IF NOT EXISTS `usuarios` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `run` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci NOT NULL,
+  `fono` int DEFAULT NULL,
+  `Direccion_id` int DEFAULT NULL COMMENT 'Dirección del usuario (opcional)',
+  `Roles_id` int DEFAULT NULL COMMENT 'Rol del usuario (opcional)',
+  `user_id` int NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `run_UNIQUE` (`run`),
+  UNIQUE KEY `user_id_UNIQUE` (`user_id`),
+  KEY `fk_Usuarios_Direccion1_idx` (`Direccion_id`),
+  KEY `fk_Usuarios_Roles1_idx` (`Roles_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish_ci;
+
+--
+-- Volcado de datos para la tabla `usuarios`
+--
+
+INSERT INTO `usuarios` (`id`, `run`, `fono`, `Direccion_id`, `Roles_id`, `user_id`) VALUES
+(1, '', NULL, NULL, 1, 2);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `ventas`
+--
+
+DROP TABLE IF EXISTS `ventas`;
+CREATE TABLE IF NOT EXISTS `ventas` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `fecha` timestamp NOT NULL,
+  `total_sin_iva` decimal(10,2) NOT NULL,
+  `total_iva` decimal(10,2) NOT NULL,
+  `descuento` decimal(10,2) NOT NULL,
+  `total_con_iva` decimal(10,2) NOT NULL,
+  `canal_venta` enum('presencial','delivery') CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci NOT NULL,
+  `folio` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci DEFAULT NULL,
+  `medio_pago` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_spanish_ci NOT NULL DEFAULT 'efectivo' COMMENT 'Método de pago: efectivo, tarjeta_debito, tarjeta_credito, transferencia, cheque, otro',
+  `monto_pagado` decimal(10,2) DEFAULT NULL,
+  `vuelto` decimal(10,2) DEFAULT NULL,
+  `clientes_id` int NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_ventas_clientes1_idx` (`clientes_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish_ci;
+
+--
+-- Volcado de datos para la tabla `ventas`
+--
+
+INSERT INTO `ventas` (`id`, `fecha`, `total_sin_iva`, `total_iva`, `descuento`, `total_con_iva`, `canal_venta`, `folio`, `medio_pago`, `monto_pagado`, `vuelto`, `clientes_id`) VALUES
+(1, '2025-12-07 04:28:46', 1800.00, 342.00, 0.00, 2142.00, 'presencial', 'BOL-20251207012845', 'efectivo', 2142.00, 0.00, 1),
+(2, '2025-12-07 06:17:36', 6000.00, 1140.00, 0.00, 7140.00, 'presencial', 'BOL-20251207031736', 'efectivo', 8000.00, 860.00, 1),
+(3, '2025-12-07 06:35:36', 2000.00, 380.00, 0.00, 2380.00, 'presencial', 'BOL-20251207033535', 'efectivo', 3000.00, 620.00, 1),
+(4, '2025-12-07 06:56:43', 4000.00, 760.00, 0.00, 4760.00, 'presencial', 'BOL-20251207035643', 'efectivo', 5000.00, 240.00, 1),
+(5, '2025-12-08 02:10:30', 4000.00, 760.00, 0.00, 4760.00, 'presencial', 'BOL-20251207231030', 'efectivo', 5000.00, 240.00, 1),
+(6, '2025-12-08 02:10:51', 8000.00, 1520.00, 0.00, 9520.00, 'presencial', 'BOL-20251207231051', 'efectivo', 10000.00, 480.00, 1),
+(7, '2025-12-08 03:27:11', 4000.00, 760.00, 0.00, 4760.00, 'presencial', 'BOL-20251208002710', 'efectivo', 5000.00, 240.00, 1),
+(8, '2025-12-08 04:26:30', 8000.00, 1520.00, 0.00, 9520.00, 'presencial', 'BOL-20251208012629', 'efectivo', 10000.00, 480.00, 1),
+(9, '2025-12-08 04:30:02', 2000.00, 380.00, 0.00, 2380.00, 'presencial', 'BOL-20251208013002', 'efectivo', 3000.00, 620.00, 1),
+(10, '2025-12-09 01:03:57', 5600.00, 1064.00, 0.00, 6664.00, 'presencial', 'BOL-20251208220357', 'efectivo', 7000.00, 336.00, 1),
+(11, '2025-12-09 01:19:38', 4705.88, 894.12, 0.00, 5600.00, 'presencial', 'BOL-20251208221938', 'efectivo', 6000.00, 400.00, 1),
+(12, '2025-12-09 01:28:59', 5983.19, 1136.81, 0.00, 7120.00, 'presencial', 'BOL-20251208222859', 'efectivo', 7500.00, 380.00, 1),
+(13, '2025-12-09 01:50:31', 7647.06, 1452.94, 0.00, 9100.00, 'presencial', 'BOL-20251208225030', 'efectivo', 10000.00, 900.00, 1),
+(14, '2025-12-09 01:52:54', 5983.19, 1136.81, 0.00, 7120.00, 'presencial', 'BOL-20251208225254', 'efectivo', 8000.00, 880.00, 1),
+(15, '2025-12-09 01:55:42', 4201.68, 798.32, 0.00, 5000.00, 'presencial', 'BOL-20251208225541', 'efectivo', 5000.00, 0.00, 1),
+(16, '2025-12-09 02:01:29', 3361.34, 638.66, 0.00, 4000.00, 'presencial', 'BOL-20251208230129', 'efectivo', 4000.00, 0.00, 1),
+(17, '2025-12-09 02:06:54', 1680.67, 319.33, 0.00, 2000.00, 'presencial', 'BOL-20251208230654', 'efectivo', 2000.00, 0.00, 1),
+(18, '2025-12-09 05:38:27', 21008.40, 3991.60, 0.00, 25000.00, 'presencial', 'BOL-20251209023826', 'efectivo', 25000.00, 0.00, 1),
+(19, '2025-12-09 21:21:23', 21008.40, 3991.60, 0.00, 25000.00, 'presencial', 'BOL-20251209182122', 'efectivo', 25000.00, 0.00, 1),
+(20, '2025-12-09 21:55:45', 18487.39, 3512.61, 0.00, 22000.00, 'presencial', 'BOL-20251209185545', 'efectivo', 22000.00, 0.00, 1),
+(22, '2025-12-09 22:07:12', 18487.39, 3512.61, 0.00, 22000.00, 'presencial', 'BOL-20251209190711', 'efectivo', 22000.00, 0.00, 1),
+(23, '2025-12-09 22:08:03', 18487.39, 3512.61, 0.00, 22000.00, 'presencial', 'BOL-20251209190802', 'efectivo', 22000.00, 0.00, 1),
+(24, '2025-12-09 22:26:29', 5042.02, 957.98, 0.00, 6000.00, 'presencial', 'BOL-20251209192629', 'efectivo', 6000.00, 0.00, 1),
+(25, '2025-12-10 00:14:32', 1680.67, 319.33, 0.00, 2000.00, 'presencial', 'BOL-20251209211432', 'efectivo', 2000.00, 0.00, 1),
+(26, '2025-12-10 01:59:31', 18487.39, 3512.61, 0.00, 22000.00, 'presencial', 'BOL-20251209225931', 'tarjeta_debito', 22000.00, 0.00, 1),
+(27, '2025-12-10 02:04:35', 1680.67, 319.33, 0.00, 2000.00, 'presencial', 'BOL-20251209230435', 'tarjeta_debito', 2000.00, 0.00, 1),
+(28, '2025-12-10 02:05:48', 1680.67, 319.33, 0.00, 2000.00, 'presencial', 'BOL-20251209230548', 'tarjeta_debito', 2000.00, 0.00, 1),
+(29, '2025-12-10 02:07:39', 1680.67, 319.33, 0.00, 2000.00, 'presencial', 'BOL-20251209230739', 'tarjeta_debito', 2000.00, 0.00, 1),
+(30, '2025-12-10 02:08:03', 1680.67, 319.33, 0.00, 2000.00, 'presencial', 'BOL-20251209230802', 'tarjeta_debito', 2000.00, 0.00, 1),
+(31, '2025-12-10 02:14:47', 1680.67, 319.33, 0.00, 2000.00, 'presencial', 'BOL-20251209231447', 'tarjeta_debito', 2000.00, 0.00, 1),
+(32, '2025-12-10 02:21:05', 1680.67, 319.33, 0.00, 2000.00, 'presencial', 'BOL-20251209232104', 'tarjeta_debito', 2000.00, 0.00, 1);
+
+--
+-- Restricciones para tablas volcadas
+--
+
+--
+-- Filtros para la tabla `alertas`
+--
+ALTER TABLE `alertas`
+  ADD CONSTRAINT `fk_alertas_factura_proveedor` FOREIGN KEY (`factura_proveedor_id`) REFERENCES `factura_proveedor` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_alertas_productos1` FOREIGN KEY (`productos_id`) REFERENCES `productos` (`id`);
+
+--
+-- Filtros para la tabla `detalle_factura_proveedor`
+--
+ALTER TABLE `detalle_factura_proveedor`
+  ADD CONSTRAINT `fk_detalle_factura_proveedor_factura_proveedor1` FOREIGN KEY (`factura_proveedor_id`) REFERENCES `factura_proveedor` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_detalle_factura_proveedor_productos1` FOREIGN KEY (`productos_id`) REFERENCES `productos` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+--
+-- Filtros para la tabla `detalle_venta`
+--
+ALTER TABLE `detalle_venta`
+  ADD CONSTRAINT `fk_detalle_venta_productos1` FOREIGN KEY (`productos_id`) REFERENCES `productos` (`id`),
+  ADD CONSTRAINT `fk_detalle_venta_ventas1` FOREIGN KEY (`ventas_id`) REFERENCES `ventas` (`id`);
+
+--
+-- Filtros para la tabla `factura_proveedor`
+--
+ALTER TABLE `factura_proveedor`
+  ADD CONSTRAINT `fk_factura_proveedor_proveedor1` FOREIGN KEY (`proveedor_id`) REFERENCES `proveedor` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+--
+-- Filtros para la tabla `historial_boletas`
+--
+ALTER TABLE `historial_boletas`
+  ADD CONSTRAINT `historial_boletas_venta_id_fk` FOREIGN KEY (`venta_id`) REFERENCES `ventas` (`id`);
+
+--
+-- Filtros para la tabla `historial_merma`
+--
+ALTER TABLE `historial_merma`
+  ADD CONSTRAINT `fk_historial_merma_producto` FOREIGN KEY (`producto_id`) REFERENCES `productos` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Filtros para la tabla `lotes`
+--
+ALTER TABLE `lotes`
+  ADD CONSTRAINT `fk_lotes_detalle_factura` FOREIGN KEY (`detalle_factura_proveedor_id`) REFERENCES `detalle_factura_proveedor` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `fk_lotes_productos` FOREIGN KEY (`productos_id`) REFERENCES `productos` (`id`) ON DELETE CASCADE;
+
+--
+-- Filtros para la tabla `movimientos_inventario`
+--
+ALTER TABLE `movimientos_inventario`
+  ADD CONSTRAINT `fk_movimientos_inventario_productos1` FOREIGN KEY (`productos_id`) REFERENCES `productos` (`id`);
+
+--
+-- Filtros para la tabla `pago_proveedor`
+--
+ALTER TABLE `pago_proveedor`
+  ADD CONSTRAINT `fk_pago_proveedor_factura_proveedor1` FOREIGN KEY (`factura_proveedor_id`) REFERENCES `factura_proveedor` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Filtros para la tabla `productos`
+--
+ALTER TABLE `productos`
+  ADD CONSTRAINT `fk_productos_categorias1` FOREIGN KEY (`categorias_id`) REFERENCES `categorias` (`id`),
+  ADD CONSTRAINT `fk_productos_nutricional1` FOREIGN KEY (`nutricional_id`) REFERENCES `nutricional` (`id`);
+
+--
+-- Filtros para la tabla `usuarios`
+--
+ALTER TABLE `usuarios`
+  ADD CONSTRAINT `fk_Usuarios_Direccion1` FOREIGN KEY (`Direccion_id`) REFERENCES `direccion` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_Usuarios_Roles1` FOREIGN KEY (`Roles_id`) REFERENCES `roles` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+--
+-- Filtros para la tabla `ventas`
+--
+ALTER TABLE `ventas`
+  ADD CONSTRAINT `fk_ventas_clientes1` FOREIGN KEY (`clientes_id`) REFERENCES `clientes` (`id`);
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

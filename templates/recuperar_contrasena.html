@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% load static %}
+{% block contenido %}
+<!-- Contenedor principal de recuperar contraseña -->
+<div class="login-page-wrapper">
+    <div class="form-container-with-video">
+        <!-- Video de fondo detrás del formulario -->
+        <div class="form-video-background">
+            <video class="form-background-video" autoplay muted loop playsinline>
+                <source src="{% static 'gif/Forneria.mp4' %}" type="video/mp4">
+                Tu navegador no soporta videos HTML5.
+            </video>
+            <!-- Overlay oscuro sobre el video -->
+            <div class="form-video-overlay"></div>
+        </div>
+        
+        <!-- Formulario de recuperar contraseña (delante del video) -->
+        <div class="form-container">
+            <!-- Logo de Fornería -->
+            <div style="text-align: center; margin-bottom: 30px;">
+                <img src="{% static 'images/Forneria.png' %}" alt="La Fornería" style="max-width: 200px; height: auto;">
+            </div>
+            
+            <h2>Recuperar Contraseña</h2>
+            
+            {% if messages %}
+                <ul class="messages">
+                    {% for message in messages %}
+                        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+            
+            <p style="color: #b0b0b0; font-size: 0.95rem; margin-bottom: 20px; text-align: center;">
+                Ingrese su correo electrónico y le enviaremos un enlace para restablecer su contraseña.
+            </p>
+
+            <form method="post" novalidate>
+                {% csrf_token %}
+                
+                <div class="form-group">
+                    {{ form.email.label_tag }}
+                    {{ form.email }}
+                    {% if form.email.errors %}
+                        <div class="field-error">
+                            {% for error in form.email.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <button type="submit" class="submit-button">
+                    Enviar Instrucciones
+                </button>
+            </form>
+
+            <div class="form-link">
+                <p>¿Ya recordaste tu contraseña? <a href="{% url 'login' %}">Inicia sesión aquí</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

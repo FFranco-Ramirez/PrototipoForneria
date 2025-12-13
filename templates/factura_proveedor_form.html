@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block contenido %}
+<div class="dashboard-main-container">
+    {% include 'includes/sidebar.html' with active_page='facturas_proveedores' %}
+    
+    <div class="dashboard-content-wrapper">
+        <div class="card">
+            <div class="card-header">
+                <h2>{% if modo == 'crear' %}Nueva Factura de Proveedor{% else %}Editar Factura{% endif %}</h2>
+                <a href="{% url 'facturas_proveedores_list' %}" class="btn btn-secondary">Volver</a>
+            </div>
+            <div class="card-body">
+                {% if messages %}
+                <div class="alert alert-info">
+                    {% for message in messages %}
+                    <div>{{ message }}</div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                
+                <form method="post" id="facturaForm">
+                    {% csrf_token %}
+                    
+                    <!-- Información básica -->
+                    <h4 class="mb-3">Información de la Factura</h4>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Proveedor *</label>
+                            <select name="proveedor_id" class="form-select" required>
+                                <option value="">Seleccione un proveedor</option>
+                                {% for proveedor in proveedores %}
+                                <option value="{{ proveedor.id }}" {% if factura.proveedor.id == proveedor.id %}selected{% endif %}>
+                                    {{ proveedor.nombre }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Número de Factura *</label>
+                            <input type="text" name="numero_factura" class="form-control" value="{{ factura.numero_factura|default:'' }}" required>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Fecha de Factura *</label>
+                            <input type="date" name="fecha_factura" class="form-control" value="{% if factura.fecha_factura %}{{ factura.fecha_factura|date:'Y-m-d' }}{% else %}{{ 'now'|date:'Y-m-d' }}{% endif %}" required>
+                            <small class="form-text text-muted">Fecha en que el proveedor emitió la factura (fecha de la factura física)</small>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Fecha de Vencimiento</label>
+                            <input type="date" name="fecha_vencimiento" class="form-control" value="{% if factura.fecha_vencimiento %}{{ factura.fecha_vencimiento|date:'Y-m-d' }}{% endif %}">
+                            <small class="form-text text-muted">Fecha límite para pagar la factura (opcional, pero recomendado para control de pagos)</small>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Estado de Pago</label>
+                            <select name="estado_pago" class="form-select" id="estado_pago">
+                                <option value="pendiente" {% if factura.estado_pago == 'pendiente' or not factura %}selected{% endif %}>Pendiente</option>
+                                <option value="parcial" {% if factura.estado_pago == 'parcial' %}selected{% endif %}>Pago Parcial</option>
+                                <option value="pagado" {% if factura.estado_pago == 'pagado' %}selected{% endif %}>Pagado</option>
+                                <option value="atrasado" {% if factura.estado_pago == 'atrasado' %}selected{% endif %}>Atrasado</option>
+                                <option value="cancelado" {% if factura.estado_pago == 'cancelado' %}selected{% endif %}>Cancelado/Anulado</option>
+                            </select>
+                            <small class="form-text text-muted">
+                                <strong>Cancelado/Anulado:</strong> Factura anulada que no se pagará (por error, devolución, etc.)
+                            </small>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Fecha de Recepción</label>
+                            <input type="date" name="fecha_recepcion" class="form-control" 
+                                   value="{% if factura.fecha_recepcion %}{{ factura.fecha_recepcion|date:'Y-m-d' }}{% endif %}">
+                            <small class="form-text text-muted">Dejar vacío si aún no se ha recibido</small>
+                        </div>
+                    </div>
+                    
+                    <!-- Totales -->
+                    <h4 class="mb-3 mt-4">Totales</h4>
+                    <div class="row mb-3">
+                        <div class="col-md-3">
+                            <label class="form-label">Subtotal sin IVA (Neto)</label>
+                            <input type="number" name="subtotal_sin_iva" id="subtotal_sin_iva" class="form-control" step="0.01" value="{% if factura.subtotal_sin_iva is not None %}{{ factura.subtotal_sin_iva|stringformat:".2f" }}{% else %}0.00{% endif %}" onchange="calcularTotales()">
+                            <small class="form-text text-muted">Monto sin IVA (neto)</small>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">IVA (19%)</label>
+                            <input type="number" name="total_iva" id="total_iva" class="form-control" step="0.01" value="{% if factura.total_iva is not None %}{{ factura.total_iva|stringformat:".2f" }}{% else %}0.00{% endif %}" readonly>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Descuento (en pesos)</label>
+                            <input type="number" name="descuento" id="descuento" class="form-control" step="0.01" value="{% if factura.descuento is not None %}{{ factura.descuento|stringformat:".2f" }}{% else %}0.00{% endif %}" onchange="calcularTotales()">
+                            <small class="form-text text-muted">Monto fijo en pesos (ej: 1000)</small>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Total con IVA</label>
+                            <input type="number" name="total_con_iva" id="total_con_iva" class="form-control" step="0.01" value="{% if factura.total_con_iva is not None %}{{ factura.total_con_iva|stringformat:".2f" }}{% else %}0.00{% endif %}" readonly>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <label class="form-label">Observaciones</label>
+                            <textarea name="observaciones" class="form-control" rows="3">{{ factura.observaciones|default:'' }}</textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-end">
+                        <a href="{% url 'facturas_proveedores_list' %}" class="btn btn-secondary me-2">Cancelar</a>
+                        <button type="submit" class="btn btn-primary">Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function calcularTotales() {
+    const subtotal = parseFloat(document.getElementById('subtotal_sin_iva').value) || 0;
+    const descuento = parseFloat(document.getElementById('descuento').value) || 0;
+    
+    // Calcular IVA (19% en Chile)
+    const iva = subtotal * 0.19;
+    
+    // Calcular total con IVA menos descuento
+    const total = subtotal + iva - descuento;
+    
+    document.getElementById('total_iva').value = iva.toFixed(2);
+    document.getElementById('total_con_iva').value = Math.max(0, total).toFixed(2);
+}
+
+// Calcular totales automáticamente al cargar la página si hay valores
+document.addEventListener('DOMContentLoaded', function() {
+    const subtotalInput = document.getElementById('subtotal_sin_iva');
+    if (subtotalInput && subtotalInput.value && parseFloat(subtotalInput.value) > 0) {
+        calcularTotales();
+    }
+});
+</script>
+{% endblock %}
+

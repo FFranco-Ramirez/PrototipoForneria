@@ -1,0 +1,208 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block body_class %}dark-gold-theme{% endblock %}
+
+{% block contenido %}
+<!-- ================================================================ -->
+<!-- =                                                              = -->
+<!-- =        REPORTE DE INVENTARIO CON VALORIZACIÓN               = -->
+<!-- =                                                              = -->
+<!-- ================================================================ -->
+<!--
+    Este template muestra el reporte de inventario según RF-I5 del Jira.
+    
+    FUNCIONALIDADES:
+    - Filtro por categoría
+    - Cálculo de valorización (precio × stock)
+    - Resumen por categoría con totales
+    - Exportación a CSV
+-->
+
+<div class="dashboard-main-container">
+    <!-- Sidebar de navegación -->
+    {% include 'includes/sidebar.html' with active_page='reportes' %}
+
+    <div class="dashboard-content-wrapper">
+        {% include 'includes/dashboard_header.html' with page_title='Reporte de Inventario' %}
+
+        <!-- Contenido principal -->
+        <main class="dashboard-content">
+            
+            <!-- ============================================ -->
+            <!-- SECCIÓN DE FILTROS                          -->
+            <!-- ============================================ -->
+            <div class="card mb-4" style="background: rgba(26, 26, 26, 0.8); border: 1px solid #ffd700;">
+                <div class="card-header" style="background: rgba(255, 215, 0, 0.1); border-bottom: 1px solid #ffd700;">
+                    <h5 class="mb-0">
+                        <i class="bi bi-funnel"></i> Filtros de Búsqueda
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="get" action="{% url 'reporte_inventario' %}">
+                        <input type="hidden" name="generar" value="1">
+                        
+                        <div class="row">
+                            <!-- Categoría -->
+                            <div class="col-md-6 mb-3">
+                                <label for="categoria_id" class="form-label" style="color: #ffffff;">
+                                    <i class="bi bi-tags"></i> Categoría
+                                </label>
+                                <select 
+                                    id="categoria_id" 
+                                    name="categoria_id" 
+                                    class="form-select"
+                                >
+                                    <option value="">Todas las categorías</option>
+                                    {% for categoria in categorias %}
+                                        <option value="{{ categoria.id }}" 
+                                                {% if categoria_seleccionada == categoria.id|stringformat:"s" %}selected{% endif %}>
+                                            {{ categoria.nombre }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <!-- Botones -->
+                        <div class="d-flex gap-2 flex-wrap">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-search"></i> Generar Reporte
+                            </button>
+                            {% if reporte_generado %}
+                                <a href="{% url 'exportar_inventario_excel' %}?{{ request.GET.urlencode }}" 
+                                   class="btn btn-success">
+                                    <i class="bi bi-file-earmark-excel"></i> Exportar Excel
+                                </a>
+                                <a href="{% url 'exportar_inventario_pdf' %}?{{ request.GET.urlencode }}" 
+                                   class="btn btn-danger">
+                                    <i class="bi bi-file-pdf"></i> Exportar PDF
+                                </a>
+                                <a href="{% url 'exportar_inventario_csv' %}?{{ request.GET.urlencode }}" 
+                                   class="btn btn-secondary">
+                                    <i class="bi bi-filetype-csv"></i> Exportar CSV
+                                </a>
+                            {% endif %}
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- ============================================ -->
+            <!-- RESUMEN POR CATEGORÍA                        -->
+            <!-- ============================================ -->
+            {% if reporte_generado %}
+                <!-- Valorización Total -->
+                <div class="row mb-4">
+                    <div class="col-md-12">
+                        <div class="card text-center" style="background: rgba(26, 26, 26, 0.8); border: 2px solid #ffd700;">
+                            <div class="card-body">
+                                <h6 class="text-muted mb-2">Valorización Total del Inventario</h6>
+                                <h2 class="text-warning mb-0">${{ valorizacion_total|floatformat:0 }}</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Resumen por Categoría -->
+                <div class="card mb-4" style="background: rgba(26, 26, 26, 0.8); border: 1px solid #ffd700;">
+                    <div class="card-header" style="background: rgba(255, 215, 0, 0.1); border-bottom: 1px solid #ffd700;">
+                        <h5 class="mb-0">
+                            <i class="bi bi-pie-chart"></i> Resumen por Categoría
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        {% if resumen_categorias %}
+                            <div class="table-responsive">
+                                <table class="table table-dark table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Categoría</th>
+                                            <th class="text-center">Productos</th>
+                                            <th class="text-center">Stock Total</th>
+                                            <th class="text-end">Valorización</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for item in resumen_categorias %}
+                                            <tr>
+                                                <td>
+                                                    <strong>{{ item.categoria.nombre }}</strong>
+                                                </td>
+                                                <td class="text-center">{{ item.total_productos }}</td>
+                                                <td class="text-center">{{ item.total_stock }}</td>
+                                                <td class="text-end">
+                                                    <strong class="text-warning">${{ item.valorizacion|floatformat:0 }}</strong>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <div class="alert alert-info">
+                                <i class="bi bi-info-circle"></i> No hay categorías con productos.
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Detalle de Productos -->
+                <div class="card" style="background: rgba(26, 26, 26, 0.8); border: 1px solid #ffd700;">
+                    <div class="card-header" style="background: rgba(255, 215, 0, 0.1); border-bottom: 1px solid #ffd700;">
+                        <h5 class="mb-0">
+                            <i class="bi bi-list-ul"></i> Detalle de Productos ({{ productos|length }} registros)
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        {% if productos %}
+                            <div class="table-responsive">
+                                <table class="table table-dark table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Producto</th>
+                                            <th>Categoría</th>
+                                            <th class="text-center">Stock</th>
+                                            <th class="text-end">Precio Unit.</th>
+                                            <th class="text-end">Valorización</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for item in productos %}
+                                            <tr>
+                                                <td>{{ item.producto.nombre }}</td>
+                                                <td>
+                                                    <span class="badge bg-secondary">
+                                                        {{ item.producto.categorias.nombre|default:"Sin categoría" }}
+                                                    </span>
+                                                </td>
+                                                <td class="text-center">
+                                                    <strong>{{ item.cantidad }}</strong>
+                                                </td>
+                                                <td class="text-end">${{ item.precio|floatformat:0 }}</td>
+                                                <td class="text-end">
+                                                    <strong class="text-warning">${{ item.valorizacion|floatformat:0 }}</strong>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <div class="alert alert-info">
+                                <i class="bi bi-info-circle"></i> No se encontraron productos con los filtros seleccionados.
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% else %}
+                <div class="alert alert-warning">
+                    <i class="bi bi-exclamation-triangle"></i> Selecciona los filtros y haz clic en "Generar Reporte" para ver los resultados.
+                </div>
+            {% endif %}
+
+        </main>
+    </div>
+</div>
+{% endblock %}
+

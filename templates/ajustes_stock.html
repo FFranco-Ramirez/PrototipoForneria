@@ -1,0 +1,357 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block body_class %}dark-gold-theme{% endblock %}
+
+{% block contenido %}
+<!-- ================================================================ -->
+<!-- =                                                              = -->
+<!-- =              AJUSTES MANUALES DE STOCK                       = -->
+<!-- =                                                              = -->
+<!-- ================================================================ -->
+<!--
+    Este template permite realizar ajustes manuales de stock según RF-I2 del Jira.
+    
+    FUNCIONALIDADES:
+    - Ajustar stock manualmente (entrada o salida)
+    - Crear movimiento en kardex automáticamente
+    - Registrar motivo del ajuste
+    - Trazabilidad completa
+-->
+
+<div class="dashboard-main-container">
+    <!-- Sidebar de navegación -->
+    {% include 'includes/sidebar.html' with active_page='inventario' %}
+
+    <div class="dashboard-content-wrapper">
+        <!-- Header -->
+        <header class="dashboard-header">
+            <h1 class="dashboard-main-title">
+                <i class="bi bi-arrow-left-right"></i> Ajustes Manuales de Stock
+            </h1>
+        </header>
+
+        <!-- Contenido principal -->
+        <main class="dashboard-content">
+            
+            <!-- ============================================ -->
+            <!-- FORMULARIO DE AJUSTE                        -->
+            <!-- ============================================ -->
+            <div class="card mb-4" style="background: rgba(26, 26, 26, 0.8); border: 1px solid #ffd700;">
+                <div class="card-header" style="background: rgba(255, 215, 0, 0.1); border-bottom: 1px solid #ffd700;">
+                    <h5 class="mb-0">
+                        <i class="bi bi-plus-circle"></i> Nuevo Ajuste de Stock
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form id="form-ajuste-stock">
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <!-- Producto -->
+                            <div class="col-md-6 mb-3">
+                                <label for="producto_id" class="form-label" style="color: #ffffff;">
+                                    <i class="bi bi-box"></i> Producto <span class="text-danger">*</span>
+                                </label>
+                                <select 
+                                    id="producto_id" 
+                                    name="producto_id" 
+                                    class="form-select"
+                                    required
+                                >
+                                    <option value="">Seleccione un producto</option>
+                                    {% for producto in productos %}
+                                        <option value="{{ producto.id }}" 
+                                                data-stock="{{ producto.cantidad|default:0 }}"
+                                                data-unidad="{{ producto.unidad_stock|default:'unidad' }}">
+                                            {{ producto.nombre }} 
+                                            (Stock: {{ producto.cantidad|default:0 }} {{ producto.get_unidad_stock_display|default:'' }})
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                                <small class="text-muted">Stock actual se mostrará al seleccionar</small>
+                            </div>
+                            
+                            <!-- Tipo de Ajuste -->
+                            <div class="col-md-6 mb-3">
+                                <label for="tipo" class="form-label" style="color: #ffffff;">
+                                    <i class="bi bi-arrow-up-down"></i> Tipo de Ajuste <span class="text-danger">*</span>
+                                </label>
+                                <select 
+                                    id="tipo" 
+                                    name="tipo" 
+                                    class="form-select"
+                                    required
+                                >
+                                    <option value="">Seleccione tipo</option>
+                                    <option value="entrada">Entrada (Agregar stock)</option>
+                                    <option value="salida">Salida (Reducir stock)</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <!-- Cantidad -->
+                            <div class="col-md-6 mb-3">
+                                <label for="cantidad" class="form-label" style="color: #ffffff;">
+                                    <i class="bi bi-123"></i> Cantidad <span class="text-danger">*</span>
+                                    <span id="unidad-producto-ajuste" class="text-muted ms-2"></span>
+                                </label>
+                                <input 
+                                    type="number" 
+                                    id="cantidad" 
+                                    name="cantidad" 
+                                    class="form-control"
+                                    min="0.001"
+                                    step="0.001"
+                                    required
+                                    placeholder="Ingrese la cantidad"
+                                >
+                                <small class="text-muted" id="help-cantidad-ajuste">
+                                    Debe ser mayor a 0
+                                    <span id="unidad-ayuda-ajuste"></span>
+                                </small>
+                            </div>
+                            
+                            <!-- Stock Actual (solo lectura) -->
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label" style="color: #ffffff;">
+                                    <i class="bi bi-info-circle"></i> Stock Actual
+                                </label>
+                                <input 
+                                    type="text" 
+                                    id="stock_actual" 
+                                    class="form-control"
+                                    readonly
+                                    placeholder="Seleccione un producto"
+                                >
+                            </div>
+                            
+                            <!-- Fecha de Caducidad (solo para entradas) -->
+                            <div class="col-md-3 mb-3" id="fecha-caducidad-container" style="display: none;">
+                                <label for="fecha_caducidad" class="form-label" style="color: #ffffff;">
+                                    <i class="bi bi-calendar-x"></i> Fecha Caducidad
+                                </label>
+                                <input 
+                                    type="date" 
+                                    id="fecha_caducidad" 
+                                    name="fecha_caducidad" 
+                                    class="form-control"
+                                >
+                                <small class="text-muted">Opcional (solo entradas)</small>
+                            </div>
+                        </div>
+                        
+                        <!-- Motivo -->
+                        <div class="mb-3">
+                            <label for="motivo" class="form-label" style="color: #ffffff;">
+                                <i class="bi bi-chat-left-text"></i> Motivo del Ajuste
+                            </label>
+                            <textarea 
+                                id="motivo" 
+                                name="motivo" 
+                                class="form-control"
+                                rows="3"
+                                placeholder="Ej: Ajuste por inventario físico, Corrección de error, etc."
+                            ></textarea>
+                        </div>
+                        
+                        <!-- Botones -->
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-circle"></i> Procesar Ajuste
+                            </button>
+                            <button type="reset" class="btn btn-secondary">
+                                <i class="bi bi-x-circle"></i> Limpiar
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- ============================================ -->
+            <!-- ALERTAS Y MENSAJES                          -->
+            <!-- ============================================ -->
+            <div id="alert-container"></div>
+
+        </main>
+    </div>
+</div>
+
+<!-- JavaScript para el formulario -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('form-ajuste-stock');
+    const productoSelect = document.getElementById('producto_id');
+    const stockActualInput = document.getElementById('stock_actual');
+    const tipoSelect = document.getElementById('tipo');
+    const cantidadInput = document.getElementById('cantidad');
+    const alertContainer = document.getElementById('alert-container');
+
+    // Mapeo de unidades a nombres legibles
+    const nombresUnidades = {
+        'unidad': 'unidad(es)',
+        'kg': 'kilogramo(s)',
+        'g': 'gramo(s)',
+        'l': 'litro(s)',
+        'ml': 'mililitro(s)'
+    };
+
+    // Función para actualizar max según tipo y stock
+    function actualizarMaxCantidad() {
+        if (tipoSelect.value === 'salida' && stockActualInput.value) {
+            const stockActual = parseFloat(stockActualInput.value) || 0;
+            cantidadInput.setAttribute('max', stockActual.toString());
+        } else {
+            cantidadInput.removeAttribute('max');
+        }
+    }
+
+    // Actualizar stock actual y unidad al seleccionar producto
+    productoSelect.addEventListener('change', function() {
+        const selectedOption = this.options[this.selectedIndex];
+        const unidadSpan = document.getElementById('unidad-producto-ajuste');
+        const unidadAyuda = document.getElementById('unidad-ayuda-ajuste');
+        const cantidadInput = document.getElementById('cantidad');
+        
+        if (selectedOption.value) {
+            const stock = selectedOption.getAttribute('data-stock') || '0';
+            const unidad = selectedOption.getAttribute('data-unidad') || 'unidad';
+            const nombreUnidad = nombresUnidades[unidad] || unidad;
+            
+            stockActualInput.value = stock;
+            
+            // Mostrar unidad de medida
+            unidadSpan.textContent = `(${nombreUnidad})`;
+            unidadAyuda.textContent = ` Ingrese la cantidad en ${nombreUnidad}.`;
+            
+            // Ajustar step y min según unidad
+            if (unidad === 'unidad') {
+                cantidadInput.setAttribute('step', '1');
+                cantidadInput.setAttribute('min', '1');
+            } else {
+                cantidadInput.setAttribute('step', '0.001');
+                cantidadInput.setAttribute('min', '0.001');
+            }
+            
+            // Actualizar max si es salida
+            if (tipoSelect.value === 'salida') {
+                actualizarMaxCantidad();
+            }
+        } else {
+            stockActualInput.value = '';
+            unidadSpan.textContent = '';
+            unidadAyuda.textContent = '';
+        }
+    });
+
+    // Mostrar/ocultar campo de fecha de caducidad según tipo
+    const fechaCaducidadContainer = document.getElementById('fecha-caducidad-container');
+    
+    tipoSelect.addEventListener('change', function() {
+        if (this.value === 'entrada') {
+            fechaCaducidadContainer.style.display = 'block';
+        } else {
+            fechaCaducidadContainer.style.display = 'none';
+        }
+        actualizarMaxCantidad();
+    });
+    
+    // Actualizar max cuando cambie el stock actual
+    stockActualInput.addEventListener('input', function() {
+        actualizarMaxCantidad();
+    });
+
+    // Enviar formulario
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const formData = {
+            producto_id: productoSelect.value,
+            tipo: tipoSelect.value,
+            cantidad: cantidadInput.value,
+            motivo: document.getElementById('motivo').value || 'Ajuste manual',
+            fecha_caducidad: document.getElementById('fecha_caducidad').value || null
+        };
+
+        // Validaciones
+        if (!formData.producto_id) {
+            mostrarAlerta('error', 'Debe seleccionar un producto');
+            return;
+        }
+
+        if (!formData.tipo) {
+            mostrarAlerta('error', 'Debe seleccionar un tipo de ajuste');
+            return;
+        }
+
+        if (!formData.cantidad || formData.cantidad <= 0) {
+            mostrarAlerta('error', 'La cantidad debe ser mayor a 0');
+            return;
+        }
+
+        // Validar stock si es salida (permitir decimales)
+        if (formData.tipo === 'salida') {
+            const stockActual = parseFloat(stockActualInput.value) || 0;
+            const cantidadSolicitada = parseFloat(formData.cantidad) || 0;
+            if (cantidadSolicitada > stockActual) {
+                mostrarAlerta('error', `Stock insuficiente. Disponible: ${stockActual}, Solicitado: ${formData.cantidad}`);
+                return;
+            }
+        }
+
+        // Enviar petición AJAX
+        fetch('{% url "api_ajustes_stock" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify(formData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                mostrarAlerta('success', data.mensaje);
+                form.reset();
+                stockActualInput.value = '';
+                // Recargar página después de 2 segundos
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000);
+            } else {
+                mostrarAlerta('error', data.mensaje);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            mostrarAlerta('error', 'Error de conexión con el servidor');
+        });
+    });
+
+    // Función para mostrar alertas
+    function mostrarAlerta(tipo, mensaje) {
+        const alertClass = tipo === 'success' ? 'alert-success' : 'alert-danger';
+        const icon = tipo === 'success' ? 'bi-check-circle' : 'bi-exclamation-triangle';
+        
+        const alertHTML = `
+            <div class="alert ${alertClass} alert-dismissible fade show" role="alert">
+                <i class="bi ${icon}"></i> ${mensaje}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        `;
+        
+        alertContainer.innerHTML = alertHTML;
+        
+        // Auto-cerrar después de 5 segundos
+        setTimeout(() => {
+            const alert = alertContainer.querySelector('.alert');
+            if (alert) {
+                alert.remove();
+            }
+        }, 5000);
+    }
+});
+</script>
+{% endblock %}
+

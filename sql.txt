@@ -1,0 +1,589 @@
+-- MySQL Workbench Forward Engineering
+
+SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
+SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
+
+-- -----------------------------------------------------
+-- Schema mydb
+-- -----------------------------------------------------
+-- -----------------------------------------------------
+-- Schema forneria
+-- -----------------------------------------------------
+
+-- -----------------------------------------------------
+-- Schema forneria
+-- -----------------------------------------------------
+CREATE SCHEMA IF NOT EXISTS `forneria` ;
+USE `forneria` ;
+
+-- -----------------------------------------------------
+-- Table `forneria`.`auth_group`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `forneria`.`auth_group` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(150) COLLATE 'utf8mb3_spanish_ci' NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `name` (`name` ASC) VISIBLE)
+ENGINE = MyISAM;
+
+
+-- -----------------------------------------------------
+-- Table `forneria`.`auth_group_permissions`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `forneria`.`auth_group_permissions` (
+  `id` BIGINT NOT NULL AUTO_INCREMENT,
+  `group_id` INT NOT NULL,
+  `permission_id` INT NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `auth_group_permissions_group_id_permission_id_0cd325b0_uniq` (`group_id` ASC, `permission_id` ASC) VISIBLE,
+  INDEX `auth_group_permissions_group_id_b120cbf9` (`group_id` ASC) VISIBLE,
+  INDEX `auth_group_permissions_permission_id_84c5c92e` (`permission_id` ASC) VISIBLE)
+ENGINE = MyISAM;
+
+
+-- -----------------------------------------------------
+-- Table `forneria`.`auth_permission`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `forneria`.`auth_permission` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(255) COLLATE 'utf8mb3_spanish_ci' NOT NULL,
+  `content_type_id` INT NOT NULL,
+  `codename` VARCHAR(100) COLLATE 'utf8mb3_spanish_ci' NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `auth_permission_content_type_id_codename_01ab375a_uniq` (`content_type_id` ASC, `codename` ASC) VISIBLE,
+  INDEX `auth_permission_content_type_id_2f476e4b` (`content_type_id` ASC) VISIBLE)
+ENGINE = MyISAM
+AUTO_INCREMENT = 25;
+
+
+-- -----------------------------------------------------
+-- Table `forneria`.`auth_user`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `forneria`.`auth_user` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `password` VARCHAR(128) COLLATE 'utf8mb3_spanish_ci' NOT NULL,
+  `last_login` DATETIME(6) NULL DEFAULT NULL,
+  `is_superuser` TINYINT(1) NOT NULL,
+  `username` VARCHAR(150) COLLATE 'utf8mb3_spanish_ci' NOT NULL,
+  `first_name` VARCHAR(150) COLLATE 'utf8mb3_spanish_ci' NOT NULL,
+  `last_name` VARCHAR(150) COLLATE 'utf8mb3_spanish_ci' NOT NULL,
+  `email` VARCHAR(254) COLLATE 'utf8mb3_spanish_ci' NOT NULL,
+  `is_staff` TINYINT(1) NOT NULL,
+  `is_active` TINYINT(1) NOT NULL,
+  `date_joined` DATETIME(6) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `username` (`username` ASC) VISIBLE)
+ENGINE = MyISAM
+AUTO_INCREMENT = 3;
+
+
+-- -----------------------------------------------------
+-- Table `forneria`.`auth_user_groups`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `forneria`.`auth_user_groups` (
+  `id` BIGINT NOT NULL AUTO_INCREMENT,
+  `user_id` INT NOT NULL,
+  `group_id` INT NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `auth_user_groups_user_id_group_id_94350c0c_uniq` (`user_id` ASC, `group_id` ASC) VISIBLE,
+  INDEX `auth_user_groups_user_id_6a12ed8b` (`user_id` ASC) VISIBLE,
+  INDEX `auth_user_groups_group_id_97559544` (`group_id` ASC) VISIBLE)
+ENGINE = MyISAM;
+
+
+-- -----------------------------------------------------
+-- Table `forneria`.`auth_user_user_permissions`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `forneria`.`auth_user_user_permissions` (
+  `id` BIGINT NOT NULL AUTO_INCREMENT,
+  `user_id` INT NOT NULL,
+  `permission_id` INT NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `auth_user_user_permissions_user_id_permission_id_14a6b632_uniq` (`user_id` ASC, `permission_id` ASC) VISIBLE,
+  INDEX `auth_user_user_permissions_user_id_a95ead1b` (`user_id` ASC) VISIBLE,
+  INDEX `auth_user_user_permissions_permission_id_1fbb5f2c` (`permission_id` ASC) VISIBLE)
+ENGINE = MyISAM;
+
+
+-- -----------------------------------------------------
+-- Table `forneria`.`cargo`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `forneria`.`cargo` (
+  `id` INT NOT NULL,
+  `nombre` VARCHAR(45) COLLATE 'utf8mb3_spanish_ci' NOT NULL,
+  `descripcion` VARCHAR(45) COLLATE 'utf8mb3_spanish_ci' NOT NULL,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `forneria`.`departamento`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `forneria`.`departamento` (
+  `id` INT NOT NULL,
+  `nombre` VARCHAR(45) COLLATE 'utf8mb3_spanish_ci' NOT NULL,
+  `descripcion` VARCHAR(45) COLLATE 'utf8mb3_spanish_ci' NOT NULL,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `forneria`.`empleado`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `forneria`.`empleado` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `nombres` VARCHAR(100) NOT NULL,
+  `A_paterno` VARCHAR(45) NOT NULL,
+  `A_materno` VARCHAR(45) NOT NULL,
+  `run` VARCHAR(45) NOT NULL,
+  `correo` VARCHAR(100) NOT NULL,
+  `fono` INT NOT NULL,
+  `clave` VARCHAR(45) NOT NULL,
+  `nacionalidad` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `run_UNIQUE` (`run` ASC) VISIBLE,
+  UNIQUE INDEX `fono_UNIQUE` (`fono` ASC) VISIBLE)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
+
+
+-- -----------------------------------------------------
+-- Table `forneria`.`jornada`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `forneria`.`jornada` (
+  `id` INT NOT NULL,
+  `nombre` VARCHAR(45) COLLATE 'utf8mb3_spanish_ci' NOT NULL,
+  `horas_semanales` INT NOT NULL,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `forneria`.`turno`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `forneria`.`turno` (
+  `id` INT NOT NULL,
+  `hora_entrada` TIME NOT NULL,
+  `hora_salida` TIME NOT NULL,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `forneria`.`turno_has_jornada`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `forneria`.`turno_has_jornada` (
+  `turno_id` INT NOT NULL,
+  `jornada_id` INT NOT NULL,
+  `id` INT NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`id`),
+  INDEX `fk_turno_has_jornada_jornada1_idx` (`jornada_id` ASC) VISIBLE,
+  INDEX `fk_turno_has_jornada_turno1_idx` (`turno_id` ASC) VISIBLE,
+  CONSTRAINT `fk_turno_has_jornada_jornada1`
+    FOREIGN KEY (`jornada_id`)
+    REFERENCES `forneria`.`jornada` (`id`),
+  CONSTRAINT `fk_turno_has_jornada_turno1`
+    FOREIGN KEY (`turno_id`)
+    REFERENCES `forneria`.`turno` (`id`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `forneria`.`contrato`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `forneria`.`contrato` (
+  `id` INT NOT NULL,
+  `detalle_contrato` VARCHAR(45) NOT NULL,
+  `fecha_inicio` DATE NOT NULL,
+  `fecha_fin` DATE NOT NULL,
+  `empleado_id` INT NOT NULL,
+  `cargo_id` INT NOT NULL,
+  `departamento_id` INT NOT NULL,
+  `turno_has_jornada_id` INT NOT NULL,
+  PRIMARY KEY (`id`, `empleado_id`),
+  INDEX `fk_contrato_empleado1_idx` (`empleado_id` ASC) VISIBLE,
+  INDEX `fk_contrato_cargo1_idx` (`cargo_id` ASC) VISIBLE,
+  INDEX `fk_contrato_departamento1_idx` (`departamento_id` ASC) VISIBLE,
+  INDEX `fk_contrato_turno_has_jornada1_idx` (`turno_has_jornada_id` ASC) VISIBLE,
+  CONSTRAINT `fk_contrato_cargo1`
+    FOREIGN KEY (`cargo_id`)
+    REFERENCES `forneria`.`cargo` (`id`),
+  CONSTRAINT `fk_contrato_departamento1`
+    FOREIGN KEY (`departamento_id`)
+    REFERENCES `forneria`.`departamento` (`id`),
+  CONSTRAINT `fk_contrato_empleado1`
+    FOREIGN KEY (`empleado_id`)
+    REFERENCES `forneria`.`empleado` (`id`),
+  CONSTRAINT `fk_contrato_turno_has_jornada1`
+    FOREIGN KEY (`turno_has_jornada_id`)
+    REFERENCES `forneria`.`turno_has_jornada` (`id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
+
+
+-- -----------------------------------------------------
+-- Table `forneria`.`cuenta_bancaria`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `forneria`.`cuenta_bancaria` (
+  `id` INT NOT NULL,
+  `banco` VARCHAR(45) COLLATE 'utf8mb3_spanish_ci' NOT NULL,
+  `tipo_cuenta` VARCHAR(45) COLLATE 'utf8mb3_spanish_ci' NOT NULL,
+  `numero_cuenta` INT NOT NULL,
+  `correo` VARCHAR(45) COLLATE 'utf8mb3_spanish_ci' NOT NULL,
+  `empleado_id` INT NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_cuenta_bancaria_empleado1_idx` (`empleado_id` ASC) VISIBLE,
+  CONSTRAINT `fk_cuenta_bancaria_empleado1`
+    FOREIGN KEY (`empleado_id`)
+    REFERENCES `forneria`.`empleado` (`id`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `forneria`.`direccion`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `forneria`.`direccion` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `calle` VARCHAR(100) CHARACTER SET 'utf8mb3' NOT NULL,
+  `numero` VARCHAR(10) CHARACTER SET 'utf8mb3' NOT NULL,
+  `depto` VARCHAR(10) CHARACTER SET 'utf8mb3' NULL DEFAULT NULL,
+  `comuna` VARCHAR(100) CHARACTER SET 'utf8mb3' NOT NULL,
+  `region` VARCHAR(100) CHARACTER SET 'utf8mb3' NOT NULL,
+  `codigo_postal` VARCHAR(45) CHARACTER SET 'utf8mb3' NULL DEFAULT NULL,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
+
+
+-- -----------------------------------------------------
+-- Table `forneria`.`django_admin_log`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `forneria`.`django_admin_log` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `action_time` DATETIME(6) NOT NULL,
+  `object_id` LONGTEXT COLLATE 'utf8mb3_spanish_ci' NULL DEFAULT NULL,
+  `object_repr` VARCHAR(200) COLLATE 'utf8mb3_spanish_ci' NOT NULL,
+  `action_flag` SMALLINT UNSIGNED NOT NULL,
+  `change_message` LONGTEXT COLLATE 'utf8mb3_spanish_ci' NOT NULL,
+  `content_type_id` INT NULL DEFAULT NULL,
+  `user_id` INT NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `django_admin_log_content_type_id_c4bce8eb` (`content_type_id` ASC) VISIBLE,
+  INDEX `django_admin_log_user_id_c564eba6` (`user_id` ASC) VISIBLE)
+ENGINE = MyISAM
+AUTO_INCREMENT = 3;
+
+
+-- -----------------------------------------------------
+-- Table `forneria`.`django_content_type`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `forneria`.`django_content_type` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `app_label` VARCHAR(100) COLLATE 'utf8mb3_spanish_ci' NOT NULL,
+  `model` VARCHAR(100) COLLATE 'utf8mb3_spanish_ci' NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `django_content_type_app_label_model_76bd3d3b_uniq` (`app_label` ASC, `model` ASC) VISIBLE)
+ENGINE = MyISAM
+AUTO_INCREMENT = 7;
+
+
+-- -----------------------------------------------------
+-- Table `forneria`.`django_migrations`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `forneria`.`django_migrations` (
+  `id` BIGINT NOT NULL AUTO_INCREMENT,
+  `app` VARCHAR(255) COLLATE 'utf8mb3_spanish_ci' NOT NULL,
+  `name` VARCHAR(255) COLLATE 'utf8mb3_spanish_ci' NOT NULL,
+  `applied` DATETIME(6) NOT NULL,
+  PRIMARY KEY (`id`))
+ENGINE = MyISAM
+AUTO_INCREMENT = 19;
+
+
+-- -----------------------------------------------------
+-- Table `forneria`.`django_session`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `forneria`.`django_session` (
+  `session_key` VARCHAR(40) COLLATE 'utf8mb3_spanish_ci' NOT NULL,
+  `session_data` LONGTEXT COLLATE 'utf8mb3_spanish_ci' NOT NULL,
+  `expire_date` DATETIME(6) NOT NULL,
+  PRIMARY KEY (`session_key`),
+  INDEX `django_session_expire_date_a5c62663` (`expire_date` ASC) VISIBLE)
+ENGINE = MyISAM;
+
+
+-- -----------------------------------------------------
+-- Table `forneria`.`liquidacion`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `forneria`.`liquidacion` (
+  `id` INT NOT NULL,
+  `periodo` DATE NOT NULL,
+  `imponible` INT NOT NULL,
+  `no_imponible` INT NOT NULL,
+  `tributable` INT NOT NULL,
+  `descuentos` INT NOT NULL,
+  `bruto` INT NOT NULL,
+  `liquido` INT NOT NULL,
+  `fecha_cierre` DATE NOT NULL,
+  `estado` VARCHAR(45) NOT NULL,
+  `contrato_id` INT NOT NULL,
+  `contrato_empleado_id` INT NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_liquidacion_contrato1_idx` (`contrato_id` ASC, `contrato_empleado_id` ASC) VISIBLE,
+  CONSTRAINT `fk_liquidacion_contrato1`
+    FOREIGN KEY (`contrato_id` , `contrato_empleado_id`)
+    REFERENCES `forneria`.`contrato` (`id` , `empleado_id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
+
+
+-- -----------------------------------------------------
+-- Table `forneria`.`pago`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `forneria`.`pago` (
+  `id` INT NOT NULL,
+  `fecha_pago` DATE NOT NULL,
+  `monto` INT NOT NULL,
+  `comprobante` VARCHAR(45) COLLATE 'utf8mb3_spanish_ci' NOT NULL,
+  `estado` VARCHAR(45) COLLATE 'utf8mb3_spanish_ci' NOT NULL,
+  `liquidacion_id` INT NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_pago_liquidacion1_idx` (`liquidacion_id` ASC) VISIBLE,
+  CONSTRAINT `fk_pago_liquidacion1`
+    FOREIGN KEY (`liquidacion_id`)
+    REFERENCES `forneria`.`liquidacion` (`id`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `forneria`.`forma_pago`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `forneria`.`forma_pago` (
+  `id` INT NOT NULL,
+  `nombre` VARCHAR(45) COLLATE 'utf8mb3_spanish_ci' NOT NULL,
+  `descripcion` VARCHAR(45) COLLATE 'utf8mb3_spanish_ci' NOT NULL,
+  `pago_id` INT NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_forma_pago_pago1_idx` (`pago_id` ASC) VISIBLE,
+  CONSTRAINT `fk_forma_pago_pago1`
+    FOREIGN KEY (`pago_id`)
+    REFERENCES `forneria`.`pago` (`id`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `forneria`.`roles`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `forneria`.`roles` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `nombre` VARCHAR(100) CHARACTER SET 'utf8mb3' NOT NULL,
+  `descripcion` VARCHAR(200) CHARACTER SET 'utf8mb3' NULL DEFAULT NULL,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
+
+
+-- -----------------------------------------------------
+-- Table `forneria`.`usuarios`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `forneria`.`usuarios` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `nombres` VARCHAR(100) CHARACTER SET 'utf8mb3' NOT NULL,
+  `paterno` VARCHAR(100) CHARACTER SET 'utf8mb3' NOT NULL,
+  `materno` VARCHAR(100) CHARACTER SET 'utf8mb3' NULL DEFAULT NULL,
+  `run` VARCHAR(10) CHARACTER SET 'utf8mb3' NOT NULL,
+  `correo` VARCHAR(100) CHARACTER SET 'utf8mb3' NOT NULL,
+  `fono` INT NULL DEFAULT NULL,
+  `clave` VARCHAR(150) CHARACTER SET 'utf8mb3' NULL DEFAULT NULL,
+  `Direccion_id` INT NOT NULL,
+  `Roles_id` INT NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `run_UNIQUE` (`run` ASC) VISIBLE,
+  INDEX `fk_Usuarios_Direccion1_idx` (`Direccion_id` ASC) VISIBLE,
+  INDEX `fk_Usuarios_Roles1_idx` (`Roles_id` ASC) VISIBLE,
+  CONSTRAINT `fk_Usuarios_Direccion1`
+    FOREIGN KEY (`Direccion_id`)
+    REFERENCES `forneria`.`direccion` (`id`),
+  CONSTRAINT `fk_Usuarios_Roles1`
+    FOREIGN KEY (`Roles_id`)
+    REFERENCES `forneria`.`roles` (`id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
+
+
+-- -----------------------------------------------------
+-- Table `forneria`.`categorias`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `forneria`.`categorias` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `nombre` VARCHAR(100) NULL,
+  `descripcion` VARCHAR(200) NULL,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `forneria`.`nutricional`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `forneria`.`nutricional` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `calorias` DECIMAL(10,2) NULL,
+  `proteinas` DECIMAL(10,2) NULL,
+  `grasas` DECIMAL(10,2) NULL,
+  `carbohidratos` DECIMAL(10,2) NULL,
+  `azucares` DECIMAL(10,2) NULL,
+  `sodio` DECIMAL(10,2) NULL,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `forneria`.`productos`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `forneria`.`productos` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `nombre` VARCHAR(100) NOT NULL,
+  `descripcion` VARCHAR(300) NULL,
+  `marca` VARCHAR(100) NULL,
+  `precio` DECIMAL(10,2) NOT NULL,
+  `caducidad` DATE NOT NULL,
+  `elaboracion` DATE NULL,
+  `tipo` VARCHAR(100) NULL,
+  `stock_actual` INT NULL,
+  `stock_minimo` INT NULL,
+  `stock_maximo` INT NULL,
+  `presentacion` VARCHAR(100) NULL,
+  `formato` VARCHAR(100) NULL,
+  `creado` TIMESTAMP NULL,
+  `modificado` TIMESTAMP NULL,
+  `eliminado` TIMESTAMP NULL,
+  `categorias_id` INT NOT NULL,
+  `nutricional_id` INT NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_productos_categorias1_idx` (`categorias_id` ASC) VISIBLE,
+  INDEX `fk_productos_nutricional1_idx` (`nutricional_id` ASC) VISIBLE,
+  CONSTRAINT `fk_productos_categorias1`
+    FOREIGN KEY (`categorias_id`)
+    REFERENCES `forneria`.`categorias` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_productos_nutricional1`
+    FOREIGN KEY (`nutricional_id`)
+    REFERENCES `forneria`.`nutricional` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `forneria`.`alertas`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `forneria`.`alertas` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `tipo_alerta` ENUM('verde', 'amarilla', 'roja') NOT NULL,
+  `mensaje` VARCHAR(255) NOT NULL,
+  `fecha_generada` TIMESTAMP NULL,
+  `estado` VARCHAR(20) NULL,
+  `productos_id` INT NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_alertas_productos1_idx` (`productos_id` ASC) VISIBLE,
+  CONSTRAINT `fk_alertas_productos1`
+    FOREIGN KEY (`productos_id`)
+    REFERENCES `forneria`.`productos` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `forneria`.`clientes`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `forneria`.`clientes` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `rut` VARCHAR(12) NULL,
+  `nombre` VARCHAR(150) NOT NULL,
+  `correo` VARCHAR(100) NULL,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `forneria`.`ventas`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `forneria`.`ventas` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `fecha` TIMESTAMP NOT NULL,
+  `total_sin_iva` DECIMAL(10,2) NOT NULL,
+  `total_iva` DECIMAL(10,2) NOT NULL,
+  `descuento` DECIMAL(10,2) NOT NULL,
+  `total_con_iva` DECIMAL(10,2) NOT NULL,
+  `canal_venta` ENUM('presencial', 'delivery') NOT NULL,
+  `folio` VARCHAR(20) NULL,
+  `monto_pagado` DECIMAL(10,2) NULL,
+  `vuelto` DECIMAL(10,2) NULL,
+  `clientes_id` INT NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_ventas_clientes1_idx` (`clientes_id` ASC) VISIBLE,
+  CONSTRAINT `fk_ventas_clientes1`
+    FOREIGN KEY (`clientes_id`)
+    REFERENCES `forneria`.`clientes` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `forneria`.`detalle_venta`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `forneria`.`detalle_venta` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `cantidad` INT NOT NULL,
+  `precio_unitario` DECIMAL(10,2) NOT NULL,
+  `descuento_pct` DECIMAL(5,2) NULL,
+  `ventas_id` INT NOT NULL,
+  `productos_id` INT NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_detalle_venta_ventas1_idx` (`ventas_id` ASC) VISIBLE,
+  INDEX `fk_detalle_venta_productos1_idx` (`productos_id` ASC) VISIBLE,
+  CONSTRAINT `fk_detalle_venta_ventas1`
+    FOREIGN KEY (`ventas_id`)
+    REFERENCES `forneria`.`ventas` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_detalle_venta_productos1`
+    FOREIGN KEY (`productos_id`)
+    REFERENCES `forneria`.`productos` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `forneria`.`movimientos_inventario`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `forneria`.`movimientos_inventario` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `tipo_movimiento` ENUM('entrada', 'salida') NOT NULL,
+  `cantidad` INT NOT NULL,
+  `fecha` TIMESTAMP NOT NULL,
+  `productos_id` INT NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_movimientos_inventario_productos1_idx` (`productos_id` ASC) VISIBLE,
+  CONSTRAINT `fk_movimientos_inventario_productos1`
+    FOREIGN KEY (`productos_id`)
+    REFERENCES `forneria`.`productos` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+SET SQL_MODE=@OLD_SQL_MODE;
+SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;

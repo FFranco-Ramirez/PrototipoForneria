@@ -1,0 +1,52 @@
+/*
+================================================================
+=                                                              =
+=               ESTILOS PÁGINA DE BIENVENIDA (HOME)            =
+=                                                              =
+================================================================
+*/
+
+/*
+  Estos estilos se aplican a la página principal o de bienvenida,
+  que se muestra a los usuarios antes de que inicien sesión.
+  Utiliza Flexbox para centrar perfectamente el contenido en la pantalla.
+*/
+
+/* --- Contenedor Principal --- */
+/* La caja que envuelve todo el contenido de la bienvenida. */
+.welcome-container {
+  display: flex;              /* Activa Flexbox para centrado y alineación. */
+  flex-direction: column;     /* Apila los elementos (título, subtítulo, botones) verticalmente. */
+  justify-content: center;    /* Centra todo el contenido verticalmente en la pantalla. */
+  align-items: center;        /* Centra todo el contenido horizontalmente. */
+  height: 100vh;              /* Hace que el contenedor ocupe el 100% de la altura de la ventana. */
+  text-align: center;         /* Asegura que el texto dentro de los elementos esté centrado. */
+}
+
+/* --- Título Principal (h1) --- */
+.welcome-title {
+  font-size: 3rem;      /* Tamaño de fuente grande y llamativo. */
+  font-weight: bold;    /* Texto en negrita. */
+  color: var(--gold);   /* Usa el color dorado definido en el tema. */
+  margin-bottom: 1rem;  /* Espacio debajo del título. */
+}
+
+/* --- Subtítulo (h2) --- */
+.welcome-subtitle {
+  font-size: 1.5rem;    /* Tamaño de fuente mediano. */
+  color: var(--muted);  /* Usa el color de texto "apagado" (gris claro) del tema. */
+  margin-bottom: 2rem;  /* Espacio generoso debajo del subtítulo para separarlo de los botones. */
+}
+
+/* --- Contenedor de Botones --- */
+.button-container {
+  display: flex; /* Usa Flexbox para poner los botones uno al lado del otro. */
+  gap: 1rem;     /* Crea un espacio de 16px entre los botones. */
+}
+
+/* --- Estilos para el Tema Oscuro --- */
+/* Estos estilos solo se aplican cuando el body tiene la clase 'dark-gold-theme'. */
+.dark-gold-theme .welcome-container {
+    background-color: #121212; /* Fondo negro oscuro para el tema. */
+    color: #f0f0f0; /* Color de texto claro para que sea legible sobre el fondo oscuro. */
+}

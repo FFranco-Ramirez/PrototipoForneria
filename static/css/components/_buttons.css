@@ -1,0 +1,129 @@
+/*
+================================================================
+=                                                              =
+=               ESTILOS DE BOTONES GLOBALES                    =
+=                                                              =
+================================================================
+*/
+
+/* --- Contenedor para Botones (Página de Bienvenida) --- */
+/* Este estilo se usa en la página de inicio para agrupar los botones de login y registro. */
+.button-container {
+    margin-top: 20px; /* Crea un espacio de 20 píxeles arriba del contenedor, separándolo del subtítulo. */
+    display: flex;    /* Activa un modo de diseño que facilita alinear elementos uno al lado del otro. */
+    gap: 15px;        /* Añade un espacio de 15 píxeles entre cada botón dentro de este contenedor. */
+}
+
+/* --- Botón de Registro (Página de Bienvenida) --- */
+/* Estilo específico para el botón 'Registrarse' en la pantalla de inicio. */
+.register-button {
+    background-color: #D4AF37; /* Color de fondo del botón, en este caso, un tono dorado. */
+    color: #000000;           /* Color del texto del botón, que será negro. */
+    padding: 10px 20px;       /* Espacio interior del botón. '10px' arriba/abajo y '20px' a los lados. Hace el botón más grande y fácil de pulsar. */
+    text-decoration: none;    /* Quita el subrayado que los enlaces (etiqueta <a>) tienen por defecto. */
+    border-radius: 5px;       /* Redondea las esquinas del botón en 5 píxeles para que no sean tan puntiagudas. */
+    font-weight: bold;        /* Pone el texto del botón en negrita. */
+    transition: background-color 0.3s ease; /* Crea una animación suave de 0.3 segundos cuando el color de fondo cambia (por ejemplo, al pasar el ratón). */
+}
+
+.register-button:hover {
+    background-color: #E5C100; /* Cambia el color de fondo a un dorado más claro cuando el cursor está sobre el botón. */
+}
+
+/* --- Botón de Login (Página de Bienvenida) --- */
+/* Estilo específico para el botón 'Iniciar Sesión' en la pantalla de inicio. */
+.login-button {
+    padding: 15px 30px;       /* Espacio interior del botón. '15px' arriba/abajo y '30px' a los lados. Es más grande que el de registro. */
+    font-size: 1.2rem;        /* Tamaño del texto del botón, 1.2 veces el tamaño de fuente base del navegador. */
+    color: #121212;           /* Color del texto del botón, en este caso, un gris oscuro casi negro. */
+    background-color: #D4AF37; /* Color de fondo dorado. */
+    border: none;             /* Elimina cualquier borde que el navegador ponga por defecto. */
+    border-radius: 5px;       /* Redondea las esquinas del botón. */
+    text-decoration: none;    /* Quita el subrayado del enlace. */
+    cursor: pointer;          /* Cambia el cursor a una mano para indicar que el botón es clickeable. */
+    transition: background-color 0.3s, transform 0.3s; /* Anima suavemente el cambio de color y cualquier cambio de tamaño. */
+}
+
+.login-button:hover {
+    background-color: #E5C100; /* Cambia el fondo a un dorado más claro al pasar el ratón. */
+    transform: scale(1.05);   /* Aumenta ligeramente el tamaño del botón (un 5%) para dar una sensación de interactividad. */
+}
+
+/* --- Botón de Envío de Formularios (Login, Registro, Productos) --- */
+/* Este es un estilo genérico para los botones que envían formularios ('submit'). */
+.submit-button {
+    width: 100%;              /* Hace que el botón ocupe todo el ancho disponible de su contenedor. */
+    padding: 12px;            /* Espacio interior uniforme de 12 píxeles en todos los lados. */
+    background-color: #D4AF37; /* Color de fondo dorado. */
+    color: #000000;           /* Color del texto negro. */
+    border: none;             /* Sin borde. */
+    border-radius: 5px;       /* Esquinas redondeadas. */
+    font-size: 16px;          /* Tamaño del texto de 16 píxeles. */
+    font-weight: bold;        /* Texto en negrita. */
+    cursor: pointer;          /* Cursor de mano para indicar que es clickeable. */
+    transition: background-color 0.3s, transform 0.2s ease; /* Animación suave para el color de fondo y el tamaño. */
+}
+
+.submit-button:hover {
+    background-color: #E5C100; /* Fondo dorado más claro al pasar el ratón. */
+}
+
+
+/*
+================================================================
+=                                                              =
+=        ESTILOS DE BOTONES PARA EL TEMA "DARK & GOLD"         =
+=                                                              =
+================================================================
+*/
+
+/* --- Botón Primario (Tema Oscuro) --- */
+/* Usado para acciones principales en secciones con el tema oscuro, como en Inventario y Editar Producto. */
+.dark-gold-theme .btn-primary {
+  background: var(--gold);    /* Fondo dorado, usando una variable de color para consistencia. */
+  border-color: var(--gold);  /* Color del borde también dorado. */
+  color: #101010;            /* Color del texto muy oscuro para que contraste con el fondo. */
+  font-weight: 600;           /* Un grosor de fuente semi-negrita. */
+}
+
+/* --- Botón de Enlace (Tema Oscuro) --- */
+/* Un botón que parece un simple enlace de texto, pero con el color dorado del tema. */
+.dark-gold-theme .btn-link {
+    color: var(--gold); /* El texto del enlace es de color dorado. */
+}
+
+/* --- Botones con Contorno (Tema Oscuro) --- */
+/* Botones que no tienen fondo, solo un borde de color. Se usan para acciones secundarias. */
+
+/* Botón con contorno primario (dorado) */
+.dark-gold-theme .btn-outline-primary {
+    border-color: var(--gold); /* El borde es de color dorado. */
+    color: var(--gold);        /* El texto también es dorado. */
+}
+
+/* Botón con contorno secundario (gris) */
+.dark-gold-theme .btn-outline-secondary {
+    border-color: #6c757d; /* Color de borde gris oscuro */
+    color: #6c757d;       /* Color de texto gris oscuro para contraste en fondos claros */
+}
+
+.dark-gold-theme .btn-outline-secondary:hover {
+    background-color: #6c757d; /* Fondo gris oscuro al pasar el ratón */
+    color: #fff; /* Texto blanco para contraste */
+}
+
+/* --- Anulación para Botón Secundario en Tablas (Tema Oscuro) --- */
+/*
+  Ajuste específico para el botón 'Editar' (.btn-outline-secondary) cuando está
+  dentro de una tabla en el tema oscuro, para asegurar su visibilidad
+  sobre los fondos de fila claros de .table-striped.
+*/
+.dark-gold-theme .inventory-table .btn-outline-secondary {
+  color: #6c757d; /* Color de texto gris oscuro estándar de Bootstrap */
+  border-color: #6c757d; /* Color de borde gris oscuro */
+}
+
+.dark-gold-theme .inventory-table .btn-outline-secondary:hover {
+  background-color: #6c757d; /* Fondo gris oscuro al pasar el ratón */
+  color: #fff; /* Texto blanco para contraste */
+}

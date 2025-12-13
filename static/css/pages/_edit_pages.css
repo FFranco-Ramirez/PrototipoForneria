@@ -1,0 +1,123 @@
+/*
+================================================================
+=                                                              =
+=        ESTILOS PARA PÁGINAS DE EDICIÓN (PRODUCTOS/USUARIOS)  =
+=                                                              =
+================================================================
+*/
+
+/*
+  Estos estilos definen la estructura y apariencia de las páginas
+  de edición, como "Editar Producto" y "Editar Usuario".
+  La característica principal es un layout de dos columnas que se
+  adapta a una sola columna en pantallas pequeñas.
+*/
+
+/* --- Cabecera de la Página de Edición --- */
+/* Contiene el título (ej. "Editar Producto") y el enlace para volver. */
+.edit-product-container .edit-header {
+  display: flex;                 /* Usa Flexbox para alinear los elementos hijos (título y enlace). */
+  justify-content: space-between;/* Coloca el título a la izquierda y el enlace a la derecha. */
+  align-items: center;           /* Centra verticalmente el título y el enlace. */
+  margin-bottom: 12px;           /* Espacio inferior para separar la cabecera de la rejilla de contenido. */
+}
+
+/* --- Título en la Cabecera (h2) --- */
+/* Para los títulos principales como "Editar Producto". */
+.edit-product-container .edit-header h2 {
+  color: #f0f0f0; /* Color claro/oscuro para mejor visibilidad. */
+  font-weight: 600; /* Texto semi-negrita para mayor contraste. */
+  margin: 0;          /* Elimina cualquier margen por defecto del h2 para un control preciso. */
+}
+
+/* --- Enlace para Volver Atrás --- */
+/* El enlace "Volver" en la cabecera. */
+.edit-product-container .back-link {
+  color: var(--gold); /* También usa el color dorado para consistencia. */
+}
+
+/* --- Rejilla Principal de Contenido --- */
+/* La estructura que organiza las tarjetas de edición en columnas. */
+.edit-grid {
+  display: grid;                  /* Usa CSS Grid para crear el layout de columnas. */
+  grid-template-columns: 1fr 1fr; /* Crea dos columnas de igual ancho. */
+  gap: 16px;                      /* Espacio de 16px entre las columnas y filas de la rejilla. */
+}
+
+/* --- Adaptación para Pantallas Pequeñas (Móviles) --- */
+/* Esta regla se aplica solo cuando el ancho de la pantalla es de 900 píxeles o menos. */
+@media (max-width: 900px) {
+  .edit-grid {
+    grid-template-columns: 1fr; /* Cambia a una sola columna para que el contenido fluya verticalmente. */
+  }
+}
+
+/* --- Contenedor de Botones de Acción --- */
+/* La sección que agrupa los botones "Guardar Cambios" y "Cancelar". */
+.edit-actions {
+  margin-top: 16px; /* Espacio superior para separarlo de la rejilla de contenido. */
+  display: flex;    /* Usa Flexbox para alinear los botones. */
+  gap: 12px;        /* Espacio de 12px entre los botones. */
+}
+
+/* --- Estilos para Inputs y Selects dentro del Tema Oscuro --- */
+/* Personaliza la apariencia de los campos de formulario en estas páginas. */
+.edit-product-container input, .edit-product-container select {
+  background-color: #141414; /* Fondo oscuro para los campos. */
+  color: #eaeaea;           /* Texto claro para que sea legible sobre el fondo oscuro. */
+  border: 1px solid #444;    /* Borde sutil que coincide con el tema. */
+}
+
+/*
+  NOTA: Las clases de formulario más genéricas como .form-grid, .form-row
+  y .field-error se definen en _forms.css. Este archivo se enfoca
+  únicamente en el layout estructural específico de las páginas de edición.
+*/
+
+/* --- Estilos para la sección de descripción de roles en el formulario de usuario --- */
+.roles-description {
+    background-color: #1e1e1e; /* Fondo oscuro para la caja de descripciones */
+    border: 1px solid #444;    /* Borde sutil */
+    border-radius: 8px;        /* Esquinas redondeadas */
+    padding: 15px;             /* Espacio interior */
+    margin-top: 10px;          /* Espacio superior */
+}
+
+.roles-description .role-info-title {
+    color: #D4AF37;            /* Color dorado para el título informativo */
+    font-weight: 600;          /* Negrita */
+    margin-bottom: 10px;       /* Espacio debajo del título */
+    font-size: 0.95rem;        /* Tamaño de fuente ligeramente más pequeño */
+}
+
+.roles-description .role-item {
+    margin-bottom: 10px;       /* Espacio entre cada descripción de rol */
+    padding-bottom: 10px;      /* Padding inferior */
+    border-bottom: 1px dashed #333; /* Línea divisoria sutil */
+}
+
+.roles-description .role-item:last-child {
+    margin-bottom: 0;          /* Eliminar margen inferior del último elemento */
+    padding-bottom: 0;         /* Eliminar padding inferior del último elemento */
+    border-bottom: none;        /* Eliminar borde inferior del último elemento */
+}
+
+.roles-description .role-name {
+    color: #f0f0f0;            /* Color blanco para el nombre del rol */
+    font-size: 1rem;           /* Tamaño de fuente estándar */
+    display: block;            /* Asegura que el nombre del rol ocupe su propia línea */
+    margin-bottom: 5px;        /* Espacio debajo del nombre del rol */
+}
+
+.roles-description .role-desc {
+    color: #b0b0b0;            /* Color gris claro para la descripción */
+    font-size: 0.85rem;        /* Tamaño de fuente más pequeño para la descripción */
+    line-height: 1.4;          /* Altura de línea para mejor legibilidad */
+    margin: 0;                 /* Eliminar márgenes por defecto */
+}
+
+/* --- Estilos para texto de ayuda en tema oscuro --- */
+.dark-gold-theme .form-text,
+.dark-gold-theme .form-text.text-muted {
+    color: #e0e0e0 !important; /* Color blanco para texto de ayuda en tema oscuro */
+}

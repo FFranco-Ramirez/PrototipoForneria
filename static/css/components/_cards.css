@@ -1,0 +1,126 @@
+/*
+================================================================
+=                                                              =
+=                   ESTILOS DE TARJETAS                        =
+=                                                              =
+================================================================
+*/
+
+/*
+----------------------------------------------------------------
+-        Tarjeta para la Edición de Productos (Tema Oscuro)    -
+----------------------------------------------------------------
+*/
+
+/* --- Estilo Base de la Tarjeta de Edición --- */
+/* Esta es la "caja" o contenedor que se usa en la página de editar producto para agrupar secciones. */
+.edit-card {
+  background: var(--bg-alt); /* Color de fondo, un gris un poco más claro que el fondo principal del tema oscuro. */
+  border: 1px solid var(--border); /* Borde muy sutil, usando un color definido en el tema. */
+  border-radius: 12px;       /* Esquinas bastante redondeadas para un diseño moderno y suave. */
+  padding: 16px;             /* Espacio interior para que el contenido no esté pegado a los bordes. */
+}
+
+/* --- Título dentro de la Tarjeta de Edición --- */
+/* Para los títulos como "Información General" o "Detalles de Stock". */
+.edit-section-title {
+    color: #e0e0e0;      /* Color claro para mejor visibilidad. */
+    font-weight: 600;    /* Texto semi-negrita para mayor contraste. */
+    margin-bottom: 8px;      /* Un pequeño espacio debajo del título para separarlo del contenido. */
+}
+
+
+/*
+----------------------------------------------------------------
+-        Tarjeta Específica para "Productos por Vencer"        -
+----------------------------------------------------------------
+*/
+
+/* --- Contenedor de la Tarjeta de Vencimientos --- */
+/* Esta tarjeta es especial, se usa en el dashboard para mostrar productos que están a punto de vencer. */
+#vencimientos-card {
+    width: 100%;             /* Ocupa todo el ancho disponible de la columna. */
+    /* Usa display: flex por defecto de .dashboard-metric-card */
+    /* Usa align-items: center por defecto de .dashboard-metric-card para centrar el contenido */
+    /* No necesita margin-top ya que el gap de .dashboard-col maneja el espaciado */
+}
+
+/* --- Título de la Tarjeta de Vencimientos --- */
+#vencimientos-card .metric-card-title {
+    margin-bottom: 8px;      /* Espacio debajo del título. */
+    /* Usa text-align: center por defecto para centrar el título */
+}
+
+/* --- Lista dentro de la Tarjeta de Vencimientos --- */
+/* Para la lista de productos que se muestra dentro de la tarjeta. */
+#vencimientos-card .metric-list {
+    list-style: none;        /* Quita los puntos o viñetas de la lista. */
+    padding-left: 0;         /* Elimina el espacio de sangría que las listas suelen tener a la izquierda. */
+    margin: 0 0 12px 0;      /* Quita los márgenes superior e inferior, pero deja un espacio de 12px abajo antes del botón. */
+    text-align: center;      /* Centra el texto de la lista para que coincida con los otros cuadros. */
+    width: 100%;             /* Ocupa todo el ancho disponible */
+}
+
+/* --- Elemento de la Lista (Cada Producto) --- */
+#vencimientos-card .metric-list li {
+    margin: 4px 0;           /* Pequeño espacio vertical entre cada producto de la lista. */
+    color: #343a40;          /* Color de texto oscuro para los nombres de los productos. */
+}
+
+/* --- Contenedor de la Tarjeta de Vencimientos (14 días) --- */
+#vencimientos-14-card {
+    width: 100%;             /* Ocupa todo el ancho disponible de la columna. */
+    /* Usa display: flex por defecto de .dashboard-metric-card */
+    /* Usa align-items: center por defecto de .dashboard-metric-card para centrar el contenido */
+    /* No necesita margin-top ya que el gap de .dashboard-col maneja el espaciado */
+}
+
+/* --- Título de la Tarjeta de Vencimientos (14 días) --- */
+#vencimientos-14-card .metric-card-title {
+    margin-bottom: 8px;      /* Espacio debajo del título. */
+    /* Usa text-align: center por defecto para centrar el título */
+}
+
+/* --- Lista dentro de la Tarjeta de Vencimientos (14 días) --- */
+#vencimientos-14-card .metric-list {
+    list-style: none;        /* Quita los puntos o viñetas de la lista. */
+    padding-left: 0;         /* Elimina el espacio de sangría que las listas suelen tener a la izquierda. */
+    margin: 0 0 12px 0;      /* Quita los márgenes superior e inferior, pero deja un espacio de 12px abajo antes del botón. */
+    text-align: center;      /* Centra el texto de la lista. */
+    width: 100%;             /* Ocupa todo el ancho disponible */
+}
+
+/* --- Elemento de la Lista (Cada Producto) - 14 días --- */
+#vencimientos-14-card .metric-list li {
+    margin: 4px 0;           /* Pequeño espacio vertical entre cada producto de la lista. */
+    color: #343a40;          /* Color de texto oscuro para los nombres de los productos. */
+}
+
+/* --- Contenedor de la Tarjeta de Vencimientos (30 días) --- */
+#vencimientos-30-card {
+    width: 100%;             /* Ocupa todo el ancho disponible de la columna. */
+    /* Usa display: flex por defecto de .dashboard-metric-card */
+    /* Usa align-items: center por defecto de .dashboard-metric-card para centrar el contenido */
+    /* No necesita margin-top ya que el gap de .dashboard-col maneja el espaciado */
+}
+
+/* --- Título de la Tarjeta de Vencimientos (30 días) --- */
+#vencimientos-30-card .metric-card-title {
+    margin-bottom: 8px;      /* Espacio debajo del título. */
+    /* Usa text-align: center por defecto para centrar el título */
+}
+
+/* --- Lista dentro de la Tarjeta de Vencimientos (30 días) --- */
+#vencimientos-30-card .metric-list {
+    list-style: none;        /* Quita los puntos o viñetas de la lista. */
+    padding-left: 0;         /* Elimina el espacio de sangría que las listas suelen tener a la izquierda. */
+    margin: 0 0 12px 0;      /* Quita los márgenes superior e inferior, pero deja un espacio de 12px abajo antes del botón. */
+    text-align: center;      /* Centra el texto de la lista. */
+    width: 100%;             /* Ocupa todo el ancho disponible */
+}
+
+/* --- Elemento de la Lista (Cada Producto) - 30 días --- */
+#vencimientos-30-card .metric-list li {
+    margin: 4px 0;           /* Pequeño espacio vertical entre cada producto de la lista. */
+    color: #343a40;          /* Color de texto oscuro para los nombres de los productos. */
+}

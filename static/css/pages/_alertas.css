@@ -1,0 +1,763 @@
+/*
+================================================================
+=                                                              =
+=          ESTILOS PARA EL SISTEMA DE ALERTAS                  =
+=                                                              =
+================================================================
+
+Este archivo contiene todos los estilos específicos para
+el sistema de alertas de vencimiento de productos.
+
+TEMA: Negro y Dorado (#ffd700) consistente con el resto del sitio
+IMPORTANTE: Todos los selectores están prefijados con .alertas-page
+para evitar conflictos con otras páginas.
+
+SECCIONES:
+1. Cards de estadísticas (dark-gold theme)
+2. Botones de acción
+3. Filtros y formularios
+4. Tabla de alertas
+5. Acciones masivas
+6. Estilos responsive
+*/
+
+
+/* ============================================================
+   4. TABLA DE ALERTAS - DARK GOLD THEME
+   ============================================================ */
+
+/* --- Tabla principal SOLO EN ALERTAS ---*/
+.alertas-page .alertas-table {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+}
+
+/* --- Encabezado de la tabla SOLO EN ALERTAS --- */
+.alertas-page .alertas-table thead th {
+    background-color: #f8f9fa !important;
+    color: #000000 !important;
+    font-weight: 600 !important;
+    border-bottom: 2px solid #ffd700 !important;
+    padding: 12px !important;
+}
+
+/* --- Filas de la tabla SOLO EN ALERTAS --- */
+.alertas-page .alertas-table tbody tr {
+    transition: background-color 0.2s ease !important;
+    border-bottom: 1px solid #dee2e6 !important;
+}
+
+/* --- Efecto hover en las filas SOLO EN ALERTAS --- */
+.alertas-page .alertas-table tbody tr:hover {
+    background-color: rgba(255, 215, 0, 0.2) !important;
+    cursor: pointer !important;
+}
+
+/* --- Celdas de la tabla SOLO EN ALERTAS --- */
+.alertas-page .alertas-table tbody td {
+    padding: 12px !important;
+    vertical-align: middle !important;
+    color: #000000 !important;
+}
+
+/* --- Filas alternas SOLO EN ALERTAS --- */
+.alertas-page .alertas-table tbody tr:nth-child(odd) {
+    background-color: #f8f9fa !important;
+}
+
+/* --- Botones en la tabla SOLO EN ALERTAS --- */
+.alertas-page .alertas-table .btn-outline-primary {
+    border-color: #ffd700 !important;
+    color: #ffd700 !important;
+    background-color: transparent !important;
+}
+
+.alertas-page .alertas-table .btn-outline-primary:hover {
+    background-color: #ffd700 !important;
+    color: #000 !important;
+}
+
+.alertas-page .alertas-table .btn-outline-danger {
+    border-color: #dc3545 !important;
+    color: #dc3545 !important;
+    background-color: transparent !important;
+}
+
+.alertas-page .alertas-table .btn-outline-danger:hover {
+    background-color: #dc3545 !important;
+    color: #fff !important;
+}
+
+.alertas-page .alertas-table .btn-outline-secondary {
+    border-color: #6c757d !important;
+    color: #ddd !important;
+    background-color: transparent !important;
+}
+
+.alertas-page .alertas-table .btn-outline-secondary:hover {
+    background-color: #6c757d !important;
+    color: #fff !important;
+}
+
+/* --- Dropdown menu SOLO EN ALERTAS --- */
+.alertas-page .dropdown-menu {
+    background-color: #1a1a1a !important;
+    border: 1px solid #ffd700 !important;
+}
+
+.alertas-page .dropdown-item {
+    color: #f2f2f2 !important;
+    transition: background-color 0.2s ease !important;
+}
+
+.alertas-page .dropdown-item:hover {
+    background-color: rgba(255, 215, 0, 0.2) !important;
+    color: #f2f2f2 !important;
+}
+
+/* --- Badges en la tabla SOLO EN ALERTAS --- */
+.alertas-page .badge {
+    padding: 6px 12px !important;
+    border-radius: 4px !important;
+    font-weight: 600 !important;
+    font-size: 0.85rem !important;
+}
+
+.alertas-page .badge.bg-danger {
+    background-color: #dc3545 !important;
+    color: #fff !important;
+}
+
+.alertas-page .badge.bg-warning {
+    background-color: #ffd700 !important;
+    color: #000 !important;
+}
+
+.alertas-page .badge.bg-success {
+    background-color: #28a745 !important;
+    color: #fff !important;
+}
+
+.alertas-page .badge.bg-primary {
+    background-color: #ffd700 !important;
+    color: #000 !important;
+}
+
+.alertas-page .badge.bg-secondary {
+    background-color: #6c757d !important;
+    color: #fff !important;
+}
+
+
+/* ============================================================
+   1. CARDS DE ESTADÍSTICAS - DARK GOLD THEME
+   ============================================================ */
+
+/*
+   Cards que muestran el resumen de alertas por tipo
+   Diseño moderno con gradientes oscuros y acentos dorados
+*/
+
+/* --- Grid de métricas SOLO EN ALERTAS --- */
+.alertas-page .dashboard-metrics-grid {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)) !important;
+    gap: 20px !important;
+    margin-bottom: 25px !important;
+}
+
+/* --- Tarjetas de métricas con diseño dark-gold SOLO EN ALERTAS --- */
+.alertas-page .dashboard-metric-card {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%) !important;
+    border: none !important;
+    border-radius: 12px !important;
+    padding: 25px !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+    transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+}
+
+.alertas-page .dashboard-metric-card:hover {
+    transform: translateY(-5px) !important;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* --- Títulos de las tarjetas SOLO EN ALERTAS --- */
+.alertas-page .dashboard-metric-card .metric-card-title {
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
+    margin-bottom: 15px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    color: #ddd !important;
+}
+
+/* --- Valores grandes SOLO EN ALERTAS --- */
+.alertas-page .dashboard-metric-card .metric-card-value {
+    font-size: 48px !important;
+    font-weight: bold !important;
+    line-height: 1 !important;
+    margin-bottom: 10px !important;
+}
+
+/* --- Subtítulos SOLO EN ALERTAS --- */
+.alertas-page .dashboard-metric-card .metric-card-subtitle {
+    font-size: 13px !important;
+    opacity: 0.7 !important;
+    color: #999 !important;
+}
+
+/* --- Bordes personalizados para cada tipo de alerta SOLO EN ALERTAS --- */
+.alertas-page .dashboard-metric-card.border-danger {
+    border-left: 4px solid #dc3545 !important;
+}
+
+.alertas-page .dashboard-metric-card.border-warning {
+    border-left: 4px solid #ffd700 !important;
+}
+
+.alertas-page .dashboard-metric-card.border-success {
+    border-left: 4px solid #28a745 !important;
+}
+
+.alertas-page .dashboard-metric-card.border-gold {
+    border-left: 4px solid #ffd700 !important;
+}
+
+/* --- Colores de texto para títulos SOLO EN ALERTAS --- */
+.alertas-page .metric-card-title.text-danger {
+    color: #dc3545 !important;
+}
+
+.alertas-page .metric-card-title.text-warning {
+    color: #ffd700 !important;
+}
+
+.alertas-page .metric-card-title.text-success {
+    color: #28a745 !important;
+}
+
+.alertas-page .metric-card-title.text-gold {
+    color: #ffd700 !important;
+}
+
+/* --- Colores de texto para valores SOLO EN ALERTAS --- */
+.alertas-page .metric-card-value.text-danger {
+    color: #dc3545 !important;
+}
+
+.alertas-page .metric-card-value.text-warning {
+    color: #ffd700 !important;
+}
+
+.alertas-page .metric-card-value.text-success {
+    color: #28a745 !important;
+}
+
+.alertas-page .metric-card-value.text-gold {
+    color: #ffd700 !important;
+}
+
+/* ============================================================
+   2. BOTONES DE ACCIÓN - DARK GOLD THEME
+   ============================================================ */
+
+/* --- Contenedor de botones de acción SOLO EN ALERTAS --- */
+.alertas-page .alertas-action-buttons {
+    display: flex !important;
+    gap: 10px !important;
+    flex-wrap: wrap !important;
+    margin-bottom: 20px !important;
+}
+
+/* --- Botones generales SOLO EN ALERTAS --- */
+.alertas-page .alertas-action-buttons .btn {
+    border-radius: 8px !important;
+    padding: 10px 20px !important;
+    font-weight: 600 !important;
+    transition: all 0.3s ease !important;
+}
+
+/* --- Botón primario (Nueva Alerta) DORADO SOLO EN ALERTAS --- */
+.alertas-page .alertas-action-buttons .btn-primary {
+    background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%) !important;
+    border: 1px solid #ffd700 !important;
+    color: #000 !important;
+}
+
+.alertas-page .alertas-action-buttons .btn-primary:hover {
+    background: linear-gradient(135deg, #ffed4e 0%, #ffd700 100%) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4) !important;
+}
+
+/* --- Botón success (Generar Alertas) VERDE SOLO EN ALERTAS --- */
+.alertas-page .alertas-action-buttons .btn-success {
+    background: linear-gradient(135deg, #28a745 0%, #218838 100%) !important;
+    border: 1px solid #28a745 !important;
+    color: #fff !important;
+}
+
+.alertas-page .alertas-action-buttons .btn-success:hover {
+    background: linear-gradient(135deg, #218838 0%, #1e7e34 100%) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4) !important;
+}
+
+/* --- Botón outline secondary (Volver) SOLO EN ALERTAS --- */
+.alertas-page .alertas-action-buttons .btn-outline-secondary {
+    background-color: transparent !important;
+    border: 2px solid #6c757d !important;
+    color: #ddd !important;
+}
+
+.alertas-page .alertas-action-buttons .btn-outline-secondary:hover {
+    background-color: #6c757d !important;
+    border-color: #6c757d !important;
+    color: #fff !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 12px rgba(108, 117, 125, 0.4) !important;
+}
+
+/* ============================================================
+   3. FILTROS Y FORMULARIOS - DARK GOLD THEME
+   ============================================================ */
+
+/* --- Card de filtros SOLO EN ALERTAS --- */
+.alertas-page .alertas-filter-card {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%) !important;
+    border: 1px solid rgba(255, 215, 0, 0.2) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+}
+
+.alertas-page .alertas-filter-card .card-header {
+    background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%) !important;
+    color: #000 !important;
+    border-radius: 12px 12px 0 0 !important;
+    padding: 15px 20px !important;
+    font-weight: 600 !important;
+    border: none !important;
+}
+
+.alertas-page .alertas-filter-card .card-body {
+    background: transparent !important;
+    padding: 20px !important;
+}
+
+/* --- Card de tabla SOLO EN ALERTAS --- */
+.alertas-page .alertas-table-card {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%) !important;
+    border: 1px solid rgba(255, 215, 0, 0.2) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+}
+
+.alertas-page .alertas-table-card .card-header {
+    background-color: #1a1a1a !important;
+    border-bottom: 2px solid #ffd700 !important;
+    padding: 15px 20px !important;
+    border-radius: 12px 12px 0 0 !important;
+}
+
+.alertas-page .alertas-table-card .card-header h5 {
+    color: #f2f2f2 !important;
+    margin: 0 !important;
+}
+
+.alertas-page .alertas-count-badge {
+    background-color: #ffd700 !important;
+    color: #000 !important;
+    padding: 6px 12px !important;
+    border-radius: 4px !important;
+    font-weight: 600 !important;
+}
+
+.alertas-page .alertas-table-card .card-body {
+    background-color: #ffffff !important;
+    padding: 0 !important;
+}
+
+/* --- Estado vacío SOLO EN ALERTAS --- */
+.alertas-page .alertas-empty-state {
+    background-color: #0e0e0e !important;
+    color: #f2f2f2 !important;
+    padding: 3rem 1rem !important;
+}
+
+.alertas-page .alertas-empty-state .bi-bell-slash {
+    font-size: 4rem !important;
+    color: #666 !important;
+}
+
+.alertas-page .alertas-empty-state .empty-message {
+    color: #999 !important;
+    font-size: 1.1rem !important;
+}
+
+.alertas-page .alertas-empty-state .empty-question {
+    color: #f2f2f2 !important;
+    margin-top: 1rem !important;
+}
+
+
+/* ============================================================
+   5. ALERTAS URGENTES CON ANIMACIÓN - SOLO EN ALERTAS
+   ============================================================ */
+
+/* --- Fila de alerta urgente SOLO EN ALERTAS --- */
+.alertas-page .alerta-row[data-tipo="roja"] {
+    background-color: rgba(220, 53, 69, 0.1) !important;
+    border-left: 4px solid #dc3545 !important;
+}
+
+/* --- Clase para animación de pulso SOLO EN ALERTAS --- */
+.alertas-page .alerta-urgente {
+    animation: pulse-urgente-alertas 2s ease-in-out infinite !important;
+}
+
+/* --- Definición de la animación de pulso --- */
+@keyframes pulse-urgente-alertas {
+    0% {
+        background-color: rgba(220, 53, 69, 0.1);
+    }
+    50% {
+        background-color: rgba(220, 53, 69, 0.25);
+    }
+    100% {
+        background-color: rgba(220, 53, 69, 0.1);
+    }
+}
+
+
+/* --- Inputs y selects SOLO EN ALERTAS --- */
+.alertas-page .form-control,
+.alertas-page .form-select {
+    background-color: #1a1a1a !important;
+    color: #f2f2f2 !important;
+    border: 1px solid #444 !important;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease !important;
+}
+
+/* Asegurar que las opciones del select también sean visibles SOLO EN ALERTAS */
+.alertas-page .form-select option {
+    background-color: #1a1a1a !important;
+    color: #f2f2f2 !important;
+}
+
+/* --- Focus en inputs SOLO EN ALERTAS --- */
+.alertas-page .form-control:focus,
+.alertas-page .form-select:focus {
+    border-color: #ffd700 !important;
+    box-shadow: 0 0 0 0.2rem rgba(255, 215, 0, 0.25) !important;
+    background-color: #1a1a1a !important;
+    color: #fff !important;
+}
+
+/* --- Labels de los filtros SOLO EN ALERTAS --- */
+.alertas-page .form-label.fw-bold {
+    color: #ffd700 !important;
+    font-size: 0.9rem !important;
+}
+
+/* --- Botones dentro del formulario de filtros SOLO EN ALERTAS --- */
+.alertas-page .card-body .btn-primary {
+    background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%) !important;
+    border: 1px solid #ffd700 !important;
+    color: #000 !important;
+    font-weight: 600 !important;
+}
+
+.alertas-page .card-body .btn-primary:hover {
+    background: linear-gradient(135deg, #ffed4e 0%, #ffd700 100%) !important;
+    box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4) !important;
+}
+
+.alertas-page .card-body .btn-secondary {
+    background-color: #6c757d !important;
+    border: 1px solid #6c757d !important;
+    color: #fff !important;
+}
+
+.alertas-page .card-body .btn-secondary:hover {
+    background-color: #5a6268 !important;
+    border-color: #545b62 !important;
+}
+
+
+/* ============================================================
+   6. ICONOS - SOLO EN ALERTAS
+   ============================================================ */
+
+/* --- Iconos grandes en la tabla SOLO EN ALERTAS --- */
+.alertas-page .alertas-table .bi {
+    transition: transform 0.2s ease !important;
+}
+
+.alertas-page .alertas-table tr:hover .bi {
+    transform: scale(1.1) !important;
+}
+
+/* --- Iconos de tipo de alerta SOLO EN ALERTAS --- */
+.alertas-page .bi-exclamation-triangle-fill.text-danger {
+    color: #dc3545 !important;
+}
+
+.alertas-page .bi-exclamation-circle-fill.text-warning {
+    color: #ffd700 !important;
+}
+
+.alertas-page .bi-info-circle-fill.text-success {
+    color: #28a745 !important;
+}
+
+
+/* ============================================================
+   7. ANIMACIONES - SOLO EN ALERTAS
+   ============================================================ */
+
+/* --- Animación de entrada para las filas SOLO EN ALERTAS --- */
+@keyframes slideInAlertas {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.alertas-page .alertas-table tbody tr {
+    animation: slideInAlertas 0.3s ease !important;
+}
+
+/* --- Animación para el botón de generar alertas SOLO EN ALERTAS --- */
+@keyframes spinAlertas {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.alertas-page #btn-generar-alertas:disabled .bi-arrow-repeat {
+    animation: spinAlertas 1s linear infinite !important;
+}
+
+
+
+/* ============================================================
+   8. BARRA DE ACCIONES MASIVAS - SOLO ALERTAS
+   ============================================================ */
+
+/* --- Contenedor de la barra SOLO EN ALERTAS --- */
+.alertas-page .bulk-actions-bar {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%) !important;
+    padding: 15px 20px !important;
+    border-radius: 12px !important;
+    border: 1px solid rgba(255, 215, 0, 0.2) !important;
+    margin-bottom: 20px !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+    animation: slideDownAlertas 0.3s ease !important;
+}
+
+@keyframes slideDownAlertas {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* --- Contenido de la barra SOLO EN ALERTAS --- */
+.alertas-page .bulk-actions-content {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    flex-wrap: wrap !important;
+    gap: 15px !important;
+}
+
+/* --- Contador de seleccionados SOLO EN ALERTAS --- */
+.alertas-page .bulk-selected-count {
+    font-weight: 600 !important;
+    color: #ffd700 !important;
+    font-size: 16px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+}
+
+.alertas-page .bulk-selected-count i {
+    font-size: 20px !important;
+}
+
+/* --- Botones de acciones masivas SOLO EN ALERTAS --- */
+.alertas-page .bulk-actions-buttons {
+    display: flex !important;
+    gap: 10px !important;
+    flex-wrap: wrap !important;
+}
+
+.alertas-page .bulk-actions-buttons .btn {
+    font-weight: 600 !important;
+    border-radius: 8px !important;
+    padding: 8px 16px !important;
+    transition: all 0.3s ease !important;
+}
+
+.alertas-page .bulk-actions-buttons .btn:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Botón success en bulk actions - VERDE OSCURO */
+.alertas-page .bulk-actions-buttons .btn-success {
+    background-color: #1e7e34 !important;
+    border: 1px solid #1e7e34 !important;
+    color: #fff !important;
+}
+
+.alertas-page .bulk-actions-buttons .btn-success:hover {
+    background-color: #28a745 !important;
+    border-color: #28a745 !important;
+}
+
+/* Botón secondary en bulk actions - GRIS OSCURO */
+.alertas-page .bulk-actions-buttons .btn-secondary {
+    background-color: #495057 !important;
+    border: 1px solid #495057 !important;
+    color: #fff !important;
+}
+
+.alertas-page .bulk-actions-buttons .btn-secondary:hover {
+    background-color: #6c757d !important;
+    border-color: #6c757d !important;
+}
+
+/* Botón primary en bulk actions - DORADO */
+.alertas-page .bulk-actions-buttons .btn-primary {
+    background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%) !important;
+    border: 1px solid #ffd700 !important;
+    color: #000 !important;
+}
+
+.alertas-page .bulk-actions-buttons .btn-primary:hover {
+    background: linear-gradient(135deg, #ffed4e 0%, #ffd700 100%) !important;
+}
+
+/* Botón danger en bulk actions - ROJO */
+.alertas-page .bulk-actions-buttons .btn-danger {
+    background-color: #bd2130 !important;
+    border: 1px solid #bd2130 !important;
+    color: #fff !important;
+}
+
+.alertas-page .bulk-actions-buttons .btn-danger:hover {
+    background-color: #dc3545 !important;
+    border-color: #dc3545 !important;
+}
+
+/* Botón outline-light en bulk actions - OUTLINE GRIS */
+.alertas-page .bulk-actions-buttons .btn-outline-light {
+    background-color: transparent !important;
+    border: 2px solid #6c757d !important;
+    color: #ddd !important;
+}
+
+.alertas-page .bulk-actions-buttons .btn-outline-light:hover {
+    background-color: #6c757d !important;
+    border-color: #6c757d !important;
+    color: #fff !important;
+}
+
+/* --- Checkbox personalizado SOLO EN ALERTAS --- */
+.alertas-page .form-check-input {
+    width: 18px !important;
+    height: 18px !important;
+    cursor: pointer !important;
+    border: 2px solid #ffd700 !important;
+}
+
+.alertas-page .form-check-input:checked {
+    background-color: #ffd700 !important;
+    border-color: #ffd700 !important;
+}
+
+.alertas-page .form-check-input:focus {
+    border-color: #ffd700 !important;
+    box-shadow: 0 0 0 0.25rem rgba(255, 215, 0, 0.25) !important;
+}
+
+/* --- Fila seleccionada SOLO EN ALERTAS --- */
+.alertas-page .alerta-row:has(.alerta-checkbox:checked) {
+    background-color: rgba(255, 215, 0, 0.3) !important;
+}
+
+/* ============================================================
+   9. RESPONSIVE - SOLO ALERTAS
+   ============================================================ */
+
+/* --- Para tablets (menor a 992px) SOLO EN ALERTAS --- */
+@media (max-width: 991px) {
+    .alertas-page .alertas-table th:nth-child(4),
+    .alertas-page .alertas-table td:nth-child(4) {
+        display: none !important;
+    }
+}
+
+/* --- Para móviles (menor a 576px) SOLO EN ALERTAS --- */
+@media (max-width: 575px) {
+    .alertas-page .table-responsive {
+        overflow-x: auto !important;
+    }
+    
+    .alertas-page .dashboard-metric-card {
+        padding: 12px !important;
+    }
+    
+    .alertas-page .metric-card-value {
+        font-size: 1.8rem !important;
+    }
+    
+    .alertas-page .btn-group-sm .btn {
+        padding: 2px 6px !important;
+        font-size: 0.75rem !important;
+    }
+}
+
+/* --- Responsive para bulk actions SOLO EN ALERTAS --- */
+@media (max-width: 768px) {
+    .alertas-page .bulk-actions-content {
+        flex-direction: column !important;
+        align-items: stretch !important;
+    }
+    
+    .alertas-page .bulk-actions-buttons {
+        justify-content: center !important;
+    }
+    
+    .alertas-page .bulk-actions-buttons .btn {
+        flex: 1 !important;
+        min-width: 120px !important;
+    }
+    
+    .alertas-page .alertas-action-buttons {
+        flex-direction: column !important;
+    }
+    
+    .alertas-page .alertas-action-buttons .btn {
+        width: 100% !important;
+    }
+}
+
+/* ============================================================
+   FIN DE LOS ESTILOS DE ALERTAS
+   ============================================================ */

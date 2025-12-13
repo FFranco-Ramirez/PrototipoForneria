@@ -1,0 +1,227 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block body_class %}dark-gold-theme{% endblock %}
+
+{% block contenido %}
+<!-- ================================================================ -->
+<!-- =                                                              = -->
+<!-- =              REPORTE TOP PRODUCTOS VENDIDOS                 = -->
+<!-- =                                                              = -->
+<!-- ================================================================ -->
+<!--
+    Este template muestra el ranking de productos más vendidos según RF-V5 del Jira.
+    
+    FUNCIONALIDADES:
+    - Ranking por cantidad vendida
+    - Ranking por monto neto vendido
+    - Filtro por rango de fechas
+    - Exportación a CSV
+-->
+
+<div class="dashboard-main-container">
+    <!-- Sidebar de navegación -->
+    {% include 'includes/sidebar.html' with active_page='reportes' %}
+
+    <div class="dashboard-content-wrapper">
+        {% include 'includes/dashboard_header.html' with page_title='Top Productos Vendidos' %}
+
+        <!-- Contenido principal -->
+        <main class="dashboard-content">
+            
+            <!-- ============================================ -->
+            <!-- SECCIÓN DE FILTROS                          -->
+            <!-- ============================================ -->
+            <div class="card mb-4" style="background: rgba(26, 26, 26, 0.8); border: 1px solid #ffd700;">
+                <div class="card-header" style="background: rgba(255, 215, 0, 0.1); border-bottom: 1px solid #ffd700;">
+                    <h5 class="mb-0">
+                        <i class="bi bi-funnel"></i> Filtros de Búsqueda
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="get" action="{% url 'top_productos' %}">
+                        <input type="hidden" name="generar" value="1">
+                        
+                        <div class="row">
+                            <!-- Fecha Desde -->
+                            <div class="col-md-4 mb-3">
+                                <label for="fecha_desde" class="form-label" style="color: #ffffff;">
+                                    <i class="bi bi-calendar-event"></i> Fecha Desde
+                                </label>
+                                <input 
+                                    type="date" 
+                                    id="fecha_desde" 
+                                    name="fecha_desde" 
+                                    class="form-control"
+                                    value="{{ fecha_desde|date:'Y-m-d' }}"
+                                >
+                            </div>
+                            
+                            <!-- Fecha Hasta -->
+                            <div class="col-md-4 mb-3">
+                                <label for="fecha_hasta" class="form-label" style="color: #ffffff;">
+                                    <i class="bi bi-calendar-event-fill"></i> Fecha Hasta
+                                </label>
+                                <input 
+                                    type="date" 
+                                    id="fecha_hasta" 
+                                    name="fecha_hasta" 
+                                    class="form-control"
+                                    value="{{ fecha_hasta|date:'Y-m-d' }}"
+                                >
+                            </div>
+                            
+                            <!-- Tipo de Ranking -->
+                            <div class="col-md-4 mb-3">
+                                <label for="tipo_ranking" class="form-label" style="color: #ffffff;">
+                                    <i class="bi bi-sort-down"></i> Tipo de Ranking
+                                </label>
+                                <select 
+                                    id="tipo_ranking" 
+                                    name="tipo_ranking" 
+                                    class="form-select"
+                                >
+                                    <option value="cantidad" {% if tipo_ranking == 'cantidad' %}selected{% endif %}>
+                                        Por Cantidad Vendida
+                                    </option>
+                                    <option value="neto" {% if tipo_ranking == 'neto' %}selected{% endif %}>
+                                        Por Monto Neto
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <!-- Botones -->
+                        <div class="d-flex gap-2 flex-wrap">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-search"></i> Generar Ranking
+                            </button>
+                            {% if reporte_generado %}
+                                <a href="{% url 'exportar_top_productos_excel' tipo_ranking %}?{{ request.GET.urlencode }}" 
+                                   class="btn btn-success">
+                                    <i class="bi bi-file-earmark-excel"></i> Exportar Excel
+                                </a>
+                                <a href="{% url 'exportar_top_productos_pdf' tipo_ranking %}?{{ request.GET.urlencode }}" 
+                                   class="btn btn-danger">
+                                    <i class="bi bi-file-pdf"></i> Exportar PDF
+                                </a>
+                                <a href="{% url 'exportar_top_productos_csv' tipo_ranking %}?{{ request.GET.urlencode }}" 
+                                   class="btn btn-secondary">
+                                    <i class="bi bi-filetype-csv"></i> Exportar CSV
+                                </a>
+                            {% endif %}
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- ============================================ -->
+            <!-- RESULTADOS DEL RANKING                      -->
+            <!-- ============================================ -->
+            {% if reporte_generado %}
+                <div class="row">
+                    <!-- Ranking por Cantidad -->
+                    <div class="col-md-6 mb-4">
+                        <div class="card" style="background: rgba(26, 26, 26, 0.8); border: 1px solid #ffd700;">
+                            <div class="card-header" style="background: rgba(255, 215, 0, 0.1); border-bottom: 1px solid #ffd700;">
+                                <h5 class="mb-0">
+                                    <i class="bi bi-sort-numeric-down"></i> Top 20 por Cantidad Vendida
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                {% if ranking_cantidad %}
+                                    <div class="table-responsive">
+                                        <table class="table table-dark table-sm">
+                                            <thead>
+                                                <tr>
+                                                    <th width="40">#</th>
+                                                    <th>Producto</th>
+                                                    <th class="text-center">Cantidad</th>
+                                                    <th class="text-end">Total Neto</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for item in ranking_cantidad %}
+                                                    <tr>
+                                                        <td>
+                                                            <span class="badge {% if forloop.counter <= 3 %}bg-warning{% else %}bg-secondary{% endif %}">
+                                                                {{ forloop.counter }}
+                                                            </span>
+                                                        </td>
+                                                        <td>{{ item.nombre|truncatechars:30 }}</td>
+                                                        <td class="text-center">
+                                                            <strong>{{ item.cantidad_vendida }}</strong>
+                                                        </td>
+                                                        <td class="text-end">${{ item.total_neto|floatformat:0 }}</td>
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                {% else %}
+                                    <div class="alert alert-info">
+                                        <i class="bi bi-info-circle"></i> No hay datos para mostrar.
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Ranking por Monto Neto -->
+                    <div class="col-md-6 mb-4">
+                        <div class="card" style="background: rgba(26, 26, 26, 0.8); border: 1px solid #ffd700;">
+                            <div class="card-header" style="background: rgba(255, 215, 0, 0.1); border-bottom: 1px solid #ffd700;">
+                                <h5 class="mb-0">
+                                    <i class="bi bi-currency-dollar"></i> Top 20 por Monto Neto
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                {% if ranking_neto %}
+                                    <div class="table-responsive">
+                                        <table class="table table-dark table-sm">
+                                            <thead>
+                                                <tr>
+                                                    <th width="40">#</th>
+                                                    <th>Producto</th>
+                                                    <th class="text-center">Cantidad</th>
+                                                    <th class="text-end">Total Neto</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for item in ranking_neto %}
+                                                    <tr>
+                                                        <td>
+                                                            <span class="badge {% if forloop.counter <= 3 %}bg-warning{% else %}bg-secondary{% endif %}">
+                                                                {{ forloop.counter }}
+                                                            </span>
+                                                        </td>
+                                                        <td>{{ item.nombre|truncatechars:30 }}</td>
+                                                        <td class="text-center">{{ item.cantidad_vendida }}</td>
+                                                        <td class="text-end">
+                                                            <strong>${{ item.total_neto|floatformat:0 }}</strong>
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                {% else %}
+                                    <div class="alert alert-info">
+                                        <i class="bi bi-info-circle"></i> No hay datos para mostrar.
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="alert alert-warning">
+                    <i class="bi bi-exclamation-triangle"></i> Selecciona los filtros y haz clic en "Generar Ranking" para ver los resultados.
+                </div>
+            {% endif %}
+
+        </main>
+    </div>
+</div>
+{% endblock %}
+
